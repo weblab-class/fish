@@ -95,61 +95,60 @@ export default function Game() {
     scene: {
       preload() {
         // background
-        this.load.image("tiles", "background.png");
-        this.load.tilemapTiledJSON("map", "background.json");
+        this.load.image("tiles", "/backgrounds/homeBg.png");
+        this.load.tilemapTiledJSON("map", "/backgrounds/background.json");
 
         // collision objects
-        this.load.image("house", "house.png");
-        this.load.image("ground", "platform.png");
-        this.load.image("swan", "swan.png");
-        this.load.image("transparent", "transparent.png");
+        this.load.image("house", "/objects/house.png");
+        this.load.image("swan", "/objects/swan.png");
+        this.load.image("transparent", "/backgrounds/transparent.png");
 
         // player sprites
-        this.load.spritesheet("cow", "cow.png", {
+        this.load.spritesheet("cow", "/players/cow.png", {
           frameWidth: 100,
           frameHeight: 119,
         });
-        this.load.spritesheet("bear", "bear.png", {
+        this.load.spritesheet("bear", "/players/bear.png", {
           frameWidth: 100,
           frameHeight: 109,
         });
-        this.load.spritesheet("panda", "panda.png", {
+        this.load.spritesheet("panda", "/players/panda.png", {
           frameWidth: 100,
           frameHeight: 110,
         });
-        this.load.spritesheet("pig", "pig.png", {
+        this.load.spritesheet("pig", "/players/pig.png", {
           frameWidth: 112,
           frameHeight: 110,
         });
-        this.load.spritesheet("bunny", "bunny.png", {
+        this.load.spritesheet("bunny", "/players/bunny.png", {
           frameWidth: 80,
           frameHeight: 110,
         });
-        this.load.spritesheet("penguin", "penguin.png", {
+        this.load.spritesheet("penguin", "/players/penguin.png", {
           frameWidth: 82,
           frameHeight: 122,
         });
-        this.load.spritesheet("cat", "cat.png", {
+        this.load.spritesheet("cat", "/players/cat.png", {
           frameWidth: 70,
           frameHeight: 114,
         });
-        this.load.spritesheet("sheep", "sheep.png", {
+        this.load.spritesheet("sheep", "/players/sheep.png", {
           frameWidth: 100,
           frameHeight: 114,
         });
-        this.load.spritesheet("beaver", "beaver.png", {
+        this.load.spritesheet("beaver", "/players/beaver.png", {
           frameWidth: 100,
           frameHeight: 133,
         });
-        this.load.spritesheet("duck", "duck.png", {
+        this.load.spritesheet("duck", "/players/duck.png", {
           frameWidth: 75,
           frameHeight: 122,
         });
-        this.load.spritesheet("hedgehog", "hedgehog.png", {
+        this.load.spritesheet("hedgehog", "/players/hedgehog.png", {
           frameWidth: 100,
           frameHeight: 118,
         });
-        this.load.spritesheet("shiba", "shiba.png", {
+        this.load.spritesheet("shiba", "/players/shiba.png", {
           frameWidth: 75,
           frameHeight: 122,
         });
@@ -168,18 +167,18 @@ export default function Game() {
           tileHeight: 2224,
         });
 
-        const tileset = map.addTilesetImage("background", "tiles");
+        const tileset = map.addTilesetImage("homeBg", "tiles");
         const layer = map.createLayer("layer", tileset!, 0, 0);
 
         // create static house and door
-        const house = this.physics.add.image(730, 300, "house");
+        const house = this.physics.add.image(730, 400, "house");
         house.setImmovable(true);
-        const door = this.physics.add.image(730, 300, "house");
+        const door = this.physics.add.image(730, 400, "house");
         door.setImmovable(true);
 
         // modifying collision box of house
         house.setOrigin(0.5, 0.5);
-        house.setSize(430, 200);
+        house.setSize(430, 160);
         house.setOffset(0, 30);
 
         // modifying collision box of door
@@ -187,27 +186,27 @@ export default function Game() {
         door.setSize(80, 50);
         door.setOffset(90, 200);
 
-        const swan = this.physics.add.image(2000, 520, "swan");
+        const swan = this.physics.add.image(1600, 700, "swan");
         swan.setDepth(2);
         swan.setImmovable(true);
         swan.setOrigin(0.5, 0.5);
         swan.setSize(120, 60);
         swan.setOffset(15, 0);
 
-        const lowerPond = this.physics.add.image(2240, 1010, "transparent");
+        const lowerPond = this.physics.add.image(2240, 1200, "transparent");
         lowerPond.setImmovable(true);
         lowerPond.setOrigin(0.5, 0.5);
         lowerPond.setSize(630, 190);
         lowerPond.setOffset(0, 0);
         const self = this as Phaser.Scene;
 
-        const upperPond = this.physics.add.image(2415, 1050, "transparent");
+        const upperPond = this.physics.add.image(2415, 1230, "transparent");
         upperPond.setImmovable(true);
         upperPond.setOrigin(0.5, 0.5);
         upperPond.setSize(300, 70);
         upperPond.setOffset(0, -100);
 
-        const midPond = this.physics.add.image(2350, 990, "transparent");
+        const midPond = this.physics.add.image(2350, 1170, "transparent");
         midPond.setImmovable(true);
         midPond.setOrigin(0.5, 0.5);
         midPond.setSize(430, 30);
@@ -218,7 +217,7 @@ export default function Game() {
         // this.registry.set("socket_id", pusherClient.connection.socket_id);
 
         // display player sprite
-        const player = this.physics.add.sprite(700, 550, "bunny");
+        const player = this.physics.add.sprite(700, 650, "bunny");
 
         // collision between player and house
         this.physics.add.collider(player, house);
@@ -247,9 +246,9 @@ export default function Game() {
         // world bounds
         this.physics.world.setBounds(
           0,
-          190,
+          370,
           map.widthInPixels,
-          map.heightInPixels - 190,
+          map.heightInPixels - 370,
         );
 
         player.setDataEnabled();
@@ -501,14 +500,11 @@ export default function Game() {
       <div ref={parentEl} className="phaser-container block h-full w-full" />
       <div className="absolute bottom-7 flex w-full justify-center">
         {textBox !== "" && (
-          <div className="rounded-xl bg-opacity-90 bg-[url('/pinkBg.png')] bg-cover p-4 text-center text-xl text-white shadow-md shadow-pink-900 outline outline-white">
+          <div className="rounded-xl bg-opacity-90 bg-[url('/backgrounds/pinkBg.png')] bg-cover p-4 text-center text-2xl text-white shadow-md shadow-pink-900 outline outline-white">
             {textBox}
           </div>
         )}
       </div>
-      {inviteScreen && (
-        <div className="z-20 flex h-full w-full items-center justify-center bg-blue-500"></div>
-      )}
     </div>
   );
 }

@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     <main>
-      <div className="absolute top-0 w-full h-full m-0 p-0 z-0">
+      <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
         <NextAuthProvider>
           <DynamicComponentWithNoSSR />
         </NextAuthProvider>
@@ -21,31 +21,27 @@ export default function Home() {
 
       {/* nav bar */}
       <div
-        className="bg-[url('/logoutCloud.png')] hover:bg-[url('/logoutCloudHover.png')] hover:z-20 z-10 bg-no-repeat bg-right-top absolute right-0 inset-y-0 h-28 w-96"
+        className="absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]"
         onClick={() => console.log("return to title screen")}
       />
       <div
-        className="bg-[url('/studyCloud.png')] hover:bg-[url('/studyCloudHover.png')] bg-no-repeat hover:z-20 z-10 bg-right-top absolute right-64 inset-y-0 h-28 w-96"
+        className="absolute inset-y-0 right-64 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
         onClick={() => console.log("go to study room")}
       />
       <div
-        className="bg-[url('/multiplayerCloud.png')] hover:bg-[url('/multiplayerCloudHover.png')] hover:z-20 z-10 bg-no-repeat bg-left-top absolute left-0 inset-y-0 h-28 w-96"
+        className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/multiplayerCloudHover.png')]"
         onClick={() => setInviteScreen(true)}
       />
       <div
-        className="bg-[url('/mailCloud.png')] hover:bg-[url('/mailCloudHover.png')] hover:z-20 z-10 bg-no-repeat bg-right-top absolute inset-x-72 inset-y-0 h-28 w-96"
+        className="absolute inset-x-72 inset-y-0 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/mailCloudHover.png')]"
         onClick={() => console.log("open mailbox")}
       />
-      <div
-        className="bg-[url('/houseCloud.png')] hover:bg-[url('/houseCloudHover.png')] hover:z-20 z-10 bg-no-repeat bg-left-top absolute right-1/3 inset-y-0 h-28 w-96"
-        onClick={() => console.log("enter house")}
-      />
-    
-    {/* Invite/Join friends pop up */}
-      {inviteScreen && (
-        <div className="absolute rounded-3xl shadow-xl shadow-stone-600 h-5/6 w-5/6 bg-[url(/tanBg.png)] bg-cover outline-8 outline-amber-900 z-20">
-        </div>
-      )}
+      <div className="absolute flex w-full justify-center">
+        <div
+          className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/houseCloudHover.png')]"
+          onClick={() => console.log("enter house")}
+        />
+      </div>
     </main>
   );
 }
