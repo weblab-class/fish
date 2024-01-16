@@ -1,5 +1,8 @@
 "use client";
+import InvitePopup from "@/components/InvitePopup";
+import MailPopup from "@/components/MailPopup";
 import NextAuthProvider from "@/services/next-auth/NextAuthProvider";
+import { useGameStore } from "@/stores/gameStore";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +12,43 @@ const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
 });
 
 export default function Home() {
-  const [inviteScreen, setInviteScreen] = useState(false);
+  // control display of popups
+  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
+    (state) => [
+      state.showInvitePopup,
+      state.showMailPopup,
+      state.showPopup,
+      state.setDefault,
+    ],
+  );
+  const inviteRef = useRef<HTMLDivElement>(null);
+  const mailRef = useRef<HTMLDivElement>(null);
+
+  // handle clicks outside of popups
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        (mailRef.current && !mailRef.current.contains(event.target as Node)) ||
+        (inviteRef.current && !inviteRef.current.contains(event.target as Node))
+      ) {
+        console.log(mailRef.current);
+        console.log(event.target);
+        setDefault();
+        console.log("clicked outside");
+      }
+      if (mailRef.current && mailRef.current.contains(event.target as Node)) {
+        console.log(mailRef.current);
+        console.log(event.target);
+
+        console.log("clicked inside");
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  });
 
   return (
     <main>
@@ -30,11 +69,11 @@ export default function Home() {
       />
       <div
         className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/multiplayerCloudHover.png')]"
-        onClick={() => setInviteScreen(true)}
+        onClick={() => showPopup("invite")}
       />
       <div
         className="absolute inset-x-72 inset-y-0 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/mailCloudHover.png')]"
-        onClick={() => console.log("open mailbox")}
+        onClick={() => showPopup("mail")}
       />
       <div className="absolute flex w-full justify-center">
         <div
@@ -42,6 +81,28 @@ export default function Home() {
           onClick={() => console.log("enter house")}
         />
       </div>
+
+      {showInvitePopup && (
+        <div className="flex h-screen w-screen items-center justify-center">
+          <div
+            className="flex items-center justify-center bg-white"
+            ref={inviteRef}
+          >
+            <InvitePopup />
+          </div>
+        </div>
+      )}
+
+      {showMailPopup && (
+        <div className="flex h-screen w-screen items-center justify-center">
+          <div
+            className="flex items-center justify-center bg-slate-200"
+            ref={mailRef}
+          >
+            <MailPopup />
+          </div>
+        </div>
+      )}
     </main>
   );
 }

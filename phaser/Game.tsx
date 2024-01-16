@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { PresenceChannel } from "pusher-js";
 import { NextResponse } from "next/server";
 import { PresenceChannelData } from "pusher";
+import { useGameStore } from "@/stores/gameStore";
 
 interface IRedirectStoreState {
   redirect: boolean;
@@ -34,6 +35,15 @@ export default function Game() {
   const session = useSession();
   const uid = session.data!.user.uid!;
   const router = useRouter();
+  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
+    (state) => [
+      state.showInvitePopup,
+      state.showMailPopup,
+      state.showPopup,
+      state.setDefault,
+    ],
+  );
+
   // TODO fix how it only works right when you finish build it
   useEffect(() => {
     if (redirect) {
@@ -399,6 +409,8 @@ export default function Game() {
         const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
         const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
         const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
+        const updatedShowInvite = useGameStore.getState().showInvitePopup;
+        const updatedShowMail = useGameStore.getState().showMailPopup;
 
         // // detect overlap between player and door
         // self.physics.add.overlap(player, door, () => {
@@ -417,15 +429,19 @@ export default function Game() {
           const isDown = keyObj.isDown;
 
           // enters house when enter key is pressed
-          if (isDown) {
+          if (isDown && !updatedShowInvite && !updatedShowMail) {
             console.log("enter house");
           }
-        } else if (isOverlappingSwan) {
+        } else if (
+          isOverlappingSwan &&
+          !updatedShowInvite &&
+          !updatedShowMail
+        ) {
           const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
           const isDown = keyObj.isDown;
           setTextBox("Press [Enter] to travel");
           if (isDown) {
-            setInviteScreen(true);
+            showPopup("invite");
           }
         } else {
           setTextBox("");
