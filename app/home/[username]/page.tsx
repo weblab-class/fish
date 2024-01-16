@@ -1,4 +1,5 @@
 "use client";
+import NextAuthProvider from "@/services/next-auth/NextAuthProvider";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +14,9 @@ export default function Home() {
   return (
     <main>
       <div className="absolute top-0 w-full h-full m-0 p-0 z-0">
-        <DynamicComponentWithNoSSR />
+        <NextAuthProvider>
+          <DynamicComponentWithNoSSR />
+        </NextAuthProvider>
       </div>
 
       {/* nav bar */}

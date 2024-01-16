@@ -1,20 +1,51 @@
 import { Game as PhaserGame } from "phaser";
 import { useEffect, useRef, useState } from "react";
-import { pusherClient } from "@/services/pusher";
-import { PlayerInfo } from "@/types";
+import {
+  PlayerRoomUserInfo,
+  PusherError,
+  pusherClient,
+} from "@/services/pusher";
+import { PlayerInfo } from "./types";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
+import { create } from "zustand";
+import { useRouter } from "next/navigation";
+import { PresenceChannel } from "pusher-js";
+import { NextResponse } from "next/server";
+import { PresenceChannelData } from "pusher";
+
+interface IRedirectStoreState {
+  redirect: boolean;
+  setRedirect: (state: boolean) => void;
+}
+
+const useRedirectStore = create<IRedirectStoreState>((set) => ({
+  redirect: false,
+  setRedirect: (state) => set({ redirect: state }),
+}));
 
 export default function Game() {
   const [textBox, setTextBox] = useState("");
   const [inviteScreen, setInviteScreen] = useState(false);
   const parentEl = useRef<HTMLDivElement>(null);
   let [game, setGame] = useState<PhaserGame | null>(null);
+  const [redirect] = useRedirectStore((state) => [state.redirect]);
+  const session = useSession();
+  const uid = session.data!.user.uid!;
+  const router = useRouter();
+  // TODO fix how it only works right when you finish build it
+  useEffect(() => {
+    if (redirect) {
+      router.push("/no-duplicate-tabs");
+    }
+  }, [redirect]);
 
   useEffect(() => {
     if (!parentEl.current) return;
 
     // get presence-channel for room
-    const channel = pusherClient.subscribe("presence-channel");
+    const channel = pusherClient.subscribe(`presence-host-${uid}`);
 
     const newGame = new PhaserGame({
       ...gameConfig,
@@ -26,7 +57,7 @@ export default function Game() {
     setGame(newGame);
 
     return () => {
-      pusherClient.unsubscribe("presence-channel");
+      pusherClient.unsubscribe(`presence-host-${uid}`);
       channel.unbind(); // unsubscribe when the component unmounts
       newGame?.destroy(true, true);
     };
@@ -39,7 +70,7 @@ export default function Game() {
     otherPlayer.data.set("playerId", playerInfo.playerId);
 
     (scene.data.get("otherPlayers") as Phaser.GameObjects.Group).add(
-      otherPlayer
+      otherPlayer,
     );
   }
 
@@ -127,7 +158,7 @@ export default function Game() {
       create() {
         // access arrow keys
         const cursors = this.registry.get(
-          "cursors"
+          "cursors",
         ) as Phaser.Types.Input.Keyboard.CursorKeys;
 
         // create one-tile tilemap
@@ -210,7 +241,7 @@ export default function Game() {
           0,
           0,
           map.widthInPixels,
-          map.heightInPixels
+          map.heightInPixels,
         );
 
         // world bounds
@@ -218,7 +249,7 @@ export default function Game() {
           0,
           190,
           map.widthInPixels,
-          map.heightInPixels - 190
+          map.heightInPixels - 190,
         );
 
         player.setDataEnabled();
@@ -243,6 +274,7 @@ export default function Game() {
         presenceChannel.bind(
           "pusher:subscription_succeeded",
           async (members: any) => {
+            useRedirectStore.setState({ redirect: false });
             const x = player.x;
             const y = player.y;
             this.registry.set("socket_id", pusherClient.connection.socket_id);
@@ -254,7 +286,37 @@ export default function Game() {
               y: 450,
               playerId: this.registry.get("socket_id") as string,
             });
-          }
+          },
+        );
+
+        presenceChannel.bind(
+          "pusher:subscription_error",
+          async (error: any) => {
+            switch (error.status) {
+              case 403:
+                const localUid = session.data?.user.uid;
+                const localSocketId = pusherClient.connection.socket_id;
+
+                // if the socket ID match, then we are on the right tab and hence it was a rerender issue, so DON'T REDIRECT
+                if (localUid && localSocketId) {
+                  const storedUserInfo = (
+                    presenceChannel as PresenceChannel
+                  ).members.get(localUid) as PresenceChannelData;
+                  console.log("stored", storedUserInfo);
+                  if (storedUserInfo) {
+                    const { socket_id } =
+                      storedUserInfo.user_info! as PlayerRoomUserInfo;
+                    console.log("local", localSocketId);
+                    if (localSocketId === socket_id) {
+                      return;
+                    }
+                  }
+
+                  useRedirectStore.setState({ redirect: true });
+                }
+                break;
+            }
+          },
         );
 
         // listens for when a new member subscribes to channel
@@ -264,7 +326,7 @@ export default function Game() {
             if (player.id != (this.registry.get("socket_id") as string)) {
               addOtherPlayer(this, { x: 100, y: 450, playerId: player.id });
             }
-          }
+          },
         );
 
         // deletes player when they unsubscribe from channel
@@ -277,7 +339,7 @@ export default function Game() {
                 otherPlayer.destroy();
               }
             });
-          }
+          },
         );
 
         // listens for when new players join and adds current players to the new player's screen
@@ -294,13 +356,13 @@ export default function Game() {
                 addOtherPlayer(self, data.players[id]);
               });
             }
-          }
+          },
         );
 
         // updates location of other players
         presenceChannel.bind("playerMoved", (playerInfo: PlayerInfo) => {
           const otherPlayers = this.data.get(
-            "otherPlayers"
+            "otherPlayers",
           ) as Phaser.GameObjects.Group;
 
           (otherPlayers.getChildren() as Phaser.GameObjects.Sprite[]).forEach(
@@ -311,7 +373,7 @@ export default function Game() {
               ) {
                 otherPlayer.setPosition(playerInfo.x, playerInfo.y);
               }
-            }
+            },
           );
         });
 
@@ -372,7 +434,7 @@ export default function Game() {
 
         // access arrow keys
         const cursors = self.registry.get(
-          "cursors"
+          "cursors",
         ) as Phaser.Types.Input.Keyboard.CursorKeys;
 
         // player movement
@@ -436,16 +498,16 @@ export default function Game() {
 
   return (
     <div className="absolute">
-      <div ref={parentEl} className="phaser-container w-full h-full block" />
-      <div className="flex absolute bottom-7 w-full justify-center">
+      <div ref={parentEl} className="phaser-container block h-full w-full" />
+      <div className="absolute bottom-7 flex w-full justify-center">
         {textBox !== "" && (
-          <div className="rounded-xl p-4 text-xl bg-opacity-90 text-center shadow-pink-900 shadow-md bg-[url('/pinkBg.png')] bg-cover outline outline-white text-white">
+          <div className="rounded-xl bg-opacity-90 bg-[url('/pinkBg.png')] bg-cover p-4 text-center text-xl text-white shadow-md shadow-pink-900 outline outline-white">
             {textBox}
           </div>
         )}
       </div>
       {inviteScreen && (
-        <div className="w-full h-full flex bg-blue-500 items-center justify-center z-20"></div>
+        <div className="z-20 flex h-full w-full items-center justify-center bg-blue-500"></div>
       )}
     </div>
   );

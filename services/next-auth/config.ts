@@ -7,10 +7,19 @@ import { mongodbConnect } from "../mongo";
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(mongodbConnect()),
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      session.user.uid = token.sub;
+      return session;
+    }
+  }
 };
