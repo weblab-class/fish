@@ -1,8 +1,8 @@
-import { Schema, Types } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
-import { gameRoomSchema, type IGameData } from "./BaseGameRoom";
+import { gameRoomSchema, IGameRoom, GameRoomModel } from "./BaseGameRoom";
 
-interface ISentenceSymphonyGameData extends IGameData {
+interface ISentenceSymphonyGameRoom extends IGameRoom {
   initialPrompt: string;
   voteOptions: {
     sentence: string;
@@ -16,7 +16,7 @@ interface ISentenceSymphonyGameData extends IGameData {
   sentences: string[];
 }
 
-const sentenceSymphonyGameDataSchema = new Schema<ISentenceSymphonyGameData>({
+const sentenceSymphonyGameRoomSchema = new Schema<ISentenceSymphonyGameRoom>({
   initialPrompt: { type: String, required: true },
   voteOptions: [
     {
@@ -25,9 +25,14 @@ const sentenceSymphonyGameDataSchema = new Schema<ISentenceSymphonyGameData>({
       voteIds: [{ type: Schema.Types.ObjectId, required: true }],
     },
   ],
-  scores: [{}],
+  scores: [
+    {
+      playerId: { type: Schema.Types.ObjectId, required: true, ref: "Player" },
+      roundsWon: Number,
+    },
+  ],
+  sentences: [{ type: String, required: true }],
 });
 
-export const SentenceSymphonyGameRoomModel = gameRoomSchema
-  .path<Schema.Types.Subdocument>("gameData")
-  .discriminator("sentence-symphony", sentenceSymphonyGameDataSchema);
+export const SentenceSymphonyGameRoomModel = mongoose.models.SentenceSymphony || GameRoomModel.discriminator("SentenceSymphony", sentenceSymphonyGameRoomSchema);
+  

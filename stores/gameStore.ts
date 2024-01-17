@@ -37,7 +37,6 @@ export const useGameStore = create<GameStoreState>((set) => ({
                 data.showMailPopup = true;
                 break;
         }
-        console.log(data);
         set({...data});
     }
 }));

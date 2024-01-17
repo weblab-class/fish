@@ -20,6 +20,7 @@ function TitleContent() {
     <div>
       <button onClick={() => signIn("google")}>Sign In With Google</button>
       <button onClick={() => signOut()}>Sign Out</button>
+      <p>{session.data?.user.uid ?? "bruh"}</p>
     </div>
   );
 }

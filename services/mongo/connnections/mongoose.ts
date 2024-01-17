@@ -2,10 +2,10 @@
 import mongoose, { type Mongoose } from "mongoose";
 
 interface ICached {
-    conn: Mongoose,
+    conn: Mongoose | null,
     promise: Promise<Mongoose> | null;
 }
-let cached: ICached;
+let cached: ICached = { conn: null, promise: null };
 
 /**
  * Mongoose client.

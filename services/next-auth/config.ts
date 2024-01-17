@@ -2,7 +2,7 @@ import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-import { mongodbConnect } from "../mongo";
+import { mongodbConnect, mongooseConnect } from "../mongo/connnections";
 
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(mongodbConnect()),
@@ -18,7 +18,11 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, token, user }) {
-      session.user.uid = token.sub;
+      await mongooseConnect();  // ensure that mongoose is connected
+  
+      session.user.uid = "lol";
+      console.log(session);
+      console.log(user);
       return session;
     }
   }

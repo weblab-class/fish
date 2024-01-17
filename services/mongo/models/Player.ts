@@ -1,5 +1,4 @@
-import mongoose, { InferSchemaType, model, Schema, Types } from "mongoose";
-import { mongooseConnect } from "../mongoose";
+import mongoose, { model, Schema, Types } from "mongoose";
 
 export enum AnimalSpriteType {
   COW = "cow",
@@ -17,7 +16,6 @@ export enum AnimalSpriteType {
 }
 
 interface IPlayer {
-  _id: string;
   username: string;
   animalSprite: AnimalSpriteType;
   currentPlayerRoomId: Types.ObjectId;
@@ -29,10 +27,18 @@ const playerSchema = new Schema<IPlayer>({
   animalSprite: { type: String, enum: AnimalSpriteType, required: true },
   currentPlayerRoomId: {
     type: Schema.Types.ObjectId,
-    ref: "player",
+    ref: "User",
     required: true,
-  }, // tracks what room they are in
-  teamId: { type: Schema.Types.ObjectId, ref: "team" },
+  }, // tracks what room they are in (on creation, this will be the uid from next-auth/mongodb)
+  teamId: { type: Schema.Types.ObjectId, ref: "Team" },
+});
+playerSchema.pre("save", function (next) {
+  if (this.isNew) {
+    // if new, set the document _id to the uid
+    this._id = this.currentPlayerRoomId;
+  }
+  next();
 });
 
-export const PlayerModel: mongoose.Model<IPlayer> = mongoose.models.Player || model<IPlayer>("Player", playerSchema);
+export const PlayerModel: mongoose.Model<IPlayer> =
+  mongoose.models.Player || model<IPlayer>("Player", playerSchema);

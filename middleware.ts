@@ -1,5 +1,5 @@
 /**
- * Ensures that the user is signed in 
+ * Ensures that the user is signed in no matter what existing route the user takes.
  */
 import { withAuth } from "next-auth/middleware";
 
