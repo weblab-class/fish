@@ -8,5 +8,20 @@ const config: Config = {
     './phaser/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   plugins: [],
+  theme: {
+    extend: {
+      height: {
+        '270': '270px',
+        '170':'170px',
+      },
+      width: {
+        '500': '500px',
+        '300': '300px',
+        '90%':'90%'
+      },
+    },
+  }
 }
+
+
 export default config;
