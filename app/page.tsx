@@ -1,26 +1,23 @@
-"use client";
-
-import NextAuthProvider from "@/services/next-auth/NextAuthProvider";
-import { SessionProvider, signIn, signOut, useSession } from "next-auth/react";
+import { getPageSession } from "@/services/lucia/functions";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import TitlePageOnboarding from "./TitlePageOnboarding";
+import { redirect } from "next/navigation";
+import { mongooseConnect } from "@/services/mongo/connnections";
+import TitlePageLogin from "./TitlePageLogin";
 
-export default function TitlePage() {
+/**
+ * This is the title page. If you need to render stuff dynamically, use `session`. Any client components should be
+ */
+export default async function TitlePage() {
+  await mongooseConnect();
+  const session = await getPageSession();
+  // TODO: call database and see if they finished the onboarding process. if they did, then do `redirect()` to the /home/{session.user.id}
+
   return (
-    <NextAuthProvider>
-      <TitleContent />
-    </NextAuthProvider>
-  );
-}
-
-function TitleContent() {
-  const session = useSession();
-
-  return (
-    <div>
-      <button onClick={() => signIn("google")}>Sign In With Google</button>
-      <button onClick={() => signOut()}>Sign Out</button>
-      <p>{session.data?.user.uid ?? "bruh"}</p>
+    <div className="flex flex-col gap-5">
+      {!session ? <TitlePageLogin /> : <TitlePageOnboarding />}
     </div>
   );
 }

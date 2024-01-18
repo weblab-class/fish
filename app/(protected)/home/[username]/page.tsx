@@ -1,7 +1,6 @@
 "use client";
 import InvitePopup from "@/components/InvitePopup";
 import MailPopup from "@/components/MailPopup";
-import NextAuthProvider from "@/services/next-auth/NextAuthProvider";
 import { useGameStore } from "@/stores/gameStore";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
@@ -53,9 +52,7 @@ export default function Home() {
   return (
     <main>
       <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
-        <NextAuthProvider>
           <DynamicComponentWithNoSSR />
-        </NextAuthProvider>
       </div>
 
       {/* nav bar */}
