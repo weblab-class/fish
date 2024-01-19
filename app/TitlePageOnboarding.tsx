@@ -6,7 +6,7 @@ import { AnimalSprite } from "@/services/mongo/models";
 import { useCreatePlayer } from "@/services/mongo/react-query/mutations";
 import axios from "axios";
 import { useRef } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function TitlePageOnboarding() {
   const router = useRouter();

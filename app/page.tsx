@@ -18,7 +18,7 @@ export default async function TitlePage() {
   await mongooseConnect();
   const session = await getPageSession();
   const player = session ? await getPlayer(session.user.uid) : null;
-  if (player) redirect(`/home/${player.data.username}`);
+  if (player?.data) redirect(`/home/${player.data.username}`);
 
   return (
     <div className="flex flex-col gap-5">

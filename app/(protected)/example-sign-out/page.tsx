@@ -19,7 +19,7 @@ export default function RedirectTitlePage() {
       <p>{session?.user.userId ?? "hello"}</p>
       <a
         onClick={async () => {
-          await axios.post("/api/auth/logout");
+          await axios.post(`${process.env.DOMAIN}/api/auth/logout`);
           router.replace("/");
         }}
       >

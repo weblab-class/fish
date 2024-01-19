@@ -6,6 +6,7 @@ namespace NodeJS {
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
     MONGODB_SECRET: string;
+    DOMAIN: string;
 
     NODE_ENV: "development" | "production";
     TZ?: string;
