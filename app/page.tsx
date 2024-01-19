@@ -7,8 +7,8 @@ import { redirect } from "next/navigation";
 import { mongooseConnect } from "@/services/mongo/connnections";
 import TitlePageLogin from "./TitlePageLogin";
 import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
-import ReactQueryProvider from "@/services/mongo/react-query/ReactQueryProvider";
-import { getPlayer } from "@/services/mongo/react-query";
+import ReactQueryProvider from "@/services/react-query/ReactQueryProvider";
+import { getPlayer } from "@/services/react-query";
 
 /**
  * This is the title page. If you need to render stuff dynamically, use `session`. Any client components should be
