@@ -24,10 +24,13 @@ export default async function ProtectedLayout({
   const session = await getPageSession();
   if (!session) redirect("/");
 
+  const player = await getPlayer(session.user.uid)
+  if (!player.data) redirect("/");
+
   // TODO use this to get player and protect this (MAY BREAK)
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
-    queryKey: ["user"],
+    queryKey: ["player", session.user.uid],
     queryFn: async () => {
       return await getPlayer(session.user.uid);
     },
