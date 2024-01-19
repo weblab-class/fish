@@ -15,6 +15,7 @@ export const luciaAuth = lucia({
     expires: false,
   },
   adapter: mongoose({
+    // @ts-ignore
     User,
     Key,
     Session,

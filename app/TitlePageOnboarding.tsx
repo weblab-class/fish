@@ -1,8 +1,11 @@
 "use client";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
-import Image from "next/image";
 import { useState } from "react";
+import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
+import { useCreatePlayer } from "@/services/mongo/react-query/mutations";
+import { useRouter } from "next/router";
+
 type Input = {
   username: string;
 };
@@ -13,6 +16,24 @@ export default function TitlePageOnboarding() {
     handleSubmit,
     formState: { errors },
   } = useForm<Input>();
+
+  const router = useRouter();
+  const createPlayerMutation = useCreatePlayer();
+  const { session } = useLuciaSession();
+
+  // add form values
+
+  // EXAMPLE BELOW
+  // return (
+  //   <button onClick={async () => {
+      // await createPlayerMutation.mutate( { });
+      // if the player successfullly created
+      // router.push(`/home/${username here}`)
+  //   }}>
+  //     Bruh
+  //   </button>
+  // );
+
   const onSubmit: SubmitHandler<Input> = (data) => {
     // pass identifier, username, and sprite to database
     // TO DO: post to database and replace player id

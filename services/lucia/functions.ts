@@ -30,7 +30,7 @@ export const getPageSession = cache<CachedSessionCallback>(async () => {
  * @param sessionResponse 
  * @returns 
  */
-export async function protectApiRoute(req: NextRequest, sessionResponse: (session: Session) => Promise<NextResponse>) {
+export async function authorizeApiRoute(req: NextRequest, sessionResponse: (session: Session) => Promise<NextResponse>) {
 	const authRequest = luciaAuth.handleRequest(req.method, context);
 	const session = await authRequest.validate();
 

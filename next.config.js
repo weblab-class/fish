@@ -1,21 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async headers() {
-    return [
-      {
-        source: "/api/graphql",
-        headers: [
-          {
-            key: "Access-Control-Allow-Origin",
-            value: "*",
-          },
-          {
-            key: "Access-Control-Allow-Methods",
-            value: "POST, GET, PUT, PATCH, DELETE, OPTIONS, HEAD",
-          },
-        ],
-      },
-    ];
+  reactStrictMode: false,
+
+  // mongoose! (see https://mongoosejs.com/docs/nextjs.html)
+  experimental: {
+    esmExternals: "loose", 
+    serverComponentsExternalPackages: ["mongoose"]
   },
 };
 

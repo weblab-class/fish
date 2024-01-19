@@ -6,7 +6,7 @@ export interface IGameRoom {
 }
 
 export const gameRoomSchema = new Schema<IGameRoom>({
-  hostId: { type: Schema.Types.ObjectId, ref: "Player", required: true, index: { unique: true } },
+  hostId: { type: Schema.Types.ObjectId, ref: "Player", required: true },
   allPlayers: [{ type: Schema.Types.ObjectId, ref: "Player", required: true }],
 }, {discriminatorKey: "gameType"});
 
