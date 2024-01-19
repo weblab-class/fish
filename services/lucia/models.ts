@@ -1,55 +1,44 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import { prop, modelOptions, getModelForClass } from "@typegoose/typegoose";
+import type { Ref as TypeRef } from "@typegoose/typegoose";
+import type { Base } from "@typegoose/typegoose/lib/defaultClasses";
 
 // defaults provided by https://lucia-auth.com/database-adapters/mongoose/
-const userSchema = new mongoose.Schema(
-  {
-    _id: {
-      type: String,
-      required: true,
-    },
-  } as const,
-  { _id: false },
-);
-const User = mongoose.models.User || mongoose.model("User", userSchema);
 
-const keySchema = new mongoose.Schema(
-  {
-    _id: {
-      type: String,
-      required: true,
-    },
-    user_id: {
-      type: String,
-      required: true,
-    },
-    hashed_password: String,
-  } as const,
-  { _id: false },
-);
+@modelOptions({ schemaOptions: { _id: false }, options: { customName: "User" }})
+export class UserSchema {
+  @prop({ required: true })
+  public _id!: string;
+}
+const User: mongoose.Model<UserSchema> = mongoose.models.User || getModelForClass(UserSchema);
 
-const Key = mongoose.models.Key || mongoose.model("Key", keySchema);
+@modelOptions({ schemaOptions: { _id: false }, options: { customName: "Key"}})
+class KeySchema {
+  @prop({ required: true })
+  public _id!: string;
 
-const sessionSchema = new mongoose.Schema(
-  {
-    _id: {
-      type: String,
-      required: true,
-    },
-    user_id: {
-      type: String,
-      required: true,
-    },
-    active_expires: {
-      type: Number,
-      required: true,
-    },
-    idle_expires: {
-      type: Number,
-      required: true,
-    },
-  } as const,
-  { _id: false },
-);
-const Session = mongoose.models.Session || mongoose.model("Session", sessionSchema);
+  @prop({required: true})
+  public user_id!: string;
+  
+  @prop()
+  public hashed_password?: string;
+}
+const Key: mongoose.Model<KeySchema> = mongoose.models.Key || getModelForClass(KeySchema);
+
+@modelOptions({ schemaOptions: { _id: false }, options: { customName: "Session"}})
+class SessionSchema {
+  @prop({ required: true })
+  public _id!: string;
+
+  @prop({required: true})
+  public user_id!: string;
+
+  @prop({ required: true })
+  public active_expires!: number;
+
+  @prop({ required: true })
+  public idle_expires!: number;
+}
+const Session: mongoose.Model<SessionSchema> = mongoose.models.Session || getModelForClass(SessionSchema);
 
 export { User, Key, Session };

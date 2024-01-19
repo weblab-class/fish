@@ -18,7 +18,7 @@ interface ILuciaSessionContextProps {
 }
 
 /**
- * This is for the (protected) layout. DO NOT USE THIS IN OTHER FILES.
+ * This is for the protected layout and the onboarding process. DO NOT USE THIS IN OTHER FILES.
  */
 export default function LuciaSessionProvider({
   children,
@@ -33,6 +33,8 @@ export default function LuciaSessionProvider({
 
 /**
  * Use this in client components under (protected) to get the Lucia session.
+ * 
+ * **NOTE: Although the type is nullable, it is safe to assume that this will ALWAYS exist.**
  */
 export const useLuciaSession = () => {
   const context = useContext(LuciaSessionContext);

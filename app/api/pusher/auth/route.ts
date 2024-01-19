@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { PresenceChannelData } from "pusher";
 
 import { type PlayerRoomUserInfo, PusherError, pusherServer } from "@/services/pusher";
-import { protectApiRoute } from "@/services/lucia/functions";
+import { authorizeApiRoute } from "@/services/lucia/functions";
 
 export async function POST(req: NextRequest) {
-  return await protectApiRoute(req, async (session) => {
+  return await authorizeApiRoute(req, async (session) => {
     const data = await req.text();  // contains socket id and channel name
     const socketId = data.split("&")[0].split("=")[1];
     const uid = session.user.uid!;

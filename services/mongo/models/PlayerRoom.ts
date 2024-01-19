@@ -1,9 +1,17 @@
 import mongoose, { model, Schema, Types } from "mongoose";
 
 export enum PlayerRoomStatus {
-  OUTSIDE = "outside",
-  INSIDE = "inside",
-  STUDY = "study",
+  EXTERIOR = "exterior",
+  INTERIOR = "interior",
+  STUDY = "studyroom",
+}
+
+
+class PlayerRoom {
+}
+
+class PlayerData {
+
 }
 
 interface IPlayerRoom {
@@ -22,7 +30,7 @@ const playerRoomSchema = new Schema<IPlayerRoom>(
     hostStatus: {
       type: String,
       enum: PlayerRoomStatus,
-      default: PlayerRoomStatus.OUTSIDE,
+      default: PlayerRoomStatus.EXTERIOR,
       required: true,
     },
     allPlayers: [

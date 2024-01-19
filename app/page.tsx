@@ -6,18 +6,29 @@ import TitlePageOnboarding from "./TitlePageOnboarding";
 import { redirect } from "next/navigation";
 import { mongooseConnect } from "@/services/mongo/connnections";
 import TitlePageLogin from "./TitlePageLogin";
+import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
+import ReactQueryProvider from "@/services/mongo/react-query/ReactQueryProvider";
+import { getPlayer } from "@/services/mongo/react-query";
 
 /**
  * This is the title page. If you need to render stuff dynamically, use `session`. Any client components should be
+ * created outside this folder, since this is a server component.
  */
 export default async function TitlePage() {
   await mongooseConnect();
   const session = await getPageSession();
-  // TODO: call database and see if they finished the onboarding process. if they did, then do `redirect()` to the /home/{session.user.id}
+  const player = session ? await getPlayer(session.user.uid) : null;
+  if (player) redirect(`/home/${player.data.username}`);
 
   return (
     <div className="flex flex-col gap-5">
-      {!session ? <TitlePageLogin /> : <TitlePageOnboarding />}
+      {!session ? (
+        <TitlePageLogin />
+      ) : (
+        <LuciaSessionProvider session={session}>
+          <TitlePageOnboarding />
+        </LuciaSessionProvider>
+      )}
     </div>
   );
 }

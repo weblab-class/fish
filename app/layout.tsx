@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Gamja_Flower } from "next/font/google";
 import "./globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ReactQueryProvider from "@/services/mongo/react-query/ReactQueryProvider";
 
 const gamja = Gamja_Flower({ subsets: ["latin"], weight: ["400"] });
 
@@ -16,7 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={gamja.className}>{children}</body>
+      <body className={gamja.className}>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </body>
     </html>
   );
 }

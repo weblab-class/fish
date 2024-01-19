@@ -5,12 +5,19 @@ import { useGameStore } from "@/stores/gameStore";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { Session } from "lucia";
+import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 
 const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
 });
 
+
 export default function Home() {
+  const { session } = useLuciaSession();
+
   // control display of popups
   const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
     (state) => [
