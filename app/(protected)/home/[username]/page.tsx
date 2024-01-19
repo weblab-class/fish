@@ -35,12 +35,6 @@ export default function Home() {
         setDefault();
         console.log("clicked outside");
       }
-      if (mailRef.current && mailRef.current.contains(event.target as Node)) {
-        console.log(mailRef.current);
-        console.log(event.target);
-
-        console.log("clicked inside");
-      }
     };
     document.addEventListener("click", handleClickOutside);
 
@@ -52,7 +46,7 @@ export default function Home() {
   return (
     <main>
       <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
-          <DynamicComponentWithNoSSR />
+        <DynamicComponentWithNoSSR />
       </div>
 
       {/* nav bar */}
@@ -61,7 +55,7 @@ export default function Home() {
         onClick={() => console.log("return to title screen")}
       />
       <div
-        className="absolute inset-y-0 right-64 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
+        className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
         onClick={() => console.log("go to study room")}
       />
       <div
@@ -69,7 +63,7 @@ export default function Home() {
         onClick={() => showPopup("invite")}
       />
       <div
-        className="absolute inset-x-72 inset-y-0 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/mailCloudHover.png')]"
+        className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/mailCloudHover.png')]"
         onClick={() => showPopup("mail")}
       />
       <div className="absolute flex w-full justify-center">
