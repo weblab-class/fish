@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 export async function createPlayer(data: NewPlayerInput) {
   await mongooseConnect();
 
-  return await axios.post("/api/db/create-player", data);
+  return await axios.post(`${process.env.DOMAIN}/api/db/create-player`, data);
 }
 
 export function useCreatePlayer() {

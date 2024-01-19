@@ -290,7 +290,7 @@ export default function Game() {
             // alerts server of new player and server loads current players
             console.log("subcribed");
             console.log("added and posting", this.registry.get("socket_id"));
-            await axios.post("/api/pusher/currentPlayers", {
+            await axios.post(`${process.env.DOMAIN}/api/pusher/currentPlayers`, {
               x: 0,
               y: 450,
               playerId: this.registry.get("socket_id") as string,
@@ -493,7 +493,7 @@ export default function Game() {
 
         // checks if position changed
         if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y)) {
-          await axios.post("/api/pusher/playerMoved", {
+          await axios.post(`${process.env.DOMAIN}/api/pusher/playerMoved`, {
             x,
             y,
             playerId: self.registry.get("socket_id") as string,

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import { useCreatePlayer } from "@/services/mongo/react-query/mutations";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type Input = {
   username: string;
