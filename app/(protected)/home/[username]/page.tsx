@@ -1,7 +1,7 @@
 "use client";
 import InvitePopup from "@/components/InvitePopup";
 import MailPopup from "@/components/MailPopup";
-import { useGameStore } from "@/stores/gameStore";
+import { useGameStore } from "@/phaser/gameStore";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 import { NewPlayerInput } from "../../mongo/models";
-import { mongooseConnect } from "../../mongo/connnections";
+import { mongooseConnect } from "../../mongo";
 
 export async function createPlayer(data: NewPlayerInput) {
   await mongooseConnect();

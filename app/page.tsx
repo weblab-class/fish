@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import TitlePageOnboarding from "./TitlePageOnboarding";
 import { redirect } from "next/navigation";
-import { mongooseConnect } from "@/services/mongo/connnections";
+import { mongooseConnect } from "@/services/mongo";
 import TitlePageLogin from "./TitlePageLogin";
 import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
 import ReactQueryProvider from "@/services/react-query/ReactQueryProvider";

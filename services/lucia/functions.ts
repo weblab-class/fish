@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 
 import { luciaAuth } from "@/services/lucia";
-import { mongooseConnect } from "../mongo/connnections";
+import { mongooseConnect } from "../mongo";
 
 type CachedSessionCallback = () => Promise<Session | null>;
 

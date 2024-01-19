@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { PresenceChannel } from "pusher-js";
 import { NextResponse } from "next/server";
 import { PresenceChannelData } from "pusher";
-import { useGameStore } from "@/stores/gameStore";
+import { useGameStore } from "@/phaser/gameStore";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 
 interface IRedirectStoreState {

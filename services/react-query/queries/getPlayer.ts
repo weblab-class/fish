@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { mongooseConnect } from "../../mongo/connnections";
+import { mongooseConnect } from "../../mongo";
 import { Player } from "../../mongo/models";
 
 export async function getPlayer(uid: string) {

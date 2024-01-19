@@ -1,4 +1,4 @@
-import { useGameStore } from "@/stores/gameStore";
+import { useGameStore } from "@/phaser/gameStore";
 import React, { useEffect } from "react";
 
 const InvitePopup = () => {

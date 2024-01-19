@@ -1,4 +1,4 @@
-import { useGameStore } from "@/stores/gameStore";
+import { useGameStore } from "@/phaser/gameStore";
 import React, { useEffect, useState } from "react";
 import ReadMailPopup from "./ReadMailPopup";
 import SendMailPopup from "./SendMailPopup";

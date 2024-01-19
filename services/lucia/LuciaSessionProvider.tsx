@@ -34,7 +34,7 @@ export default function LuciaSessionProvider({
 /**
  * Use this in client components under (protected) to get the Lucia session.
  * 
- * **NOTE: Although the type is nullable, it is safe to assume that this will ALWAYS exist.**
+ * **NOTE: Although the type is nullable, it is safe to assume that this will ALWAYS exist if you are within the protected layout.**
  */
 export const useLuciaSession = () => {
   const context = useContext(LuciaSessionContext);

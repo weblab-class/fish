@@ -3,7 +3,7 @@ import * as context from "next/headers";
 import type { NextRequest } from "next/server";
 
 import { luciaAuth } from "@/services/lucia";
-import { mongooseConnect } from "@/services/mongo/connnections";
+import { mongooseConnect } from "@/services/mongo";
 
 export const POST = async (request: NextRequest) => {
   await mongooseConnect();

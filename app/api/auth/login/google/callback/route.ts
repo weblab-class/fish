@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import type { NextRequest } from "next/server";
 
 import { luciaAuth, googleAuth } from "@/services/lucia";
-import { mongooseConnect } from "@/services/mongo/connnections";
+import { mongooseConnect } from "@/services/mongo";
 
 // modified from https://lucia-auth.com/guidebook/github-oauth/nextjs-app/
 

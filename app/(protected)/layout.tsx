@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
 import { getPageSession } from "@/services/lucia/functions";
-import { mongooseConnect } from "@/services/mongo/connnections";
+import { mongooseConnect } from "@/services/mongo";
 import ReactQueryProvider from "@/services/react-query/ReactQueryProvider";
 import ReactQueryHydrate from "@/services/react-query/ReactQueryHydrate";
 import getQueryClient, { getPlayer } from "@/services/react-query";
