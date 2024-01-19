@@ -20,7 +20,7 @@ export const luciaAuth = lucia({
     Key,
     Session,
   }),
-  
+
   getUserAttributes: (data) => {
     return {
         uid: data.id,
@@ -30,10 +30,8 @@ export const luciaAuth = lucia({
 export const googleAuth = google(luciaAuth, {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: `${process.env.DOMAIN}/api/auth/login/google/callback`,
-    
+    redirectUri: `${process.env.NEXT_PUBLIC_DOMAIN}/api/auth/login/google/callback`,
+
 })
 
 export type Auth = typeof luciaAuth;
-
-

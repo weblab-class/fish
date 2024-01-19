@@ -17,6 +17,7 @@ export enum AnimalSprite {
   SHEEP = "sheep",
   SHIBA = "shiba",
 }
+export type AnimalSpriteType = `${AnimalSprite}`;
 
 @pre<Player>("save", function () {
   if (this.isNew) {
