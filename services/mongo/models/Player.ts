@@ -27,7 +27,7 @@ export class Player {
   @prop({ required: true, ref: () => UserSchema, type: () => String })
   public _id!: TypeRef<UserSchema, string>;
 
-  @prop({ required: true, index: 1, unique: true })
+  @prop({ required: true, unique: true })
   public username!: string;
 
   @prop({ required: true, enum: () => AnimalSprite })
