@@ -5,13 +5,14 @@ import { NewPlayerInput } from "../../mongo/models";
 import { mongooseConnect } from "../../mongo/connnections";
 
 export async function createPlayer(data: NewPlayerInput) {
-  await mongooseConnect();
-
-  return await axios.post(`${process.env.DOMAIN}/api/db/create-player`, data);
+  console.log("bruh");
+  console.log("yoooo")
+  console.log(process.env.NEXT_PUBLIC_DOMAIN)
+  return await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/db/create-player`, data);
 }
 
 export function useCreatePlayer() {
   return useMutation({
-    mutationFn: (data: NewPlayerInput) => createPlayer(data),
+    mutationFn: async (data: NewPlayerInput) => await createPlayer(data),
   });
 }
