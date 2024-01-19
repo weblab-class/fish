@@ -7,7 +7,6 @@ import {
 } from "@/services/pusher";
 import { PlayerInfo } from "./types";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { create } from "zustand";
 import { useRouter } from "next/navigation";
@@ -15,6 +14,7 @@ import { PresenceChannel } from "pusher-js";
 import { NextResponse } from "next/server";
 import { PresenceChannelData } from "pusher";
 import { useGameStore } from "@/stores/gameStore";
+import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 
 interface IRedirectStoreState {
   redirect: boolean;
@@ -32,8 +32,8 @@ export default function Game() {
   const parentEl = useRef<HTMLDivElement>(null);
   let [game, setGame] = useState<PhaserGame | null>(null);
   const [redirect] = useRedirectStore((state) => [state.redirect]);
-  const session = useSession();
-  const uid = session.data!.user.uid!;
+  const { session } = useLuciaSession();
+  const uid = session!.user.uid;
   const router = useRouter();
   const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
     (state) => [
@@ -290,11 +290,14 @@ export default function Game() {
             // alerts server of new player and server loads current players
             console.log("subcribed");
             console.log("added and posting", this.registry.get("socket_id"));
-            await axios.post("/api/pusher/currentPlayers", {
-              x: 0,
-              y: 450,
-              playerId: this.registry.get("socket_id") as string,
-            });
+            await axios.post(
+              `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/currentPlayers`,
+              {
+                x: 0,
+                y: 450,
+                playerId: this.registry.get("socket_id") as string,
+              },
+            );
           },
         );
 
@@ -303,7 +306,7 @@ export default function Game() {
           async (error: any) => {
             switch (error.status) {
               case 403:
-                const localUid = session.data?.user.uid;
+                const localUid = session!.user.uid;
                 const localSocketId = pusherClient.connection.socket_id;
 
                 // if the socket ID match, then we are on the right tab and hence it was a rerender issue, so DON'T REDIRECT
@@ -311,11 +314,9 @@ export default function Game() {
                   const storedUserInfo = (
                     presenceChannel as PresenceChannel
                   ).members.get(localUid) as PresenceChannelData;
-                  console.log("stored", storedUserInfo);
                   if (storedUserInfo) {
                     const { socket_id } =
                       storedUserInfo.user_info! as PlayerRoomUserInfo;
-                    console.log("local", localSocketId);
                     if (localSocketId === socket_id) {
                       return;
                     }
@@ -495,11 +496,14 @@ export default function Game() {
 
         // checks if position changed
         if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y)) {
-          await axios.post("/api/pusher/playerMoved", {
-            x,
-            y,
-            playerId: self.registry.get("socket_id") as string,
-          });
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/playerMoved`,
+            {
+              x,
+              y,
+              playerId: self.registry.get("socket_id") as string,
+            },
+          );
         }
 
         // saves old position

@@ -1,7 +1,7 @@
 import { pusherServer } from "@/services/pusher";
 import { PlayerInfo } from "@/phaser/types";
 import { NextRequest, NextResponse } from "next/server";
-import { protectApiRoute } from "@/services/next-auth";
+import { authorizeApiRoute } from "@/services/lucia/functions";
 
 // TODO FIX THIS BUG
 interface GlobalPlayers {
@@ -10,7 +10,7 @@ interface GlobalPlayers {
 const players: GlobalPlayers = {};
 
 export async function POST(req: NextRequest) {
-  return await protectApiRoute(async (session) => {
+  return await authorizeApiRoute(req, async (session) => {
     const { x, y, playerId } = (await req.json()) as PlayerInfo;
     console.log(players);
 

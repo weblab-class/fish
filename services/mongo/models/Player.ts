@@ -1,7 +1,9 @@
-import mongoose, { InferSchemaType, model, Schema, Types } from "mongoose";
-import { mongooseConnect } from "../mongoose";
+import mongoose from "mongoose";
+import { prop, pre, getModelForClass } from "@typegoose/typegoose";
+import type { Ref as TypeRef } from "@typegoose/typegoose";
+import { UserSchema } from "@/services/lucia/models";
 
-export enum AnimalSpriteType {
+export enum AnimalSprite {
   COW = "cow",
   BEAR = "bear",
   BEAVER = "beaver",
@@ -15,24 +17,32 @@ export enum AnimalSpriteType {
   SHEEP = "sheep",
   SHIBA = "shiba",
 }
+export type AnimalSpriteType = `${AnimalSprite}`;
 
-interface IPlayer {
-  _id: string;
-  username: string;
-  animalSprite: AnimalSpriteType;
-  currentPlayerRoomId: Types.ObjectId;
-  teamId?: Types.ObjectId;
+@pre<Player>("save", function () {
+  if (this.isNew) {
+    this.currentPlayerRoomId = this._id;
+  }
+})
+export class Player {
+  @prop({ required: true, ref: () => UserSchema, type: () => String })
+  public _id!: TypeRef<UserSchema, string>;
+
+  @prop({ required: true, unique: true })
+  public username!: string;
+
+  @prop({ required: true, enum: () => AnimalSprite })
+  public animalSprite!: AnimalSprite;
+
+  @prop({ default: "", ref: () => UserSchema, type: () => String })
+  public currentPlayerRoomId?: TypeRef<UserSchema, string>;
+
+  // add team (optional)
 }
 
-const playerSchema = new Schema<IPlayer>({
-  username: { type: String, required: true, index: { unique: true } },
-  animalSprite: { type: String, enum: AnimalSpriteType, required: true },
-  currentPlayerRoomId: {
-    type: Schema.Types.ObjectId,
-    ref: "player",
-    required: true,
-  }, // tracks what room they are in
-  teamId: { type: Schema.Types.ObjectId, ref: "team" },
-});
+export const PlayerModel: mongoose.Model<Player> =
+  mongoose.models.Player || getModelForClass(Player);
+  
+export type NewPlayerInput = Omit<Player, "currentPlayerRoomId">;
 
-export const PlayerModel: mongoose.Model<IPlayer> = mongoose.models.Player || model<IPlayer>("Player", playerSchema);
+

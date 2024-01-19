@@ -1,13 +1,21 @@
 import mongoose, { model, Schema, Types } from "mongoose";
 
 export enum PlayerRoomStatus {
-  OUTSIDE = "outside",
-  INSIDE = "inside",
-  STUDY = "study",
+  EXTERIOR = "exterior",
+  INTERIOR = "interior",
+  STUDY = "studyroom",
+}
+
+
+class PlayerRoom {
+}
+
+class PlayerData {
+
 }
 
 interface IPlayerRoom {
-  _id: Types.ObjectId; // THIS IS THE HOST ID (not username)
+  hostId: Types.ObjectId; // THIS IS THE HOST ID (not username)
   hostStatus: PlayerRoomStatus;
   allPlayers: {
     playerId: Types.ObjectId;
@@ -18,18 +26,18 @@ interface IPlayerRoom {
 
 const playerRoomSchema = new Schema<IPlayerRoom>(
   {
-    _id: { type: Schema.Types.ObjectId, ref: "player", required: true },
+    hostId: { type: Schema.Types.ObjectId, ref: "Player", required: true },
     hostStatus: {
       type: String,
       enum: PlayerRoomStatus,
-      default: PlayerRoomStatus.OUTSIDE,
+      default: PlayerRoomStatus.EXTERIOR,
       required: true,
     },
     allPlayers: [
       {
         playerId: {
           type: Schema.Types.ObjectId,
-          ref: "player",
+          ref: "Player",
           required: true,
         },
         x: { type: Number, required: true },
@@ -37,7 +45,12 @@ const playerRoomSchema = new Schema<IPlayerRoom>(
       },
     ],
   },
-  { _id: false }
 );
+playerRoomSchema.pre('save', function (next) {
+  if (this.isNew) {  // if new, set the document _id to the host uid
+    this._id = this.hostId;
+  }
+  next();
+});
 
 export const PlayerRoomModel: mongoose.Model<IPlayerRoom> = mongoose.models.PlayerRoom || model<IPlayerRoom>("PlayerRoom", playerRoomSchema);

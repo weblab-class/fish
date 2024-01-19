@@ -1,4 +1,12 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  reactStrictMode: false,
 
-module.exports = nextConfig
+  // mongoose! (see https://mongoosejs.com/docs/nextjs.html)
+  experimental: {
+    esmExternals: "loose", 
+    serverComponentsExternalPackages: ["mongoose"]
+  },
+};
+
+module.exports = nextConfig;
