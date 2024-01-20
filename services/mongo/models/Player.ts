@@ -1,6 +1,6 @@
 import mongoose, { Error, Types, mongo } from "mongoose";
-import { prop, pre, getModelForClass } from "@typegoose/typegoose";
-import type { Ref as TypeRef } from "@typegoose/typegoose";
+import { prop, pre, getModelForClass, queryMethod } from "@typegoose/typegoose";
+import type { types, Ref as TypeRef } from "@typegoose/typegoose";
 import { UserSchema } from "@/services/lucia/models";
 import { Mail } from ".";
 
@@ -22,12 +22,21 @@ export enum AnimalSprite {
 }
 export type AnimalSpriteType = `${AnimalSprite}`;
 
+// QUERY HELPERS
+interface PlayerQueryHelpers {
+  findByUsername: types.AsQueryMethod<typeof findByUsername>;
+}
+function findByUsername(this: types.QueryHelperThis<typeof Player, PlayerQueryHelpers>, username: Player["username"]) {
+  return this.find({ username });
+}
+
 // @pre<Player>("save", function (next) {
 //   if (this.inbox.length > MAX_MAIL) {
 //     const err = new Error(`This player has too much mail!`);
 //     next(err);
 //   }
 // })
+@queryMethod(findByUsername)
 export class Player {
   @prop({ required: true, ref: () => UserSchema, type: () => String })
   public _id!: TypeRef<UserSchema, string>;
