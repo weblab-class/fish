@@ -1,32 +1,39 @@
 "use client";
-import InvitePopup from "@/components/InvitePopup";
-import MailPopup from "@/components/MailPopup";
-import { useGameStore } from "@/stores/gameStore";
+import Phaser from "phaser";
+import InvitePopup from "../../../..//components/InvitePopup";
+import MailPopup from "../../../..//components/MailPopup";
+import { useGameStore } from "../../../..//stores/gameStore";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Session } from "lucia";
-import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
+import { useLuciaSession } from "../../../../services/lucia/LuciaSessionProvider";
+import exterior from "../../../../phaser/exterior";
+import interior from "../../../../phaser/interior";
+import studyroom from "../../../../phaser/studyroom";
+import { useGetPlayer } from "@/services/react-query";
 
-const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
+const DynamicComponentWithNoSSR = dynamic(() => import("../../../../phaser/Game"), {
   ssr: false,
 });
 
 
 export default function Home() {
   const { session } = useLuciaSession();
-
-  // control display of popups
-  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
-    (state) => [
+  const [game, showInvitePopup, showMailPopup, showPopup, setDefault, setData] =
+    useGameStore((state) => [
+      state.game,
       state.showInvitePopup,
       state.showMailPopup,
       state.showPopup,
       state.setDefault,
-    ],
-  );
+      state.setData
+    ]);
+  const { data: host } = useGetPlayer(session!.user.uid);
+
+
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +56,11 @@ export default function Home() {
       document.removeEventListener("click", handleClickOutside);
     };
   });
+  
+  // change player name if needed
+  useEffect(() => {
+    useGameStore.setState({hostUsername: host?.data?.username ?? "Host" });
+  }, [host])
 
   return (
     <main>
@@ -62,8 +74,8 @@ export default function Home() {
         onClick={() => console.log("return to title screen")}
       />
       <div
-        className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
-        onClick={() => console.log("go to study room")}
+        id = "studyroom_id" className="absolute inset-y-0 right-64 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
+        onClick={() => {setData({ scenes: [studyroom, interior, exterior] })}}
       />
       <div
         className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/multiplayerCloudHover.png')]"
@@ -75,8 +87,8 @@ export default function Home() {
       />
       <div className="absolute flex w-full justify-center">
         <div
-          className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/houseCloudHover.png')]"
-          onClick={() => console.log("enter house")}
+          id = "interior_id" className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/houseCloudHover.png')]"
+          onClick={() => {setData({ scenes: [interior, studyroom, exterior] })}}
         />
       </div>
 
