@@ -24,7 +24,6 @@ export default async function ProtectedLayout({
 
   // make sure they finished onboarding
   const player = await getPlayer(session.user.uid);
-  console.log("player", player)
   if (!player.data) redirect("/");
 
   // initial state is the player

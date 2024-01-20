@@ -16,9 +16,8 @@ import { getPlayer } from "@/services/react-query";
  */
 export default async function TitlePage() {
   await mongooseConnect();
+  
   const session = await getPageSession();
-
-  console.log(session);
   const player = session ? await getPlayer(session.user.uid) : null;
   if (player?.data) redirect(`/home/${player.data.username}`);
 

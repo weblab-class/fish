@@ -1,4 +1,4 @@
-import mongoose, { Error, Types } from "mongoose";
+import mongoose, { Error, Types, mongo } from "mongoose";
 import { prop, pre, getModelForClass } from "@typegoose/typegoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { UserSchema } from "@/services/lucia/models";

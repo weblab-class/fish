@@ -21,7 +21,7 @@ const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
 export default function Home() {
   const { session } = useLuciaSession();
   const router = useRouter();
-  // const signOutMutation = useSignOut();
+  const signOutMutation = useSignOut();
   const { data, isSuccess, isError, error } = useGetPlayer(session!.user.uid);
 
   // control display of popups
@@ -66,14 +66,7 @@ export default function Home() {
       <div
         className="absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]"
         onClick={async () => {
-          // TODO: THIS WORKS BUT IT GIVES WEIRD ERRORS IN THE CONSOLE, maybe see
-          // why mutations/post requests dont work?
-          // await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/auth/logout`);
-          // router.push("/");
-          console.log("data", data?.data ?? "rip");
-          console.log("success", isSuccess);
-          console.log("error", isError);
-          console.log(error);
+          signOutMutation.mutate();
         }}
       />
       <div

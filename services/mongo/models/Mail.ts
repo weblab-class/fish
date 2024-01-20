@@ -23,4 +23,4 @@ export class Mail {
   public content!: string;
 }
 
-export const MailModel: mongoose.Model<Mail> = mongoose.models.Mail || getModelForClass(Player);
+export const MailModel: mongoose.Model<Mail> = mongoose.models.Mail || getModelForClass(Mail);
