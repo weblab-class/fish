@@ -1,6 +1,7 @@
 // https://medium.com/@oruchan.asar/nextjs-13-app-backend-development-d044c804c3
 import mongoose, { type Mongoose } from "mongoose";
 
+
 interface ICached {
     conn: Mongoose | null,
     promise: Promise<Mongoose> | null;

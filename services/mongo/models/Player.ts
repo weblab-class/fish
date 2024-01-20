@@ -1,7 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Error, Types } from "mongoose";
 import { prop, pre, getModelForClass } from "@typegoose/typegoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { UserSchema } from "@/services/lucia/models";
+import { Mail } from ".";
+
+const MAX_MAIL = 8;
 
 export enum AnimalSprite {
   COW = "cow",
@@ -19,11 +22,12 @@ export enum AnimalSprite {
 }
 export type AnimalSpriteType = `${AnimalSprite}`;
 
-@pre<Player>("save", function () {
-  if (this.isNew) {
-    this.currentPlayerRoomId = this._id;
-  }
-})
+// @pre<Player>("save", function (next) {
+//   if (this.inbox.length > MAX_MAIL) {
+//     const err = new Error(`This player has too much mail!`);
+//     next(err);
+//   }
+// })
 export class Player {
   @prop({ required: true, ref: () => UserSchema, type: () => String })
   public _id!: TypeRef<UserSchema, string>;
@@ -34,15 +38,14 @@ export class Player {
   @prop({ required: true, enum: () => AnimalSprite })
   public animalSprite!: AnimalSprite;
 
-  @prop({ default: "", ref: () => UserSchema, type: () => String })
-  public currentPlayerRoomId?: TypeRef<UserSchema, string>;
+  @prop({ required: true, ref: () => UserSchema, type: () => String })
+  public currentPlayerRoomId!: TypeRef<UserSchema, string>;
 
-  // add team (optional)
+  // @prop({ required: true, type: () => Mail, default: [] })
+  // public inbox!: Types.Array<Mail>;
 }
 
 export const PlayerModel: mongoose.Model<Player> =
   mongoose.models.Player || getModelForClass(Player);
-  
-export type NewPlayerInput = Omit<Player, "currentPlayerRoomId">;
 
-
+export type NewPlayerInput = Omit<Player, "currentPlayerRoomId" | "inbox">;

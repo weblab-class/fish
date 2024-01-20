@@ -5,8 +5,6 @@ import { mongooseConnect } from "../../mongo";
 import { Player } from "../../mongo/models";
 
 export async function getPlayer(uid: string) {
-  await mongooseConnect();
-
   return await axios.get<Player | null>(`${process.env.NEXT_PUBLIC_DOMAIN}/api/db/get-player`, { params: { uid } });
 }
 

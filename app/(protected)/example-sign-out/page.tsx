@@ -22,7 +22,7 @@ export default function RedirectTitlePage() {
       <a
         onClick={() => {
           signOutMutation.mutate();;
-          router.replace("/");
+          router.replace(`${process.env.NEXT_PUBLIC_DOMAIN}`);
         }}
       >
         Sign out

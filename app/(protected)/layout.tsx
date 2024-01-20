@@ -1,14 +1,11 @@
 import { redirect } from "next/navigation";
+import { dehydrate } from "@tanstack/react-query";
 
 import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
 import { getPageSession } from "@/services/lucia/functions";
 import { mongooseConnect } from "@/services/mongo";
-import ReactQueryProvider from "@/services/react-query/ReactQueryProvider";
 import ReactQueryHydrate from "@/services/react-query/ReactQueryHydrate";
 import getQueryClient, { getPlayer } from "@/services/react-query";
-import axios from "axios";
-import { dehydrate } from "@tanstack/react-query";
-import { Session } from "lucia";
 
 /**
  * Any pages in here will be automatically protected from unauthorized access.
@@ -20,25 +17,24 @@ export default async function ProtectedLayout({
   children: React.ReactNode;
 }) {
   await mongooseConnect();
+  
+  // make sure they logged in
   const session = await getPageSession();
   if (!session) redirect("/");
 
+  // make sure they finished onboarding
   const player = await getPlayer(session.user.uid);
+  console.log("player", player)
   if (!player.data) redirect("/");
 
-  // TODO use this to get player and protect this (MAY BREAK)
+  // initial state is the player
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: ["player", session.user.uid],
-    queryFn: async () => {
-      return await getPlayer(session.user.uid);
-    },
-  });
+  queryClient.setQueryData(["player", player.data._id], player.data);
   const dehydratedState = dehydrate(queryClient);
 
   return (
-    // <ReactQueryHydrate state={dehydratedState}>
-    <LuciaSessionProvider session={session}>{children}</LuciaSessionProvider>
-    // </ReactQueryHydrate>
+    <LuciaSessionProvider session={session}>
+      <ReactQueryHydrate state={dehydratedState}>{children}</ReactQueryHydrate>
+    </LuciaSessionProvider>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+
 import InvitePopup from "@/components/InvitePopup";
 import MailPopup from "@/components/MailPopup";
 import { useGameStore } from "@/phaser/gameStore";
@@ -9,14 +10,19 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Session } from "lucia";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
+import { useSignOut } from "@/services/react-query/auth";
+import { useRouter } from "next/navigation";
+import { useGetPlayer } from "@/services/react-query";
 
 const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
 });
 
-
 export default function Home() {
   const { session } = useLuciaSession();
+  const router = useRouter();
+  // const signOutMutation = useSignOut();
+  const { data, isSuccess, isError, error } = useGetPlayer(session!.user.uid);
 
   // control display of popups
   const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
@@ -59,7 +65,16 @@ export default function Home() {
       {/* nav bar */}
       <div
         className="absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]"
-        onClick={() => console.log("return to title screen")}
+        onClick={async () => {
+          // TODO: THIS WORKS BUT IT GIVES WEIRD ERRORS IN THE CONSOLE, maybe see
+          // why mutations/post requests dont work?
+          // await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/auth/logout`);
+          // router.push("/");
+          console.log("data", data?.data ?? "rip");
+          console.log("success", isSuccess);
+          console.log("error", isError);
+          console.log(error);
+        }}
       />
       <div
         className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"

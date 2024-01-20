@@ -1,38 +1,54 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
+import {
+  getDiscriminatorModelForClass,
+  modelOptions,
+  prop,
+} from "@typegoose/typegoose";
+import type { Ref as TypeRef } from "@typegoose/typegoose";
 
-import { gameRoomSchema, IGameRoom, GameRoomModel } from "./BaseGameRoom";
+import { GameRoomModel, GameRoom, GameRoomType } from "./BaseGameRoom";
+import { Player } from "..";
 
-interface ISentenceSymphonyGameRoom extends IGameRoom {
-  initialPrompt: string;
-  voteOptions: {
-    sentence: string;
-    creatorId: Types.ObjectId;
-    voteIds: Types.ObjectId[];
-  }[];
-  scores: {
-    playerId: Types.ObjectId;
-    roundsWon: number;
-  }[];
-  sentences: string[];
+@modelOptions({ options: { customName: "SentenceSymphony" } })
+export class SentenceSymphonyGameRoom extends GameRoom {
+  @prop({ required: true })
+  public initialPrompt!: string;
+
+  @prop({ required: true, type: () => SSVoteOption, default: [] })
+  public voteOptions!: Types.Array<SSVoteOption>;
+
+  @prop({ required: true, type: () => SSScore, default: [] })
+  public scores!: Types.Array<SSScore>;
+
+  @prop({ required: true, type: () => String, default: [] })
+  public sentences!: Types.Array<string>;
 }
 
-const sentenceSymphonyGameRoomSchema = new Schema<ISentenceSymphonyGameRoom>({
-  initialPrompt: { type: String, required: true },
-  voteOptions: [
-    {
-      sentence: { type: String, required: true },
-      creatorId: { type: Schema.Types.ObjectId, required: true },
-      voteIds: [{ type: Schema.Types.ObjectId, required: true }],
-    },
-  ],
-  scores: [
-    {
-      playerId: { type: Schema.Types.ObjectId, required: true, ref: "Player" },
-      roundsWon: Number,
-    },
-  ],
-  sentences: [{ type: String, required: true }],
-});
+@modelOptions({ schemaOptions: { _id: false } })
+export class SSVoteOption {
+  @prop({ required: true })
+  public sentence!: string;
 
-export const SentenceSymphonyGameRoomModel = mongoose.models.SentenceSymphony || GameRoomModel.discriminator("SentenceSymphony", sentenceSymphonyGameRoomSchema);
-  
+  @prop({ required: true, ref: () => Player, type: () => String })
+  public creatorId!: TypeRef<Player, string>;
+
+  @prop({ required: true, type: () => String, default: [] })
+  public voteIds!: Types.Array<TypeRef<Player, string>>; // this means the ids of the players who voted
+}
+
+@modelOptions({ schemaOptions: { _id: false } })
+export class SSScore {
+  @prop({ required: true, ref: () => Player, type: () => String })
+  public playerId!: TypeRef<Player, string>;
+
+  @prop({ required: true })
+  public roundsWon!: number;
+}
+
+export const SentenceSymphonyGameRoomModel =
+  mongoose.models.SentenceSymphony ||
+  getDiscriminatorModelForClass(
+    GameRoomModel,
+    SentenceSymphonyGameRoom,
+    GameRoomType.SENTENCE_SYMPHONY,
+  );

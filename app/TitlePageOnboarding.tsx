@@ -7,6 +7,12 @@ import { useCreatePlayer } from "@/services/react-query/mutations";
 import { useRouter } from "next/navigation";
 import { AnimalSprite, AnimalSpriteType } from "@/services/mongo/models";
 
+// TODO work on eliminating duplicate errors
+/**
+ * MongoServerError: E11000 duplicate key error collection: main.players index: 
+ * username_1 dup key: { username: "sdjfs" }
+ */
+
 type Input = {
   username: string;
 };

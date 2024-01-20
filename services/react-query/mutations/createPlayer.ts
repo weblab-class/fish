@@ -5,9 +5,6 @@ import { NewPlayerInput } from "../../mongo/models";
 import { mongooseConnect } from "../../mongo";
 
 export async function createPlayer(data: NewPlayerInput) {
-  console.log("bruh");
-  console.log("yoooo")
-  console.log(process.env.NEXT_PUBLIC_DOMAIN)
   return await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/db/create-player`, data);
 }
 
