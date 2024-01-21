@@ -14,6 +14,9 @@ import { useSignOut } from "@/services/react-query/auth";
 import { useRouter } from "next/navigation";
 import { useGetPlayer } from "@/services/react-query";
 
+
+// TODO  fix the clouds when you enter the house and then exit
+
 const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
 });
