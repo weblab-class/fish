@@ -7,6 +7,7 @@ import {
 import mongoose, { model, Schema, Types, Error } from "mongoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { Player } from "./Player";
+import { PlayerRoomStatus } from "@/types";
 
 const MAX_PLAYERS = 6;
 
@@ -20,12 +21,6 @@ export class PlayerData {
 
   @prop({ required: true })
   public y!: number;
-}
-
-export enum PlayerRoomStatus {
-  EXTERIOR = "exterior",
-  INTERIOR = "interior",
-  STUDY = "studyroom",
 }
 
 @pre<PlayerRoom>("save", function (next) {

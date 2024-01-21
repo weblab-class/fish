@@ -1,4 +1,3 @@
-import { useGameStore } from "@/phaser/gameStore";
 import React from "react";
 
 export default function ReadMailPopup() {

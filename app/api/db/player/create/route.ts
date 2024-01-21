@@ -2,9 +2,10 @@ import { pusherServer } from "@/services/pusher";
 import { PlayerInfo } from "@/phaser/types";
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeApiRoute } from "@/services/lucia/functions";
-import { NewPlayerInput, PlayerModel, PlayerRoomModel, PlayerRoomStatus } from "@/services/mongo/models";
+import { NewPlayerInput, PlayerModel, PlayerRoomModel } from "@/services/mongo/models";
 import { mongooseConnect } from "@/services/mongo";
 import { Types } from "mongoose";
+import { PlayerRoomStatus } from "@/types";
 
 export async function POST(req: NextRequest) {
   const { _id, animalSprite, username } = (await req.json()) as NewPlayerInput;

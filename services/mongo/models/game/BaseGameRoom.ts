@@ -5,10 +5,6 @@ import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
 const MAX_PLAYERS = 6;
 
-export enum GameRoomType {
-  SENTENCE_SYMPHONY = "sentence-symphony",
-}
-
 @pre<GameRoom>("save", function (next) {
   if (this.allPlayers.length > MAX_PLAYERS) {
     const err = new mongoose.Error("The game is full.");

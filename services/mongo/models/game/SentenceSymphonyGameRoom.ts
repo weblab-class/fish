@@ -6,8 +6,9 @@ import {
 } from "@typegoose/typegoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
 
-import { GameRoomModel, GameRoom, GameRoomType } from "./BaseGameRoom";
+import { GameRoomModel, GameRoom } from "./BaseGameRoom";
 import { Player } from "..";
+import { GameRoomType } from "@/types";
 
 @modelOptions({ options: { customName: "SentenceSymphony" } })
 export class SentenceSymphonyGameRoom extends GameRoom {

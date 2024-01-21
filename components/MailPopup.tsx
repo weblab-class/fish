@@ -1,13 +1,11 @@
-import { useGameStore } from "@/phaser/gameStore";
+import { useHomeStore } from "@/phaser/stores";
 import React, { useEffect, useState } from "react";
 import ReadMailPopup from "./ReadMailPopup";
 import SendMailPopup from "./SendMailPopup";
 
 const MailPopup = () => {
-  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
+  const [showPopup, setDefault] = useHomeStore(
     (state) => [
-      state.showInvitePopup,
-      state.showMailPopup,
       state.showPopup,
       state.setDefault,
     ],

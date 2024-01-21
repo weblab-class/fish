@@ -2,7 +2,7 @@
 
 import InvitePopup from "@/components/InvitePopup";
 import MailPopup from "@/components/MailPopup";
-import { useGameStore } from "@/phaser/gameStore";
+import { useHomeStore } from "@/phaser/stores";
 import dynamic from "next/dynamic";
 import Pusher from "pusher-js";
 import { useEffect, useRef, useState } from "react";
@@ -25,7 +25,7 @@ export default function Home() {
   const { data, isSuccess, isError, error } = useGetPlayer(session!.user.uid);
 
   // control display of popups
-  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useGameStore(
+  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useHomeStore(
     (state) => [
       state.showInvitePopup,
       state.showMailPopup,
@@ -57,7 +57,7 @@ export default function Home() {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  });
 
   return (
     <main>
@@ -66,6 +66,7 @@ export default function Home() {
       </div>
 
       {/* nav bar */}
+      <div></div>
       <div
         className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
         onClick={async () => {
@@ -78,28 +79,34 @@ export default function Home() {
         }}
       />
       <div
-        className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
+        className="bg-[url('/objects/studyCloud.png')] hover:bg-[url('/objects/studyCloudHover.png')] bg-no-repeat hover:z-20 hover:cursor-pointer z-10 bg-right-top absolute right-80 inset-y-0 h-28 w-96"
         onClick={() => console.log("go to study room")}
       />
       <div
-        className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/multiplayerCloudHover.png')]"
-        onClick={() => showPopup("invite")}
+        className="bg-[url('/objects/multiplayerCloud.png')] hover:bg-[url('/objects/multiplayerCloudHover.png')] hover:z-20 hover:cursor-pointer z-10 bg-no-repeat bg-left-top absolute left-0 inset-y-0 h-28 w-96"
+        onClick={() => {
+          console.log("hi mailajmailamalalalm")
+          showPopup("invite");
+        }}
       />
       <div
-        className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/mailCloudHover.png')]"
-        onClick={() => showPopup("mail")}
+        className="bg-[url('/objects/mailCloud.png')] hover:bg-[url('/objects/mailCloudHover.png')] hover:z-20 hover:cursor-pointer z-10 bg-no-repeat bg-right-top absolute left-72 inset-y-0 h-28 w-96"
+        onClick={() => {
+          console.log("hi mailajmailamalalalm")
+          showPopup("mail");
+        }}
       />
-      <div className="absolute flex w-full justify-center">
+      <div className="absolute flex justify-center w-full">
         <div
-          className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/houseCloudHover.png')]"
+          className="bg-[url('/objects/houseCloud.png')] hover:bg-[url('/objects/houseCloudHover.png')] hover:z-20 hover:cursor-pointer z-10 bg-no-repeat bg-left-top absolute inset-y-0 h-28 w-96"
           onClick={() => console.log("enter house")}
         />
       </div>
 
       {showInvitePopup && (
-        <div className="flex h-screen w-screen items-center justify-center">
+        <div className="flex justify-center items-center w-screen h-screen">
           <div
-            className="flex items-center justify-center bg-white"
+            className="flex justify-center items-center bg-white"
             ref={inviteRef}
           >
             <InvitePopup />
@@ -108,9 +115,9 @@ export default function Home() {
       )}
 
       {showMailPopup && (
-        <div className="flex h-screen w-screen items-center justify-center">
+        <div className="flex justify-center items-center w-screen h-screen">
           <div
-            className="flex items-center justify-center bg-slate-200"
+            className="flex justify-center items-center bg-slate-200"
             ref={mailRef}
           >
             <MailPopup />

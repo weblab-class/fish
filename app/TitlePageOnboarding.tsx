@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import { useCreatePlayer } from "@/services/react-query/mutations";
 import { useRouter } from "next/navigation";
-import { AnimalSprite, AnimalSpriteType } from "@/services/mongo/models";
+import { AnimalSprite } from "@/types";
 
 // TODO work on eliminating duplicate errors
 /**

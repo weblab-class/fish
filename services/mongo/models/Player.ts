@@ -9,25 +9,10 @@ import {
 import type { types, Ref as TypeRef } from "@typegoose/typegoose";
 import { UserSchema } from "@/services/lucia/models";
 import { ModelWithQueryHelpers } from "./types";
+import { AnimalSprite } from "@/types";
 
 const MAX_MAIL = 8;
 const MAX_INBOX_CHARS = 400;
-
-export enum AnimalSprite {
-  COW = "cow",
-  BEAR = "bear",
-  BEAVER = "beaver",
-  BUNNY = "bunny",
-  CAT = "cat",
-  DUCK = "duck",
-  HEDGEHOG = "hedgehog",
-  PANDA = "panda",
-  PENGUIN = "penguin",
-  PIG = "pig",
-  SHEEP = "sheep",
-  SHIBA = "shiba",
-}
-export type AnimalSpriteType = `${AnimalSprite}`;
 
 @pre<Mail>("save", function (next) {
   if (this.content.length > MAX_INBOX_CHARS) {
