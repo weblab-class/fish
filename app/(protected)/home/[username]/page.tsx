@@ -33,6 +33,9 @@ export default function Home() {
       state.setDefault,
     ],
   );
+  // control logout
+  const [logoutClicked, setLogoutClicked] = useState(false);
+
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
 
@@ -64,10 +67,14 @@ export default function Home() {
 
       {/* nav bar */}
       <div
-        className="absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]"
+        className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
         onClick={async () => {
+          setLogoutClicked(true);
+
           await signOutMutation.mutateAsync();
-          router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`)
+          router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
+
+          setLogoutClicked(false);
         }}
       />
       <div
