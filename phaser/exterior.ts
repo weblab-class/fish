@@ -305,9 +305,6 @@ class exterior extends Phaser.Scene {
 
         // enters house when enter key is pressed
         if (isDown && !updatedShowInvite && !updatedShowMail) {
-          // this.scene.start("interior");
-          // this.game.destroy(true);
-          useGameStore.setState({text: ""});
           useGameStore.setState({ scenes: [interior, studyroom, exterior] })
         }
       } else if (
