@@ -40,7 +40,7 @@ export class PlayerRoom {
   @prop({ required: true, ref: () => Player, type: () => String })
   public hostId!: TypeRef<Player, string>;
 
-  @prop({ required: true, enum: () => PlayerRoomStatus })
+  @prop({ required: true, enum: () => PlayerRoomStatus, type: String })
   public hostStatus!: PlayerRoomStatus;
 
   @prop({ required: true, type: PlayerData, default: [] })

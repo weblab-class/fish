@@ -12,7 +12,7 @@ import { ModelWithQueryHelpers } from "./types";
 import { AnimalSprite } from "@/types";
 
 const MAX_MAIL = 8;
-const MAX_INBOX_CHARS = 400;
+const MAX_INBOX_CHARS = 400;  
 
 @pre<Mail>("save", function (next) {
   if (this.content.length > MAX_INBOX_CHARS) {
@@ -61,7 +61,7 @@ export class Player {
   @prop({ required: true, unique: true })
   public username!: string;
 
-  @prop({ required: true, enum: () => AnimalSprite })
+  @prop({ required: true, enum: () => AnimalSprite, type: String })
   public animalSprite!: AnimalSprite;
 
   @prop({ required: true, ref: () => UserSchema, type: () => String })
