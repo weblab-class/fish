@@ -24,23 +24,15 @@ export default function TitlePageOnboarding() {
   const router = useRouter();
   const createPlayerMutation = useCreatePlayer();
   const { session } = useLuciaSession();
+  if (!session) router.refresh();
 
-  // add form values
-
-  // EXAMPLE BELOW
-  // return (
-  //   <button onClick={async () => {
-  // await createPlayerMutation.mutate( { });
-  // if the player successfullly created
-  // router.push(`/home/${username here}`)
-  //   }}>
-  //     Bruh
-  //   </button>
-  // );
+  // we need to make sure that the user session is up to date (b/c server-side page is cached)
+  // BUG FIXED: user that logs out after creating account for first time goes to onboarding 
+  useEffect(() => {
+    if (session) router.refresh();
+  }, []);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
-    // pass identifier, username, and sprite to database
-    // TO DO: post to database and replace player id
     if (sprite === "select") {
       setSpriteSelected(false);
       setTimeout(() => {
@@ -55,15 +47,11 @@ export default function TitlePageOnboarding() {
         animalSprite: sprite as AnimalSprite,
       });
 
-      // console.log("submited:", session!.user.uid, data.username, sprite);
-      // console.log("succes", createPlayerMutation.isSuccess);
-      // console.log("error", createPlayerMutation.isError);
       router.push(`/home/${data.username}`);
     } catch (error) {
       alert(error);
       console.log(error);
     }
-    // TO DO: navigate to home page
   };
   return (
     <div>

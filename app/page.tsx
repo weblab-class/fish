@@ -20,6 +20,7 @@ export default async function TitlePage() {
   const session = await getPageSession();
   const player = session ? await getPlayer(session.user.uid) : null;
   if (player?.data) redirect(`/home/${player.data.username}`);
+  console.log(player?.data);
 
   return (
     <div className="flex flex-col gap-5">

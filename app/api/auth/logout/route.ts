@@ -24,5 +24,5 @@ export const POST = async (request: NextRequest) => {
   // delete session cookie
   authRequest.setSession(null);
 
-  redirect("/");
+  redirect(`${process.env.NEXT_PUBLIC_DOMAIN}`);
 };

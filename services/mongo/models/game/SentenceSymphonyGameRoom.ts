@@ -15,13 +15,13 @@ export class SentenceSymphonyGameRoom extends GameRoom {
   public initialPrompt!: string;
 
   @prop({ required: true, type: () => SSVoteOption, default: [] })
-  public voteOptions!: Types.Array<SSVoteOption>;
+  public voteOptions!: SSVoteOption[];
 
   @prop({ required: true, type: () => SSScore, default: [] })
-  public scores!: Types.Array<SSScore>;
+  public scores!: SSScore[];
 
-  @prop({ required: true, type: () => String, default: [] })
-  public sentences!: Types.Array<string>;
+  @prop({ required: true, type: String, default: [] })
+  public sentences!: string[];
 }
 
 @modelOptions({ schemaOptions: { _id: false } })
@@ -32,8 +32,8 @@ export class SSVoteOption {
   @prop({ required: true, ref: () => Player, type: () => String })
   public creatorId!: TypeRef<Player, string>;
 
-  @prop({ required: true, type: () => String, default: [] })
-  public voteIds!: Types.Array<TypeRef<Player, string>>; // this means the ids of the players who voted
+  @prop({ required: true, ref: () => Player, type: () => String, default: [] })
+  public voteIds!: TypeRef<Player, string>[]; // this means the ids of the players who voted
 }
 
 @modelOptions({ schemaOptions: { _id: false } })

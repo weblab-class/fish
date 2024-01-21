@@ -54,7 +54,7 @@ export default function Home() {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  });
+  }, []);
 
   return (
     <main>
@@ -67,7 +67,7 @@ export default function Home() {
         className="absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]"
         onClick={async () => {
           await signOutMutation.mutateAsync();
-          router.replace(`${process.env.NEXT_PUBLIC_DOMAIN}`)
+          router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`)
         }}
       />
       <div
