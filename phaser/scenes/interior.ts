@@ -3,7 +3,7 @@ import { PresenceChannelData } from "pusher";
 import { PresenceChannel } from "pusher-js";
 import axios from "axios";
 
-import { useHomeStore } from "../stores/homeStore";
+import { useHomeStore } from "../stores/useHomeStore";
 import { pusherClient } from "@/services/pusher";
 import loadSprites from "../functions";
 

@@ -3,9 +3,8 @@ import { Scene } from "phaser";
 
 import { pusherClient } from "@/services/pusher";
 import { AnimalSprite } from "@/types";
-import { useHomeStore } from "../stores";
+import { useHomeStore, useMultiplayerStore } from "../stores";
 import loadSprites from "../functions";
-// import { useMultiplayerStore } from "@/stores/multiplayerStore";
 
 /**
  * The exterior scene in `/home`.
@@ -15,17 +14,14 @@ export default class exterior extends Scene {
   private username: string;
   private sprite: AnimalSprite;
 
-//   constructor(uid: string, username: string, sprite: AnimalSprite) {
-  constructor() {
+  constructor(uid: string, username: string, sprite: AnimalSprite) {
     super("exterior");
-    // this.uid = uid;
-    // this.username = username;
-    // this.sprite = sprite;
-    this.uid = "test";
-    this.username = "test";
-    this.sprite = AnimalSprite.PIG;
-    // useMultiplayerStore.getState().initCurrent(uid, username, sprite);
+    this.uid = uid;
+    this.username = username;
+    this.sprite = sprite;
+    useMultiplayerStore.getState().initCurrent(uid, username, sprite);
   }
+
   preload() {
     // background
     this.load.image("tiles", "/backgrounds/homeBg.png");
@@ -97,10 +93,8 @@ export default class exterior extends Scene {
     // this.registry.set("socket_id", pusherClient.connection.socket_id);
 
     // display player sprite
-    // const { currentPlayer } = useMultiplayerStore.getState();
-    // const player = this.physics.add.sprite(currentPlayer!.x, currentPlayer!.y, currentPlayer!.sprite);
-    console.log(this.uid, this.username, this.sprite);
-    const player = this.physics.add.sprite(700, 650, this.sprite);
+    const { currentPlayer } = useMultiplayerStore.getState();
+    const player = this.physics.add.sprite(currentPlayer!.x, currentPlayer!.y, currentPlayer!.sprite);
 
     // collision between player and house
     this.physics.add.collider(player, house);
@@ -280,6 +274,9 @@ export default class exterior extends Scene {
     const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
+
+    // send data (may need to move this somewhere later on in this function)
+    useMultiplayerStore.getState().sendMyData(player);
 
     // detect overlap betweesn player and door
     self.physics.add.overlap(player, door, () => {

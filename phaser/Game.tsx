@@ -534,7 +534,6 @@
 // TODO FIX REDIRECT (move ot exterior or do useeffect here)
 
 import { useEffect, useRef } from "react";
-import { redirect } from "next/navigation";
 import { create } from "zustand";
 import { useRouter } from "next/navigation";
 import { PresenceChannel } from "pusher-js";
@@ -548,8 +547,8 @@ import exterior from "./scenes/exterior";
 import interior from "./scenes/interior";
 import studyroom from "./scenes/studyroom";
 import { Game as PhaserGame } from "phaser";
-// import { useGetPlayer } from "@/services/react-query";
-// import { Player } from "@/services/mongo/models";
+import { Player } from "@/services/mongo/models";
+import { useGetPlayer } from "@/services/react-query";
 
 interface IRedirectStoreState {
   redirect: boolean;
@@ -564,22 +563,20 @@ const useRedirectStore = create<IRedirectStoreState>((set) => ({
   setRedirect: (state) => set({ redirect: state }),
 }));
 
-// interface IGameProps {
-//   hostId: Player["_id"];
-//   hostUsername: Player["username"];
-//   hostAnimalSprite: Player["animalSprite"];
-// }
+interface IGameProps {
+  playerId: Player["_id"];
+  playerUsername: Player["username"];
+  playerAnimalSprite: Player["animalSprite"];
+}
 
-export default function Game() {
-  // hostId,
-  // hostUsername,
-  // hostAnimalSprite,
-  // }: IGameProps)
+export default function Game({
+  playerId,
+  playerUsername,
+  playerAnimalSprite,
+  }: IGameProps) {
   const parentEl = useRef<HTMLDivElement>(null);
   
   const [redirect] = useRedirectStore((state) => [state.redirect]);
-  const { session } = useLuciaSession();
-  const uid = session!.user.uid;
   const router = useRouter();
   const [text, setData] = useHomeStore((state) => [state.text, state.setData]);
 
@@ -592,7 +589,6 @@ export default function Game() {
 
   useEffect(() => {
     if (!parentEl.current) return;
-    // if (!player || !player.data) return;
 
     // get presence-channel for room
     // const channel = pusherClient.subscribe(`presence-host-${uid}`);
@@ -615,7 +611,7 @@ export default function Game() {
           debug: true,
         },
       },
-      scene: [exterior, interior, studyroom],
+      scene: [new exterior(playerId.toString(), playerUsername, playerAnimalSprite), interior, studyroom],
       dom: {
         createContainer: true,
       },
@@ -640,7 +636,7 @@ export default function Game() {
     //   newGame?.destroy(true, true);
     // };
     // }, [scenes]);
-  }, []);
+  }, [parentEl]);
 
   // add other players to current player's screen
   // function addOtherPlayer(scene: Phaser.Scene, playerInfo: PlayerInfo) {
