@@ -9,6 +9,7 @@ import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { GameRoomModel, GameRoom } from "./BaseGameRoom";
 import { Player } from "..";
 import { GameRoomType } from "@/types";
+import { PlayerInfo } from "@/phaser/types";
 
 @modelOptions({ options: { customName: "SentenceSymphony" } })
 export class SentenceSymphonyGameRoom extends GameRoom {
@@ -43,7 +44,7 @@ export class SSScore {
   public playerId!: TypeRef<Player, string>;
 
   @prop({ required: true })
-  public roundsWon!: number;
+  public score!: number;
 }
 
 export const SentenceSymphonyGameRoomModel =
@@ -53,3 +54,11 @@ export const SentenceSymphonyGameRoomModel =
     SentenceSymphonyGameRoom,
     GameRoomType.SENTENCE_SYMPHONY,
   );
+
+export interface NewSentenceSymphonyGameRoomInput {
+  hostInfo: PlayerInfo;
+  otherPlayerInfo: PlayerInfo[],
+  initialPrompt: string;
+}
+
+export type UpdateSentenceSymphonyGameRoomInput = {hostId: SentenceSymphonyGameRoom["hostId"]} & Partial<Omit<SentenceSymphonyGameRoom, "hostId">>
