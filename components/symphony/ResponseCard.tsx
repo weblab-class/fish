@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/services/pusher";
 import { useUpdateVote } from "@/services/react-query/mutations/sentence-symphony";
+import axios from "axios";
 export default function ResponseCard(props: {
+  round: number;
   response: string;
   creatorId: string;
   creatorUsername: string;
@@ -20,16 +22,20 @@ export default function ResponseCard(props: {
     );
     presenceChannel.bind("countVotes", () => {
       // +1 to the response in the data base if clicked
+      console.log(props.hostUsername);
 
       if (clicked) {
         // send player id as voter id to db
         console.log("voted for: ", props.creatorId, props.response);
         const updateVoteFunc = async () => {
           await updateVote.mutateAsync({
-            // TO DO CHANGE HOST ID
             hostId: props.hostId,
             creatorId: props.creatorId,
             voterId: props.voterId,
+          });
+
+          await axios.post("/api/pusher/symphony/updateData", {
+            hostUsername: props.hostUsername,
           });
         };
         updateVoteFunc();

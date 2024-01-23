@@ -42,6 +42,7 @@ export default function ChatLog(props: {
     await axios.post("/api/pusher/symphony/newMessage", {
       message: data.message,
       username: props.username,
+      hostUsername: props.hostUsername,
     });
     resetField("message");
   };
