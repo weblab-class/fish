@@ -48,6 +48,10 @@ type FullResponse = {
 // const sessionId= session!.user.uid
 
 export default function GamePage({ params }: { params: { username: string } }) {
+  // NOTE: subscribes once even though it may render multiple-times
+  const gameChannel = pusherClient.subscribe(`presence-ss-${params.username}`);
+  console.log("first", gameChannel);
+
   // session data
   const { session } = useLuciaSession();
   const playerId = session!.user.uid;
@@ -63,13 +67,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     params.username,
   );
   const isBothFinishedLoading = !isPlayerLoading && !isHostLoading; // make sure both is loaded in before creation
-
-  // NOTE: subscribes once even though it may render multiple-times
-  if (host?.data) {
-    const gameChannel = pusherClient.subscribe(
-      `presence-game-${host.data[0]._id}`,
-    );
-  }
 
   // mutations
   const createSentenceSymphony = useCreateSentenceSymphony();
@@ -110,6 +107,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
       await axios.delete("/api/pusher/symphony/gameTimer");
     };
 
+    console.log("init use effect called");
+
     // makes sure host data and player data are loaded
     if (!host?.data || !host.data[0] || !player?.data) return;
 
@@ -122,7 +121,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
       setIsHost(false);
     }
 
-    const gameChannel = pusherClient.subscribe("presence-game-channel");
+    const gameChannel = pusherClient.subscribe(
+      `presence-ss-${params.username}`,
+    );
+    console.log(gameChannel);
 
     if (isHost) {
       const createSentenceSymphonyFunc = async () => {
@@ -167,19 +169,28 @@ export default function GamePage({ params }: { params: { username: string } }) {
       createSentenceSymphonyFunc();
 
       const gameRoomCreatedFunc = async () => {
-        await axios.post("/api/pusher/symphony/gameRoomCreated", {});
+        await axios.post("/api/pusher/symphony/gameRoomCreated", {
+          hostUsername: params.username,
+        });
       };
       gameRoomCreatedFunc();
     }
 
     console.log("binding");
     console.log(gameChannel);
+    console.log("all channels", pusherClient.allChannels);
     gameChannel.bind("pusher:subscription_succeeded", () => {
       console.log("success yay");
     });
 
+    gameChannel.bind("test", () => {
+      console.log("test ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+    });
+
     if (isHost) {
-      const hostChannel = pusherClient.subscribe("presence-host-channel");
+      const hostChannel = pusherClient.subscribe(
+        `presence-ss-host-${params.username}`,
+      );
       hostChannel.bind("pusher:subscription_succeeded", () => {
         console.log("host success yay");
       });
@@ -216,7 +227,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // clean up
     return () => {
       gameChannel.unbind_all;
-      pusherClient.unsubscribe("presence-game-channel");
+      pusherClient.unsubscribe(`presence-ss-${params.username}`);
       window.removeEventListener("beforeunload", () => {
         stopTimer();
       });
@@ -229,7 +240,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // host listens for when voting count is done then changes the round
 
     if (isHost) {
-      const hostChannel = pusherClient.subscribe("presence-host-channel");
+      const hostChannel = pusherClient.subscribe(
+        `presence-ss-host-${params.username}`,
+      );
       hostChannel.bind(
         "mostVoted",
         async (data: { mostVotedResponse: string }) => {
@@ -241,6 +254,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await axios.post("/api/pusher/symphony/roundChange", {
             newRound: "voted",
             roundNumber: roundNumber + 1,
+            hostUsername: params.username,
           });
         },
       );
@@ -274,7 +288,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // only host controls timer
     // if (!player?.data) return;
 
-    const gameChannel = pusherClient.subscribe("presence-game-channel");
+    const gameChannel = pusherClient.subscribe(
+      `presence-ss-${params.username}`,
+    );
 
     gameChannel.bind("gameRoomCreated", () => {
       setGameRoomExists(true);
@@ -291,6 +307,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       const timer = async () => {
         await axios.post(`/api/pusher/symphony/gameTimer`, {
           time: timerDuration,
+          hostUsername: params.username,
         });
       };
       timer();
@@ -404,7 +421,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
     setSubmissionLoading(false);
 
     const updateData = async () => {
-      await axios.post("/api/pusher/symphony/updateData");
+      await axios.post("/api/pusher/symphony/updateData", {
+        hostUsername: params.username,
+      });
     };
     updateData();
 
@@ -432,6 +451,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       // server will trigger an event signalling a prompt change for all players to update
       await axios.post("/api/pusher/symphony/generatePrompt", {
         prompt: "Prompt: " + randomPrompt[randomNumber],
+        hostUsername: params.username,
       });
     };
     generatePrompt();
@@ -452,6 +472,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await axios.post("/api/pusher/symphony/roundChange", {
             newRound: "voting",
             roundNumber: roundNumber + 1,
+            hostUsername: params.username,
           });
         };
         roundChange();
@@ -464,6 +485,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await axios.post("/api/pusher/symphony/roundChange", {
             newRound: "end",
             roundNumber: roundNumber + 1,
+            hostUsername: params.username,
           });
           console.log("end");
         };
@@ -476,6 +498,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await axios.post("/api/pusher/symphony/roundChange", {
             newRound: "scores",
             roundNumber: roundNumber + 1,
+            hostUsername: params.username,
           });
         };
         roundChange();
@@ -488,6 +511,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await axios.post("/api/pusher/symphony/roundChange", {
             newRound: "writing",
             roundNumber: roundNumber + 1,
+            hostUsername: params.username,
           });
         };
         roundChange();
@@ -500,6 +524,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         const countVotes = async () => {
           await axios.put("/api/pusher/symphony/submittedResponse", {
             currentStory: currentStory,
+            hostUsername: params.username,
           });
         };
         countVotes();
@@ -510,6 +535,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await axios.post("/api/pusher/symphony/roundChange", {
             newRound: "writing",
             roundNumber: roundNumber + 1,
+            hostUsername: params.username,
           });
         };
         roundChange();
@@ -589,7 +615,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       </div>
 
       <div className="top-17 absolute top-20 z-50 ml-6 flex h-1/5 w-22% items-end">
-        <ChatLog username={"vy"} />
+        <ChatLog username={"vy"} hostUsername={params.username} />
       </div>
 
       {/* selecting round */}
@@ -632,13 +658,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
             onSubmit={(e) => {
               e.preventDefault();
               //TO DO: see what presenceChannel.members returns
-              if (!host?.data) return;
-              const gameChannel = pusherClient.subscribe(
-                `presence-game-${host?.data[0]._id.toString}`,
-              );
               axios.post("/api/pusher/symphony/submittedResponse", {
                 playerSocketId: pusherClient.connection.socket_id,
                 members: (gameChannel as PresenceChannel).members,
+                hostUsername: params.username,
               });
               //disables submission after submitting once
               setSubmissionLoading(true);
@@ -696,6 +719,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     creatorUsername={"creator username"}
                     voterId={"hsfa"}
                     hostId={session!.user.uid}
+                    hostUsername={params.username}
                   />
                 ))}
                 {/* </div> */}

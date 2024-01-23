@@ -5,6 +5,7 @@ import { number } from "zod";
 interface Players {
     playerSocketId: number,
     members: []
+    hostUsername:string
 
 }
 
@@ -41,14 +42,15 @@ export async function POST(req: NextRequest) {
 
 interface Story{
     currentStory:string,
+    hostUsername:string
 }
 // called after voting is finished
 export async function PUT(req: NextRequest) {
-    let { currentStory } = (await req.json()) as Story;
+    let { currentStory,hostUsername } = (await req.json()) as Story;
     let responseVotes=[] //somethings from db containing responses voted for
 
     // response card component will send the response to db is they are clicked
-    await pusherServer.trigger('vote-channel','countVotes',{})
+    await pusherServer.trigger(`presence-ss-vote-${hostUsername}`,'countVotes',{})
 
     // get voted responses from db
     responseVotes=[]//somethings from db containing responses voted for
@@ -57,7 +59,7 @@ export async function PUT(req: NextRequest) {
     const mostVotedResponse="this is :)";
 
     // send mostVoted to host and host will combine it with the story and display the most voted response
-    await pusherServer.trigger('presence-host-channel','mostVoted',{mostVotedResponse:mostVotedResponse})
+    await pusherServer.trigger(`presence-ss-${hostUsername}`,'mostVoted',{mostVotedResponse:mostVotedResponse})
 
 
 

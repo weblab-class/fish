@@ -1,15 +1,20 @@
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
+interface Username {
+
+    hostUsername:string
+}
 
 export async function POST(req: NextRequest) {
+    const {hostUsername } = (await req.json()) as Username;
 
 
-    await pusherServer.trigger("presence-game-channel", "updateData", {
+    await pusherServer.trigger(`presence-ss-${hostUsername}`, "updateData", {
 
     });
 
-    console.log("update in console")
+
 
     return NextResponse.json({ status: 200 });
 }

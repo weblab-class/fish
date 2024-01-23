@@ -7,6 +7,7 @@ export default function ResponseCard(props: {
   creatorUsername: string;
   voterId: string;
   hostId: string;
+  hostUsername: string;
 }) {
   const [clicked, setClicked] = useState(false);
   const responseBoxRef = useRef<HTMLDivElement>(null);
@@ -14,7 +15,9 @@ export default function ResponseCard(props: {
 
   // unclicks a response if clicked outside of box
   useEffect(() => {
-    const presenceChannel = pusherClient.subscribe("vote-channel");
+    const presenceChannel = pusherClient.subscribe(
+      `presence-ss-vote-${props.hostUsername}`,
+    );
     presenceChannel.bind("countVotes", () => {
       // +1 to the response in the data base if clicked
 

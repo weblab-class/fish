@@ -1,12 +1,19 @@
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
+interface Username {
+
+    hostUsername:string
+}
+
+
 
 export async function POST(req: NextRequest) {
+    const {hostUsername } = (await req.json()) as Username;
 
     console.log("gameRoom called")
 
-    await pusherServer.trigger("presence-game-channel", "gameRoomCreated", {
+    await pusherServer.trigger(`presence-ss-${hostUsername}`, "gameRoomCreated", {
 
     });
 

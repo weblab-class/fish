@@ -13,9 +13,14 @@ interface Message {
 interface Input {
   message: string;
 }
-export default function ChatLog(props: { username: string }) {
+export default function ChatLog(props: {
+  username: string;
+  hostUsername: string;
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const presenceChannel = pusherClient.subscribe("chat-channel");
+  const presenceChannel = pusherClient.subscribe(
+    `presence-ss-chat-${props.hostUsername}`,
+  );
   const chatLogRef = useRef<HTMLDivElement>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const [showChat, setShowChat] = useState<boolean>(false);

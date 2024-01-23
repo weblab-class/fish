@@ -2,21 +2,22 @@ import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
 interface TimerRequest {
-    time:number
+    time:number,
+    hostUsername:string
 }
 
 let intervalId: NodeJS.Timeout | undefined;
 
 
 export async function POST(req: NextRequest) {
-  let { time } = (await req.json()) as TimerRequest;
+  let { time, hostUsername } = (await req.json()) as TimerRequest;
 
     intervalId = setInterval(async () => {
         console.log(time);
         time -= 1;
 
         const triggerTimer = async () => {
-        await pusherServer.trigger('presence-game-channel', 'timer', {
+        await pusherServer.trigger(`presence-ss-${hostUsername}`, 'timer', {
             time,
         });
         };

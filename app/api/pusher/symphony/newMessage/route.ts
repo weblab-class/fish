@@ -3,12 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface Chat{
     message: string,
-    username: string
+    username: string,
+    hostUsername:string
 }
 export async function POST(req: NextRequest) {
-    const {message, username} = await req.json() as Chat;
+    const {message, username, hostUsername} = await req.json() as Chat;
 
-    await pusherServer.trigger("chat-channel", "newChat", {
+    await pusherServer.trigger(`presence-ss-chat-${hostUsername}`, "newChat", {
         message,
         username,
     });
