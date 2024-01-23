@@ -115,7 +115,6 @@ export default function Home({ params }: { params: { username: string } }) {
   useEffect(() => {
     const homeChannelName = `presence-home-${params.username}`;
     
-    console.log("FROM USE EFFECT", homeChannelName);
     const homeChannel = pusherClient.subscribe(
       homeChannelName,
     ) as PresenceChannel;

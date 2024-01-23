@@ -271,11 +271,13 @@ export default class exterior extends Scene {
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
+    console.log(useMultiplayerStore.getState());
 
     if (otherPlayers.size > 1) {
       const registryOthers = Object.getOwnPropertyNames(this.registry.getAll()).filter(key => key.startsWith("player-"));
       const keepAlive: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
   
+
       // update or add other players
       await Promise.all(
         Array.from(otherPlayers).map(([ uid, info ]) => {

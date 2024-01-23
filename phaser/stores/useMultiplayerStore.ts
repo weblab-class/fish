@@ -90,7 +90,7 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
 
       // TODO: axios post to notify others to add your data via addOrUpdateOther()
       await axios.post(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/send-data`,
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/sendData`,
         {
           channelName: `presence-home-${get().hostUsername}`,
           senderData: get().currentPlayer!,
