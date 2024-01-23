@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { takeWhile as _takeWhile, random as _random } from "lodash";
 
 import {
   NewPlayerInput,
@@ -9,50 +10,59 @@ import {
 import { mongooseConnect } from "../../../mongo";
 import { getSentenceSymphony } from "../../queries/sentence-symphony";
 
-interface UpdateVoteParams {
+interface StartNewRoundParams {
   hostId: string;
-  creatorId: string;
-  voterId: string;
 }
 
 export async function startNewRound({
   hostId,
-  creatorId,
-  voterId,
-}: UpdateVoteParams) {
+}: StartNewRoundParams) {
   // WARNING may break?
   const room = await getSentenceSymphony(hostId);
   if (!room.data) {
     throw Error("Room could not be found.");
   }
 
-  // votes and see which is max
-  const { voteOptions } = room.data;
-  const voteOptions.reduce((a,b)=>a.y>b.y?a:b).y
-  // calculate score based on votes
+  // determine sentence to be appended by sorting high to low votes
+  // NOTE: if tie, pick a random sentence
+  const { voteOptions, sentences, scores } = room.data;
+  voteOptions.sort((a, b) => b.voteIds.length - a.voteIds.length);
 
-  const { voteOptions } = room.data;
-  const creatorIndex = voteOptions.findIndex(
-    (opt) => opt.creatorId === creatorId,
+  const maxVoteOptions = _takeWhile(
+    voteOptions,
+    (v) => v.voteIds.length === voteOptions[0].voteIds.length,
   );
-  const creatorOptData = voteOptions.at(creatorIndex)!;
-  voteOptions[creatorIndex] = {
-    creatorId,
-    sentence: creatorOptData.sentence,
-    voteIds: [...creatorOptData.voteIds, voterId],
-  };
+  const pickedOpt = maxVoteOptions[_random(0, maxVoteOptions.length - 1)];
+
+  // append sentence
+  sentences.push(pickedOpt.sentence);
+
+  // now tally everyone's score based on votes
+  const scoresMap = new Map<string, number>();
+  for (const s of scores) {
+    scoresMap.set(s.playerId.toString(), s.score);
+  }
+  for (const opt of voteOptions) {
+    const oldScore = scoresMap.get(opt.creatorId.toString())!;
+    scoresMap.set(opt.creatorId.toString(), oldScore + opt.voteIds.length);
+  }
 
   return await axios.post(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/db/sentence-symphony/update`,
     {
       hostId,
-      voteOptions,
+      voteOptions: [],
+      scores: Array.from(scoresMap).map(([key, val]) => ({
+        playerId: key,
+        score: val,
+      })),
+      sentences,
     } as UpdateSentenceSymphonyGameRoomInput,
   );
 }
 
 export function useStartNewRound() {
   return useMutation({
-    mutationFn: async (data: UpdateVoteParams) => await startNewRound(data),
+    mutationFn: async (data: StartNewRoundParams) => await startNewRound(data),
   });
 }

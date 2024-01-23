@@ -4,12 +4,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
 
+    console.log("gameRoom called")
 
-    await pusherServer.trigger("presence-game-channel", "updateData", {
+    await pusherServer.trigger("presence-game-channel", "gameRoomCreated", {
 
     });
 
-    console.log("update in console")
+
 
     return NextResponse.json({ status: 200 });
 }

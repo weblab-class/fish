@@ -11,18 +11,22 @@ const players: GlobalPlayers = {};
 
 export async function POST(req: NextRequest) {
   return await authorizeApiRoute(req, async (session) => {
-    const { x, y, playerId } = (await req.json()) as PlayerInfo;
+    const { x, y, uid, sprite, username, roomStatus } = (await req.json()) as PlayerInfo;
     console.log(players);
+
 
     await pusherServer.trigger("presence-channel", "currentPlayers", {
       players,
-      newPlayerId: playerId,
+      newPlayerId: uid,
     });
 
-    players[playerId] = {
+    players[uid] = {
       x,
       y,
-      playerId: playerId,
+      uid: uid,
+      sprite,
+      username,
+      roomStatus
     };
 
     return NextResponse.json({ status: 200 });

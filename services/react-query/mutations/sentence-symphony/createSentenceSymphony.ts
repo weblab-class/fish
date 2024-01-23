@@ -13,8 +13,3 @@ export function useCreateSentenceSymphony() {
     mutationFn: async (data: NewSentenceSymphonyGameRoomInput) => await createSentenceSymphony(data),
   });
 }
-
-// delete
-//
-// start new round
-// start new round
