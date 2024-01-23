@@ -1,22 +1,19 @@
-// TO DO: add source (recharts example)
 "use client";
 import { Cell, Pie, PieChart } from "recharts";
-
-interface PieData {
-  data: { name: string; value: number }[];
-}
 
 const COLORS = [
   "#EBA8BF",
   "#BCEBA8",
-  "#F2DE93",
+  "#CE93F2",
   "#F07A7A",
   "#94C4F6",
-  "#CE93F2",
+  "#F2DE93",
+  ,
 ];
 
 const RADIAN = Math.PI / 180;
 
+//SOURCE: https://codesandbox.io/p/sandbox/pie-chart-with-customized-label-dlhhj?file=%2Fsrc%2FApp.tsx
 const renderCustomizedLabel = ({
   cx,
   cy,
@@ -51,16 +48,17 @@ const renderCustomizedLabel = ({
 export default function PieScore(props: { data: any }) {
   return (
     <div className="h-fit w-fit">
-      <PieChart width={600} height={600}>
+      <PieChart width={500} height={500}>
         <Pie
           data={props.data}
           cx="50%" // Center X dynamically set to 50% of the container width
           cy="50%" // Center Y dynamically set to 50% of the container height
           labelLine={false}
           label={renderCustomizedLabel}
-          outerRadius={"80%"} // Outer radius set as a percentage of the chart size
+          outerRadius={"100%"} // Outer radius set as a percentage of the chart size
           fill="#8884d8"
           dataKey="value"
+          nameKey="playerName"
         >
           {props.data!.map((entry: any, index: number) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

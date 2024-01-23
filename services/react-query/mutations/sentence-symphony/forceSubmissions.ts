@@ -33,7 +33,7 @@ export async function forceSubmissions({ hostId }: ForceSubmissionsParams) {
     ...notSubmittedIds.map((id) => ({
       creatorId: id,
       voterIds: [],
-      sentence: `This is a test by ${id}`,
+      sentence: `In the serene moonlit night, whispers of the wind danced through ancient trees, weaving tales of forgotten dreams and timeless secrets under the star-stuThis is a test by ${id}`,
     })),
   ];
 

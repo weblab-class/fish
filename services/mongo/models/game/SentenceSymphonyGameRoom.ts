@@ -52,7 +52,7 @@ export class SSScore {
   @prop({ required: true, ref: () => Player, type: () => String })
   public playerId!: TypeRef<Player, string>;
 
-  @prop({ required: true })
+  @prop({ required: true, default: 0 })
   public score!: number;
 }
 

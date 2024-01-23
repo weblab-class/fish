@@ -14,7 +14,6 @@ import { useSignOut } from "@/services/react-query/auth";
 import { useRouter } from "next/navigation";
 import { useGetPlayer } from "@/services/react-query";
 
-
 // TODO  fix the clouds when you enter the house and then exit
 
 const DynamicComponentWithNoSSR = dynamic(() => import("@/phaser/Game"), {
@@ -82,34 +81,32 @@ export default function Home() {
         }}
       />
       <div
-        className="bg-[url('/objects/studyCloud.png')] hover:bg-[url('/objects/studyCloudHover.png')] bg-no-repeat hover:z-20 hover:cursor-pointer z-10 bg-right-top absolute right-80 inset-y-0 h-28 w-96"
+        className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
         onClick={() => console.log("go to study room")}
       />
       <div
-        className="bg-[url('/objects/multiplayerCloud.png')] hover:bg-[url('/objects/multiplayerCloudHover.png')] hover:z-20 hover:cursor-pointer z-10 bg-no-repeat bg-left-top absolute left-0 inset-y-0 h-28 w-96"
+        className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
         onClick={() => {
-          console.log("hi mailajmailamalalalm")
           showPopup("invite");
         }}
       />
       <div
-        className="bg-[url('/objects/mailCloud.png')] hover:bg-[url('/objects/mailCloudHover.png')] hover:z-20 hover:cursor-pointer z-10 bg-no-repeat bg-right-top absolute left-72 inset-y-0 h-28 w-96"
+        className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
         onClick={() => {
-          console.log("hi mailajmailamalalalm")
           showPopup("mail");
         }}
       />
-      <div className="absolute flex justify-center w-full">
+      <div className="absolute flex w-full justify-center">
         <div
-          className="bg-[url('/objects/houseCloud.png')] hover:bg-[url('/objects/houseCloudHover.png')] hover:z-20 hover:cursor-pointer z-10 bg-no-repeat bg-left-top absolute inset-y-0 h-28 w-96"
+          className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
           onClick={() => console.log("enter house")}
         />
       </div>
 
       {showInvitePopup && (
-        <div className="flex justify-center items-center w-screen h-screen">
+        <div className="flex h-screen w-screen items-center justify-center">
           <div
-            className="flex justify-center items-center bg-white"
+            className="flex items-center justify-center bg-white"
             ref={inviteRef}
           >
             <InvitePopup />
@@ -118,9 +115,9 @@ export default function Home() {
       )}
 
       {showMailPopup && (
-        <div className="flex justify-center items-center w-screen h-screen">
+        <div className="flex h-screen w-screen items-center justify-center">
           <div
-            className="flex justify-center items-center bg-slate-200"
+            className="flex items-center justify-center bg-slate-200"
             ref={mailRef}
           >
             <MailPopup />

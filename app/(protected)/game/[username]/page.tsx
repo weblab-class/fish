@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { pusherClient } from "@/services/pusher";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import ResponseCard from "@/components/symphony/ResponseCard";
 import { PresenceChannel } from "pusher-js";
 import ChatLog from "@/components/symphony/ChatLog";
@@ -21,6 +22,7 @@ import {
 import {
   useSubmitSentence,
   useCreateSentenceSymphony,
+  useDeleteSentenceSymphony,
   useUpdateVote,
   startNewRound,
   useStartNewRound,
@@ -63,6 +65,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [allPlayers, setAllPlayers] = useState<any>(); // TO DO: ADD TYPE
   const [gameRoomExists, setGameRoomExists] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const router = useRouter();
 
   // queries
   const { data: player, isLoading: isPlayerLoading } = useGetPlayer(
@@ -78,6 +81,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const submitSentence = useSubmitSentence();
   const startNewRound = useStartNewRound();
   const forceSubmissions = useForceSubmissions();
+  const deleteSentenceSymphony = useDeleteSentenceSymphony();
 
   // loading states
   const [submissionLoading, setSubmissionLoading] = useState(false);
@@ -100,9 +104,22 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [responses, setResponses] = useState<FullResponse[]>();
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [oldResponses, setOldResponses] = useState<FullResponse[]>();
+  const [topContributor, setTopContributor] = useState<string>("");
+
+  const randomTestPrompts = [
+    "A fish goes to the grocery store.",
+    "A cow is flying.",
+    "A cat runs a marathon.",
+    "A penguin and his best friend go to school.",
+    "A bear steals honey.",
+    "A duck sells lemonade.",
+    "A duck buys grapes.",
+    "A shiba buys ramen.",
+    "A beaver opens a cafe.",
+  ];
 
   interface Contribution {
-    playerId: string;
+    playerName: string;
     value: number;
   }
   const [contributions, setContributions] = useState<Contribution[]>([]);
@@ -136,6 +153,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     const hostId = host?.data[0]._id;
     const playerId = player?.data?._id;
+    setPrompt(handleGenerate);
 
     if (hostId === playerId) {
       setIsHost(true);
@@ -176,6 +194,22 @@ export default function GamePage({ params }: { params: { username: string } }) {
               uid: "kxrguwi37czcyjc",
               username: "kenn19",
               sprite: "beaver" as AnimalSprite,
+              x: 0,
+              y: 0,
+              roomStatus: "interior" as PlayerRoomStatus,
+            },
+            {
+              uid: "rqy478h7yarmrmc",
+              username: "kchapmit",
+              sprite: "hedgehog" as AnimalSprite,
+              x: 0,
+              y: 0,
+              roomStatus: "interior" as PlayerRoomStatus,
+            },
+            {
+              uid: "rqy478h7yarmrmc",
+              username: "kchapmit",
+              sprite: "hedgehog" as AnimalSprite,
               x: 0,
               y: 0,
               roomStatus: "interior" as PlayerRoomStatus,
@@ -227,6 +261,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       },
     );
 
+    // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE
     gameChannel.bind(
       "pusher:member_removed",
       (member: { id: any; info: any }) => {
@@ -309,26 +344,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
     if (allPlayers) {
       setContributions((prevPlayers) => {
         return [
-          ...allPlayers.map((player: Contribution) => ({
-            playerId: player.playerId,
+          ...allPlayers.map((player: { gameName: string }) => ({
+            playerName: player.gameName,
             value: 0,
           })),
         ];
       });
     }
   }, [allPlayers]);
-
-  useEffect(() => {
-    console.log(contributions, "contributions");
-  }, [contributions]);
-
-  useEffect(() => {
-    console.log(roundType, "roundType use effect alone");
-  }, [roundType]);
-
-  useEffect(() => {
-    console.log(oldResponses, "oldResponses");
-  }, [oldResponses]);
 
   // timer events
   // dependencies: roundType, endScreen, player?.data
@@ -337,7 +360,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // only host controls timer
     // if (!player?.data) return;
 
-    console.log(roundType, "roundType useEffect");
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
     );
@@ -354,15 +376,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
 
     // start timer after new round
-    if (roundType != "end") {
-      const timer = async () => {
-        await axios.post(`/api/pusher/symphony/gameTimer`, {
-          time: timerDuration,
-          hostUsername: params.username,
-        });
-      };
-      timer();
-    }
+
+    const timer = async () => {
+      await axios.post(`/api/pusher/symphony/gameTimer`, {
+        time: timerDuration,
+        hostUsername: params.username,
+      });
+    };
+    timer();
 
     gameChannel.bind("updateData", async (data: { voted: boolean }) => {
       if (!host?.data) return;
@@ -380,19 +401,27 @@ export default function GamePage({ params }: { params: { username: string } }) {
         }));
         setResponses(voteOpts);
 
-        if (gameRoomData.sentences && roundType === "voted") {
+        if (
+          gameRoomData.sentences &&
+          roundType === "voted" &&
+          gameRoomData.sentences.length > 0
+        ) {
           console.log("update data 2", roundType);
+
           const winner =
             gameRoomData.sentences[
               gameRoomData.sentences.length - 1
             ].creatorId.toString();
+          const winnerName = allPlayers.find(
+            (player: { playerId: string }) => player.playerId === winner,
+          ).gameName;
           setMostVoted(
             gameRoomData.sentences[gameRoomData.sentences.length - 1].sentence,
           );
-          setVotedWinner(winner);
+          setVotedWinner(winnerName);
 
           const newContributions = contributions.map((player) => {
-            if (player.playerId === winner) {
+            if (player.playerName === winnerName) {
               return { ...player, value: player.value + 1 };
             }
 
@@ -453,20 +482,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
           setButtonPressed(false);
         }
 
-        // clears responses in database, calculates scores and updates story
-        // if (data.newRound === "scores") {
-        //   const startNewRoundFunc = async () => {
-        //     if (!host?.data) return;
-        //     await startNewRound.mutateAsync({
-        //       hostId: host.data[0]._id.toString(),
-        //     });
-        //   };
-        //   startNewRoundFunc();
-        // }
-
         setSubmittedResponse(false);
 
         setRoundType(data.newRound);
+
         setRoundNumber(data.roundNumber);
       },
     );
@@ -493,32 +512,47 @@ export default function GamePage({ params }: { params: { username: string } }) {
           setTime(10);
         }, 1000);
 
+        if (roundType === "story") {
+          // TO DO CHANGE LINK
+          if (!player?.data) return;
+          const deleteGame = async () => {
+            if (!host?.data) return;
+            await deleteSentenceSymphony.mutateAsync({
+              hostId: host?.data[0]._id.toString(),
+            });
+          };
+          deleteGame();
+
+          router.push(`/home/${player?.data?.username}`);
+        }
+
         // only host controls roundChangeFunc
+        if (roundType === "voted") {
+          console.log("starting the pie chart data", responses, roundType);
+
+          // clears responses for new round and calculates the winning prompt
+          if (isHost) {
+            const startNewRoundFunc = async () => {
+              if (!host?.data) return;
+              await startNewRound.mutateAsync({
+                hostId: host.data[0]._id.toString(),
+              });
+            };
+            startNewRoundFunc();
+            console.log("2 pt 2", roundType);
+            const updateData = async () => {
+              await axios.post("/api/pusher/symphony/updateData", {
+                hostUsername: params.username,
+                voted: true,
+              });
+            };
+            console.log("updating data");
+            updateData();
+            console.log("2 pt 3", roundType);
+          }
+        }
         if (isHost) {
           roundChangeFunc(roundType);
-        }
-      } else if (data.time == 2 && roundType === "voted") {
-        console.log("starting the pie chart data", responses, roundType);
-
-        // clears responses for new round and calculates the winning prompt
-        if (isHost) {
-          const startNewRoundFunc = async () => {
-            if (!host?.data) return;
-            await startNewRound.mutateAsync({
-              hostId: host.data[0]._id.toString(),
-            });
-          };
-          startNewRoundFunc();
-          console.log("2 pt 2", roundType);
-          const updateData = async () => {
-            await axios.post("/api/pusher/symphony/updateData", {
-              hostUsername: params.username,
-              voted: true,
-            });
-          };
-          console.log("updating data");
-          updateData();
-          console.log("2 pt 3", roundType);
         }
       }
     });
@@ -573,30 +607,24 @@ export default function GamePage({ params }: { params: { username: string } }) {
   function handleGenerate() {
     // check if user is the host
     setSubmissionLoading(true);
-    const randomPrompt = [
-      "A fish goes to the grocery store.",
-      "A cow is flying.",
-      "A cat runs a marathon.",
-      "A penguin and his best friend go to school.",
-      "A bear steals honey.",
-      "A duck sells lemonade.",
-      "A duck buys grapes.",
-      "A shiba buys ramen.",
-    ];
 
-    const randomNumber = Math.round(Math.random() * (randomPrompt.length - 1));
+    const randomNumber = Math.round(
+      Math.random() * (randomTestPrompts.length - 1),
+    );
 
     const generatePrompt = async () => {
       // server will trigger an event signalling a prompt change for all players to update
       await axios.post("/api/pusher/symphony/generatePrompt", {
-        prompt: "Prompt: " + randomPrompt[randomNumber],
+        prompt: "Prompt: " + randomTestPrompts[randomNumber],
         hostUsername: params.username,
       });
     };
     generatePrompt();
+
+    return randomTestPrompts[randomNumber];
   }
 
-  // handles round changes, host makes post requests and the server triggers changes for all players
+  // handles round changes, host makes postn requests and the server triggers changes for all players
   const roundChangeFunc = (roundTypeParam: string) => {
     const stopTimer = async () => {
       await axios.delete("/api/pusher/symphony/gameTimer");
@@ -617,15 +645,32 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // stops the game
       // TO DO: adjust number of rounds in a game
-    } else if (roundNumber === 10) {
-      setTime(10);
+    } else if (roundType === "leaderboard") {
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
-          newRound: "end",
+          newRound: "story",
           roundNumber: roundNumber + 1,
           hostUsername: params.username,
         });
-        console.log("end");
+      };
+      roundChange();
+    } else if (roundNumber === 12) {
+      setTime(10);
+      const roundChange = async () => {
+        setTopContributor(
+          contributions
+            .reduce(
+              (max, current) => (current.value > max.value ? current : max),
+              contributions[0],
+            )
+            .toString(),
+        );
+
+        await axios.post("/api/pusher/symphony/roundChange", {
+          newRound: "leaderboard",
+          roundNumber: roundNumber + 1,
+          hostUsername: params.username,
+        });
       };
       roundChange();
 
@@ -684,18 +729,24 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       roundChange();
-    } else if (roundTypeParam === "end") {
     }
   };
 
   return (
-    <div className="h-screen w-screen bg-[url('/backgrounds/brownBg.png')] bg-cover bg-no-repeat">
+    // TO DO: replace overflow-hidden and fix overflow
+    <div className="h-screen w-full overflow-hidden bg-[url('/backgrounds/brownBg.png')] bg-cover bg-no-repeat">
       {/* header with timer, prompt, and round number */}
       <div className="flex w-full justify-center">
         <div className="absolute h-fit w-full flex-row items-center rounded-b-2xl bg-[url('/backgrounds/tanTransparentBg.png')] bg-cover bg-no-repeat">
           {/* timer */}
           <div className="ml-3 p-3 text-5xl text-white">
-            {timesUp ? <p>Time&apos;s Up!</p> : <p>Time: {time}</p>}
+            {timesUp ? (
+              <p>Time&apos;s Up!</p>
+            ) : roundType === "story" ? (
+              <p>Redirect in: {time}</p>
+            ) : (
+              <p>Time: {time}</p>
+            )}
           </div>
           {/* round number */}
           <div className="absolute right-0 top-0 p-3 pr-5 text-5xl text-white">
@@ -705,39 +756,56 @@ export default function GamePage({ params }: { params: { username: string } }) {
         </div>
         {/* prompt */}
 
-        <div className="top-0 z-10 h-fit w-3/6 flex-row justify-center text-wrap rounded-b-3xl bg-[url('/backgrounds/whiteGrayBg.png')] bg-cover bg-no-repeat p-7 text-center text-4xl text-gray-600">
+        <div className="top-0 z-10 h-fit w-3/6 flex-row justify-center text-wrap rounded-b-3xl bg-[url('/backgrounds/whiteGrayBg.png')] bg-cover bg-no-repeat p-3 text-center text-4xl text-gray-600">
           {roundType === "voting" ? (
             <div>
-              <p className="rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
                 Vote for the best response!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "scores" ? (
             <div>
-              <p className="rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
                 Current Contributions
               </p>{" "}
               <p>{prompt}</p>
             </div>
           ) : roundType === "voted" ? (
             <div>
-              <p className="rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
                 Votes are in!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "writing" ? (
             <div>
-              <p className="rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
                 Write a Story Snippet!
+              </p>
+              <p>{prompt}</p>
+            </div>
+          ) : roundType === "selecting" ? (
+            <div>
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+                Select a Prompt for your Story!
+              </p>
+              <p>{prompt}</p>
+            </div>
+          ) : roundType === "leaderboard" ? (
+            <div>
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+                Overall Contributions
+              </p>
+              <p className="text-5xl text-pink-200">
+                {topContributor} was the top Contributor!
               </p>
               <p>{prompt}</p>
             </div>
           ) : (
             <div>
-              <p className="bg-coverp-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] text-5xl text-white">
-                Select a Prompt for your Story!
+              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] text-5xl text-white">
+                Final Story!
               </p>
               <p>{prompt}</p>
             </div>
@@ -748,9 +816,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
               roundType === "voting" ||
               roundType === "voted" ||
               roundType === "scores" ||
-              roundType === "selecting"
-                ? "max-h-28"
-                : "max-h-80"
+              roundType === "selecting" ||
+              roundType === "leaderboard"
+                ? "max-h-14"
+                : roundType === "story"
+                  ? "h-1/3 text-4xl"
+                  : "max-h-72"
             } justify-center overflow-auto text-wrap break-all bg-cover bg-no-repeat p-7`}
           >
             {currentStory}
@@ -831,6 +902,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 placeholder="Add your story snippet"
                 maxLength={100}
                 minLength={1}
+                required
                 pattern="[a-zA-Z0-9\s\.,!@#$%^&*()-_+=;:'\"
                 disabled={buttonPressed}
                 {...register("response")}
@@ -856,7 +928,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           // voting
           <div className="h-full w-full">
             {responses && (
-              <div className="z-20 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
+              <div className="mt-6 flex h-65% w-full flex-wrap items-start justify-center hover:z-20">
                 {/* <div className="flex items-center justify-center flex-wrap z-10"> */}
                 {/* TO DO: get responses from database */}
 
@@ -866,9 +938,18 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     key={response.creatorId}
                     creatorId={response.creatorId}
                     response={response.sentence}
-                    creatorUsername={"creator username"}
-                    voterId={"hsfa"}
-                    hostId={session!.user.uid}
+                    creatorUsername={
+                      allPlayers.find(
+                        (player: { playerId: string }) =>
+                          player.playerId === response.creatorId,
+                      ).gameName
+                    }
+                    voterId={session!.user.uid}
+                    hostId={
+                      host?.data
+                        ? host?.data[0]._id.toString()
+                        : "host-not-found"
+                    }
                     hostUsername={params.username}
                     round={roundNumber}
                   />
@@ -878,7 +959,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             )}
           </div>
         ) : roundType === "voted" ? (
-          <div className="h-full w-full">
+          <div className="z-30 h-full w-full">
             {responses && (
               <div className="z-20 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
                 {responses.map((response) => (
@@ -887,32 +968,39 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     creatorId={response.creatorId}
                     response={response.sentence}
                     // GET USERNAME OF CREATOR useGetPlayer("creatorId")
-                    creatorUsername={"creator username"}
+                    creatorUsername={
+                      allPlayers.find(
+                        (player: { playerId: string }) =>
+                          player.playerId === response.creatorId,
+                      ).gameName
+                    }
                     votes={
                       response.voteIds != undefined
                         ? response.voteIds.length
                         : 0
                     }
                     voterId={session!.user.uid}
-                    hostId={session!.user.uid}
-                    // TO DO CHANGE WON TO REAL LOGIC
-                    won={false}
+                    hostId={
+                      host?.data
+                        ? host?.data[0]._id.toString()
+                        : "host-not-found"
+                    }
+                    won={mostVoted === response.sentence}
                   />
                 ))}
               </div>
             )}
           </div>
         ) : roundType === "scores" ? (
-          <div className="-m-3 flex h-fit w-full items-start justify-center">
+          <div className="mt-2 flex h-3/4 w-full items-start justify-center">
+            <PieChartWithoutSSR data={contributions} />
+          </div>
+        ) : roundType === "leaderboard" ? (
+          <div className="mt-2 flex h-3/4 w-full items-start justify-center">
             <PieChartWithoutSSR data={contributions} />
           </div>
         ) : (
-          <div className="-m-3 flex h-fit w-full items-start justify-center">
-            THIS PLAYER WON
-            <PieChartWithoutSSR
-              data={<PieChartWithoutSSR data={contributions} />}
-            />
-          </div>
+          <div></div>
         )
         // Most voted response screen
       }
@@ -949,9 +1037,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 3 */}
             {allPlayers.length > 2 && (
-              <div className="absolute bottom-0 left-0 flex h-1/5 w-30% items-end justify-end bg-[url('/players/cowHead.png')] bg-contain bg-right bg-no-repeat ">
-                <div className="absolute -top-15% bottom-0 flex h-full w-1/3 items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-yellow-200">
+              <div className="w-73% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/pigHead.png')] bg-contain bg-right bg-no-repeat ">
+                <div className="absolute -top-15% bottom-0 flex h-full w-1/6 items-start justify-center">
+                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-purple-300">
                     {allPlayers[2].gameName}
                   </p>
                 </div>
@@ -971,10 +1059,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 6 */}
             {allPlayers.length > 5 && (
-              <div className="absolute bottom-0 left-0 flex h-1/5 w-4/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
+              <div className="w-76% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
                 <div className="absolute -top-15% bottom-0 flex h-full w-12% items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-purple-300">
-                    Usern
+                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-yellow-200">
+                    {allPlayers[5].gameName}
                   </p>
                 </div>
               </div>
