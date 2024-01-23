@@ -23,8 +23,10 @@ interface IChannelsRes {
   [channelName: string]: object;
 }
 
+// TODO Errors do not work because Pusher gets rid of the CustomErrorCode
+
 /**
- * Authorize channels.
+ * Authorize channels and users.
  * - For home channel, use `presence-home-${host username}`
  * - For sentence symphony regular channel, use `presence-ss-${host username}`
  * - For sentence symphony host channel, use `presence-ss-host-${host username}`
@@ -36,8 +38,6 @@ interface IChannelsRes {
  */
 
 export async function POST(req: NextRequest) {
-  console.log("I AM HERE");
-
   return await authorizeApiRoute(req, async (session) => {
     const data = await req.text(); // contains socket id and channel name
     const socketId = data.split("&")[0].split("=")[1];
@@ -45,7 +45,6 @@ export async function POST(req: NextRequest) {
 
     // player data (no matter if its the host or not)
     const playerUid = session.user.uid!;
-    // const playerUid = "zob5s4teag4g3rq";
     const playerData = (await getPlayer(playerUid))?.data;
     if (!playerData)
     return NextResponse.json(
@@ -57,12 +56,12 @@ export async function POST(req: NextRequest) {
         status: 404,
       },
     );
+
     const presenceData = {
-      user_id: playerUid,  // !! PUSHER MIGHT EXPECT A SOCKET ID
+      user_id: playerUid, 
       user_info: { uid: playerUid, socket_id: socketId, sprite: playerData.animalSprite, username: playerData.username } as PusherPresenceUserInfo,
     } as PresenceChannelData;
 
-console.log("STEP 1");
     // get host data for comparison
     const hostUsername = channelName.split("-").at(-1)!; // all channel names will end with host username
     const hostData = (await getPlayerByUsername(hostUsername))?.data;
@@ -77,7 +76,6 @@ console.log("STEP 1");
     const host = hostData[0];
     const hostUid = host._id.toString();
 
-    console.log("STEP")
     // make sure the user isn't opening more than one tab (see pusher:subscription_error in components that subscribe for the rest of the implementation)
     // NOTE: this is only for `presence-home-${host username}` & `presence-ss-${host username}`
     // NOTE: dev mode breaks this, so it's only available in prod
@@ -198,32 +196,7 @@ console.log("STEP 1");
     }
 
     const authRes = pusherServer.authorizeChannel(socketId, channelName, presenceData);
-    console.log("I AM DONE");
 
     return new NextResponse(JSON.stringify(authRes));
   });
 }
-
-// import { authorizeApiRoute } from "@/services/lucia/functions";
-// import { pusherServer } from "@/services/pusher";
-// import { NextRequest, NextResponse } from "next/server";
-
-// export async function POST(req: NextRequest) {
-//   return await authorizeApiRoute(req, async (session) => {
-//     const data = await req.text(); // contains socket id and channel name
-//     const socketId = data.split("&")[0].split("=")[1];
-//     const channelName = data.split("&")[1].split("=")[1];
-
-//     const presenceData = {
-//       user_id: socketId, // replace with auth
-//       user_data: { user_id: socketId },
-//     };
-
-//     const auth = pusherServer.authorizeChannel(
-//       socketId,
-//       channelName,
-//     );
-//     console.log(auth);
-//     return new NextResponse(JSON.stringify(auth));
-//   });
-// }
