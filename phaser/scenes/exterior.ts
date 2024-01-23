@@ -278,9 +278,9 @@ export default class exterior extends Scene {
     // send data (may need to move this somewhere later on in this function)
     useMultiplayerStore.getState().sendMyData(player);
 
-    // detect overlap betweesn player and door
+    // detect overlap between player and door
     self.physics.add.overlap(player, door, () => {
-      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
+      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object 
       const isDown = keyObj.isDown;
     });
 

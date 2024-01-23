@@ -2,49 +2,17 @@ import { create } from "zustand";
 
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 import { StoreStateFunc } from "./types";
+import { PlayerInfo } from "../types";
+import { getDefaultPosition } from "@/phaser/settings/functions";
 
 // PLAYER DATA
-type PlayerInfo = {
-  uid: string;
-  username: string;
-  sprite: AnimalSprite;
-  x: number;
-  y: number;
-  roomStatus: PlayerRoomStatus;
-};
 const getDefaultPlayerInfo = (
   uid: string,
   username: string,
   sprite: AnimalSprite,
   roomStatus: PlayerRoomStatus,
 ) => {
-  let pos: Pick<PlayerInfo, "roomStatus" | "x" | "y">;
-
-  switch (roomStatus) {
-    case PlayerRoomStatus.EXTERIOR:
-      pos = {
-        roomStatus,
-        x: 700,
-        y: 650,
-      };
-      break;
-    case PlayerRoomStatus.INTERIOR:
-      pos = {
-        roomStatus,
-        x: 725,
-        y: 830,
-      };
-      break;
-    case PlayerRoomStatus.STUDY:
-      // TODO: change
-      pos = {
-        roomStatus,
-        x: 0,
-        y: 0,
-      };
-      break;
-  }
-
+  const pos: Pick<PlayerInfo, "roomStatus" | "x" | "y"> = { roomStatus, ...getDefaultPosition(roomStatus)};
   return { uid, username, sprite, ...pos } as PlayerInfo;
 };
 

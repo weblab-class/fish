@@ -1,8 +1,8 @@
-export enum PusherError {
-    DUPLICATE_TABS="duplicate-tabs",
-}
+import { AnimalSprite } from "@/types";
 
-export type PlayerRoomUserInfo = {
+export type PusherPresenceUserInfo = {
     uid: string;
     socket_id: string;
+    username: string;
+    sprite: AnimalSprite;
 }

@@ -548,7 +548,7 @@ import interior from "./scenes/interior";
 import studyroom from "./scenes/studyroom";
 import { Game as PhaserGame } from "phaser";
 import { Player } from "@/services/mongo/models";
-import { useGetPlayer } from "@/services/react-query";
+import { useGetPlayer } from "@/services/react-query/queries/player";
 
 interface IRedirectStoreState {
   redirect: boolean;

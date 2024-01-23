@@ -2,6 +2,7 @@ import mongoose, { Types } from "mongoose";
 import {
   getDiscriminatorModelForClass,
   modelOptions,
+  pre,
   prop,
 } from "@typegoose/typegoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
@@ -9,7 +10,16 @@ import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { GameRoomModel, GameRoom } from "./BaseGameRoom";
 import { Player } from "..";
 import { GameRoomType } from "@/types";
+import { MAX_SENTENCE_SYMPHONY_PLAYERS } from "@/phaser/settings/consts";
 
+@pre<SentenceSymphonyGameRoom>("save", function (next) {
+  if (this.allPlayers.length > MAX_SENTENCE_SYMPHONY_PLAYERS) {
+    const err = new mongoose.Error("The game is full.");
+    throw err;
+  }
+
+  next();
+})
 @modelOptions({ options: { customName: "SentenceSymphony" } })
 export class SentenceSymphonyGameRoom extends GameRoom {
   @prop({ required: true })

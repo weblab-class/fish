@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { luciaAuth } from "@/services/lucia";
 import { mongooseConnect } from "../mongo";
+import { CustomErrorCode, ICustomError } from "@/types";
 
 type CachedSessionCallback = () => Promise<Session | null>;
 
@@ -38,5 +39,5 @@ export async function authorizeApiRoute(req: NextRequest, sessionResponse: (sess
 		return await sessionResponse(session);
 	}
 
-	return NextResponse.json("Invalid", { status: 403, statusText: "User is not authenticated. Please go back to login."});
+	return NextResponse.json({ message: "User has not logged in.", code: CustomErrorCode.PLAYER_NOT_AUTHENTICATED } as ICustomError, { status: 403, statusText: "User is not authenticated. Please go back to login."});
 }

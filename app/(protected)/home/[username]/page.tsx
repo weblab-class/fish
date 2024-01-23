@@ -12,7 +12,7 @@ import { Session } from "lucia";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import { useSignOut } from "@/services/react-query/auth";
 import { useRouter } from "next/navigation";
-import { useGetPlayer } from "@/services/react-query";
+import { useGetPlayer } from "@/services/react-query/queries/player";
 
 // TODO  fix the clouds when you enter the house and then exit
 

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     throw Error(
       "This is a developer error. Please provide a username in /api/db/get-player-by-username",
     );
-  const player = await PlayerModel.find().findByUsername(username);
+  const player = await PlayerModel.find({ username });
 
   return NextResponse.json(player, { status: 200 });
 }

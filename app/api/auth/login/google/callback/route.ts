@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 
 import { luciaAuth, googleAuth } from "@/services/lucia";
 import { mongooseConnect } from "@/services/mongo";
+import { pusherClient } from "@/services/pusher";
 
 // modified from https://lucia-auth.com/guidebook/github-oauth/nextjs-app/
 
@@ -49,6 +50,7 @@ export const GET = async (req: NextRequest) => {
       headers,
     });
     authRequest.setSession(session);
+
     return new Response(null, {
       status: 302,
       headers: {

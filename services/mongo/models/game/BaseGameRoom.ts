@@ -3,16 +3,6 @@ import { pre, type Ref as TypeRef } from "@typegoose/typegoose";
 import { Player } from "..";
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
-const MAX_PLAYERS = 6;
-
-@pre<GameRoom>("save", function (next) {
-  if (this.allPlayers.length > MAX_PLAYERS) {
-    const err = new mongoose.Error("The game is full.");
-    throw err;
-  }
-
-  next();
-})
 @modelOptions({ schemaOptions: { collection: "gamerooms" } })
 export class GameRoom {
   @prop({ required: true, ref: () => Player, type: () => String })
