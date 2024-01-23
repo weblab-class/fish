@@ -92,16 +92,18 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [prompt, setPrompt] = useState<string>("Prompt/Theme");
   const [endScreen, setEndScreen] = useState<boolean>(false);
   const [submittedResponse, setSubmittedResponse] = useState<boolean>(false);
+  const [buttonPressed, setButtonPressed] = useState<boolean>(false);
   const [currentStory, setCurrentStory] = useState("");
   const [oldStory, setOldStory] = useState("");
   const [mostVoted, setMostVoted] = useState<string>("");
+  const [votedWinner, setVotedWinner] = useState<string>("");
   const [responses, setResponses] = useState<FullResponse[]>();
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [oldResponses, setOldResponses] = useState<FullResponse[]>();
 
   interface Contribution {
     playerId: string;
-    contribution: number;
+    value: number;
   }
   const [contributions, setContributions] = useState<Contribution[]>([]);
 
@@ -309,7 +311,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         return [
           ...allPlayers.map((player: Contribution) => ({
             playerId: player.playerId,
-            contribution: 0,
+            value: 0,
           })),
         ];
       });
@@ -364,6 +366,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     gameChannel.bind("updateData", async (data: { voted: boolean }) => {
       if (!host?.data) return;
+      console.log("update data", roundType);
 
       const gameRoomRes = await getSentenceSymphony(
         host.data[0]._id.toString(),
@@ -376,45 +379,42 @@ export default function GamePage({ params }: { params: { username: string } }) {
           voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
         }));
         setResponses(voteOpts);
-        setCurrentStory(gameRoomData.sentences.toString());
-      }
 
-      if (roundType === "voted") {
-        console.log(roundType, "updateData binding");
-        if (responses) {
-          const mostVotedSentence = responses[responses.length - 1].sentence;
-          setMostVoted(mostVotedSentence);
-
-          const winner = oldResponses?.find(
-            (option) => option.sentence === mostVotedSentence,
-          )?.creatorId!;
-
-          console.log(
-            winner,
-            mostVotedSentence,
-            oldResponses,
-            responses[responses.length - 1].sentence,
+        if (gameRoomData.sentences && roundType === "voted") {
+          console.log("update data 2", roundType);
+          const winner =
+            gameRoomData.sentences[
+              gameRoomData.sentences.length - 1
+            ].creatorId.toString();
+          setMostVoted(
+            gameRoomData.sentences[gameRoomData.sentences.length - 1].sentence,
           );
+          setVotedWinner(winner);
 
           const newContributions = contributions.map((player) => {
             if (player.playerId === winner) {
-              return { ...player, contribution: player.contribution + 1 };
+              return { ...player, value: player.value + 1 };
             }
 
             return { ...player };
           });
 
           setContributions(newContributions);
+          console.log(
+            gameRoomData.sentences[gameRoomData.sentences.length - 1],
+            "sentencesss",
+          );
+          console.log("update data 3", roundType);
+          setCurrentStory(
+            currentStory +
+              gameRoomData.sentences[
+                gameRoomData.sentences.length - 1
+              ].sentence.toString(),
+          );
         }
+      }
 
-        // setContributions((prevPlayers: Contribution[]) =>
-        //   prevPlayers.map((player) => {
-        //     player.playerId === winner
-        //       ? { ...player, contribution: player.contribution + 1 }
-        //       : { player };
-        //   }),
-        // );
-      } else if (roundType === "voting" && !data.voted) {
+      if (roundType === "voting" && !data.voted) {
         console.log("forcing submissions", roundType);
         await forceSubmissions.mutateAsync({
           hostId: host?.data[0]._id.toString(),
@@ -430,7 +430,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
             voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
           }));
           setResponses(voteOpts);
-          setCurrentStory(gameRoomData.sentences.toString());
+          setCurrentStory(
+            currentStory +
+              gameRoomData.sentences[
+                gameRoomData.sentences.length - 1
+              ].sentence.toString(),
+          );
         }
       }
     });
@@ -445,6 +450,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         if (data.newRound === "voting") {
           await handleSubmit(onSubmit)();
           resetField("response");
+          setButtonPressed(false);
         }
 
         // clears responses in database, calculates scores and updates story
@@ -491,10 +497,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
         if (isHost) {
           roundChangeFunc(roundType);
         }
-      } else if (data.time == 8 && roundType === "voted") {
-        console.log("starting the pie chart data", responses);
-        setOldResponses(responses);
-        setOldStory(currentStory);
+      } else if (data.time == 2 && roundType === "voted") {
+        console.log("starting the pie chart data", responses, roundType);
+
         // clears responses for new round and calculates the winning prompt
         if (isHost) {
           const startNewRoundFunc = async () => {
@@ -504,6 +509,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             });
           };
           startNewRoundFunc();
+          console.log("2 pt 2", roundType);
           const updateData = async () => {
             await axios.post("/api/pusher/symphony/updateData", {
               hostUsername: params.username,
@@ -512,6 +518,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           };
           console.log("updating data");
           updateData();
+          console.log("2 pt 3", roundType);
         }
       }
     });
@@ -522,8 +529,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       gameChannel.unbind("roundChange");
     };
   }, [roundType, endScreen]);
-
-  useEffect(() => {}, [oldResponses]);
 
   //   submitting responses
   const onSubmit: SubmitHandler<Input> = (data) => {
@@ -556,6 +561,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     const updateData = async () => {
       await axios.post("/api/pusher/symphony/updateData", {
         hostUsername: params.username,
+        voted: false,
       });
     };
     updateData();
@@ -800,6 +806,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             className="mt-5 h-1/3"
             onSubmit={(e) => {
               e.preventDefault();
+              setButtonPressed(true);
               //TO DO: see what presenceChannel.members returns
               axios.post("/api/pusher/symphony/submittedResponse", {
                 playerSocketId: pusherClient.connection.socket_id,
@@ -817,7 +824,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             <div className="flex justify-center">
               <textarea
                 className={`z-20 h-40 w-1/3 rounded-xl p-3 text-3xl text-gray-700 ${
-                  submittedResponse
+                  buttonPressed
                     ? " cursor-not-allowed bg-white opacity-60 outline"
                     : " opacity-90"
                 }`}
@@ -825,7 +832,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 maxLength={100}
                 minLength={1}
                 pattern="[a-zA-Z0-9\s\.,!@#$%^&*()-_+=;:'\"
-                disabled={submittedResponse}
+                disabled={buttonPressed}
                 {...register("response")}
               ></textarea>
             </div>
@@ -897,25 +904,13 @@ export default function GamePage({ params }: { params: { username: string } }) {
           </div>
         ) : roundType === "scores" ? (
           <div className="-m-3 flex h-fit w-full items-start justify-center">
-            <PieChartWithoutSSR
-              data={[
-                { name: "Group A", value: 50 },
-                { name: "Group B", value: 300 },
-                { name: "Group C", value: 300 },
-                { name: "Group D", value: 200 },
-              ]}
-            />
+            <PieChartWithoutSSR data={contributions} />
           </div>
         ) : (
           <div className="-m-3 flex h-fit w-full items-start justify-center">
             THIS PLAYER WON
             <PieChartWithoutSSR
-              data={[
-                { name: "Group A", value: 50 },
-                { name: "Group B", value: 300 },
-                { name: "Group C", value: 300 },
-                { name: "Group D", value: 200 },
-              ]}
+              data={<PieChartWithoutSSR data={contributions} />}
             />
           </div>
         )

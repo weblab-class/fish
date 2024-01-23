@@ -2,13 +2,6 @@
 "use client";
 import { Cell, Pie, PieChart } from "recharts";
 
-const data = [
-  { name: "Group A", value: 50 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
-];
-
 interface PieData {
   data: { name: string; value: number }[];
 }
@@ -38,18 +31,20 @@ const renderCustomizedLabel = ({
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  return (
-    <text
-      className="text-3xl"
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${name}`}
-    </text>
-  );
+  if (percent > 0.1) {
+    return (
+      <text
+        className="text-3xl"
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
+        {`${name}`}
+      </text>
+    );
+  }
 };
 
 // TO DO: FIX TYPES
@@ -58,7 +53,7 @@ export default function PieScore(props: { data: any }) {
     <div className="h-fit w-fit">
       <PieChart width={600} height={600}>
         <Pie
-          data={data}
+          data={props.data}
           cx="50%" // Center X dynamically set to 50% of the container width
           cy="50%" // Center Y dynamically set to 50% of the container height
           labelLine={false}
@@ -67,7 +62,7 @@ export default function PieScore(props: { data: any }) {
           fill="#8884d8"
           dataKey="value"
         >
-          {data!.map((entry, index) => (
+          {props.data!.map((entry: any, index: number) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
