@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import {
   getDiscriminatorModelForClass,
   modelOptions,
@@ -31,8 +31,8 @@ export class SentenceSymphonyGameRoom extends GameRoom {
   @prop({ required: true, type: () => SSScore, default: [] })
   public scores!: SSScore[];
 
-  @prop({ required: true, type: String, default: [] })
-  public sentences!: string[];
+  @prop({ required: true, type: () => SSSentence, default: [] })
+  public sentences!: SSSentence[];
 }
 
 @modelOptions({ schemaOptions: { _id: false } })
@@ -53,8 +53,18 @@ export class SSScore {
   public playerId!: TypeRef<Player, string>;
 
   @prop({ required: true })
-  public roundsWon!: number;
+  public score!: number;
 }
+
+@modelOptions({ schemaOptions: { _id: false } })
+export class SSSentence {
+  @prop({ required: true })
+  public sentence!: string;
+
+  @prop({ required: true, ref: () => Player, type: () => String })
+  public creatorId!: TypeRef<Player, string>;
+}
+
 
 export const SentenceSymphonyGameRoomModel =
   mongoose.models.SentenceSymphony ||

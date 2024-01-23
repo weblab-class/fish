@@ -76,10 +76,13 @@ export async function POST(req: NextRequest) {
       const userIds = (usersBody.users as { id: string }[]).map(({ id }) => id);
       if (userIds.includes(playerUid)) {
         // this might be a signal that the user created another tab, so check in the component
-        return NextResponse.json(socketId, {
-          status: 403,
-          statusText: CustomErrorCode.DUPLICATE_TABS,
-        });
+        return NextResponse.json(
+          { message: socketId, code: CustomErrorCode.DUPLICATE_TABS },
+          {
+            status: 403,
+            statusText: CustomErrorCode.DUPLICATE_TABS,
+          },
+        );
       }
     }
 
@@ -164,8 +167,7 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        /// SUCCESS! we will add them to the database after checking if this is the only tab
-        //           they have open
+        /// SUCCESS! we will add them to the database
         console.log("AS A GUEST, I AM ADDING MYSELF TO THE HOST ROOM");
 
         await addPlayerToRoom({
@@ -177,7 +179,7 @@ export async function POST(req: NextRequest) {
     }
 
     const authRes = pusherServer.authorizeChannel(socketId, channelName);
-  console.log("I AM DONE");
+    console.log("I AM DONE");
 
     return new NextResponse(JSON.stringify(authRes));
   });
