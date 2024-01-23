@@ -60,6 +60,6 @@ export async function POST(req: NextRequest) {
     channelName,
     presenceData
   )
-
+console.log(auth)
   return new NextResponse(JSON.stringify(auth))
 }

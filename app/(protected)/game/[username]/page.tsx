@@ -30,7 +30,6 @@ import {
   useForceSubmissions,
 } from "@/services/react-query/mutations/sentence-symphony";
 import { PlayerInfo } from "@/phaser/types";
-import { AiFillSkype } from "react-icons/ai";
 
 const PieChartWithoutSSR = dynamic(
   () => import("@/components/symphony/PieScore"),
@@ -1037,7 +1036,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 3 */}
             {allPlayers.length > 2 && (
-              <div className="w-73% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/pigHead.png')] bg-contain bg-right bg-no-repeat ">
+              <div className="absolute bottom-0 left-0 flex h-1/5 w-73% items-end justify-end bg-[url('/players/pigHead.png')] bg-contain bg-right bg-no-repeat ">
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/6 items-start justify-center">
                   <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-purple-300">
                     {allPlayers[2].gameName}
@@ -1059,7 +1058,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 6 */}
             {allPlayers.length > 5 && (
-              <div className="w-76% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
+              <div className="absolute bottom-0 left-0 flex h-1/5 w-76% justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
                 <div className="absolute -top-15% bottom-0 flex h-full w-12% items-start justify-center">
                   <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-yellow-200">
                     {allPlayers[5].gameName}

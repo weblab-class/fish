@@ -49,11 +49,11 @@ export default function TitlePageLogin() {
         {/* login cloud */}
         <a
           href="/api/auth/login/google"
-          className="h-270 w-500 absolute bottom-32 bg-[url('/objects/loginCloud.png')] bg-cover hover:bg-[url('/objects/loginCloudHover.png')]"
+          className="absolute bottom-32 h-270 w-500 bg-[url('/objects/loginCloud.png')] bg-cover hover:bg-[url('/objects/loginCloudHover.png')]"
         ></a>
         {/* help cloud */}
         <div
-          className="h-170 w-300 absolute right-8 top-8 bg-[url('/objects/helpCloud.png')] bg-cover hover:bg-[url('/objects/helpCloudHover.png')]"
+          className="absolute right-8 top-8 h-170 w-300 bg-[url('/objects/helpCloud.png')] bg-cover hover:bg-[url('/objects/helpCloudHover.png')]"
           onClick={() => {
             setShowHelpPopup(true);
           }}
@@ -61,12 +61,12 @@ export default function TitlePageLogin() {
 
         {/* how to play pop up */}
         {showHelpPopup && (
-          <div className="z-30 flex h-screen w-screen items-center justify-center overscroll-none text-5xl text-white">
-            <div className="z-10 h-5/6 w-3/4 rounded-3xl bg-[url('/backgrounds/blueBg.png')] bg-cover outline outline-8 outline-white">
+          <div className="z-30 flex h-screen w-screen items-center justify-center overscroll-none text-6xl text-white">
+            <div className="z-10 h-5/6 w-3/4 rounded-3xl bg-[url('/backgrounds/pinkBg.png')] bg-cover outline outline-8 outline-white">
               {/* nav bar */}
-              <div className="hover:pointer mt-3  flex justify-evenly bg-[url('/backgrounds/lightBlueBg.png')] p-2">
+              <div className="hover:pointer bg-opacity-  mt-3 flex justify-evenly bg-[url('/backgrounds/greenBg.png')] bg-bottom p-3">
                 <span
-                  className={`${helpContent === "About" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "About" ? "bg-green-400 bg-opacity-35 underline " : " no-underline "} rounded-2xl p-4 pl-6 pr-6 hover:cursor-pointer`}
                   onClick={() => {
                     setHelpContent("About");
                   }}
@@ -74,7 +74,7 @@ export default function TitlePageLogin() {
                   About
                 </span>
                 <span
-                  className={`${helpContent === "Multiplayer" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "Multiplayer" ? "bg-green-400 bg-opacity-35 underline " : " no-underline "} rounded-2xl p-4 pl-6 pr-6  hover:cursor-pointer hover:underline`}
                   onClick={() => {
                     setHelpContent("Multiplayer");
                   }}
@@ -82,7 +82,7 @@ export default function TitlePageLogin() {
                   Multiplayer
                 </span>
                 <span
-                  className={`${helpContent === "Game" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "Game" ? "bg-green-400 bg-opacity-35 underline " : " no-underline "} rounded-2xl p-4 pl-6 pr-6 hover:cursor-pointer hover:underline`}
                   onClick={() => {
                     setHelpContent("Game");
                   }}
@@ -90,7 +90,7 @@ export default function TitlePageLogin() {
                   Game
                 </span>
                 <span
-                  className={`${helpContent === "Study" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "Study" ? "bg-green-400 bg-opacity-35 underline " : " no-underline "} rounded-2xl p-4 pl-6 pr-6 hover:cursor-pointer hover:underline`}
                   onClick={() => {
                     setHelpContent("Study");
                   }}
@@ -161,7 +161,7 @@ export default function TitlePageLogin() {
                 {helpContent === "Game" && (
                   <div className="">
                     <h1 className="text-center text-4xl text-gray-200">
-                      on f.i.s.h you can play Sentence Symphony with friends!
+                      Play Sentence Symphony with friends!
                     </h1>
                     <div className="">
                       <p className="m-3 flex items-center text-center text-4xl">
