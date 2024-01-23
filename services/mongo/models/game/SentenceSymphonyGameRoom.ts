@@ -2,6 +2,7 @@ import mongoose, { Types } from "mongoose";
 import {
   getDiscriminatorModelForClass,
   modelOptions,
+  pre,
   prop,
 } from "@typegoose/typegoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
@@ -11,6 +12,14 @@ import { Player } from "..";
 import { GameRoomType } from "@/types";
 import { PlayerInfo } from "@/phaser/types";
 
+@pre<SentenceSymphonyGameRoom>("save", function (next) {
+  if (this.allPlayers.length > 6) {
+    const err = new mongoose.Error("The game is full.");
+    throw err;
+  }
+
+  next();
+})
 @modelOptions({ options: { customName: "SentenceSymphony" } })
 export class SentenceSymphonyGameRoom extends GameRoom {
   @prop({ required: true })
@@ -22,8 +31,8 @@ export class SentenceSymphonyGameRoom extends GameRoom {
   @prop({ required: true, type: () => SSScore, default: [] })
   public scores!: SSScore[];
 
-  @prop({ required: true, type: String, default: [] })
-  public sentences!: string[];
+  @prop({ required: true, type: () => SSSentence, default: [] })
+  public sentences!: SSSentence[];
 }
 
 @modelOptions({ schemaOptions: { _id: false } })
@@ -45,6 +54,15 @@ export class SSScore {
 
   @prop({ required: true })
   public score!: number;
+}
+
+@modelOptions({ schemaOptions: { _id: false } })
+export class SSSentence {
+  @prop({ required: true })
+  public sentence!: string;
+
+  @prop({ required: true, ref: () => Player, type: () => String })
+  public creatorId!: TypeRef<Player, string>;
 }
 
 export const SentenceSymphonyGameRoomModel =

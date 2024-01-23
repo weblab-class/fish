@@ -22,7 +22,6 @@ export default function ResponseCard(props: {
     );
     presenceChannel.bind("countVotes", () => {
       // +1 to the response in the data base if clicked
-      console.log(props.hostUsername);
 
       if (clicked) {
         // send player id as voter id to db

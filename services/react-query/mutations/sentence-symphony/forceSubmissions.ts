@@ -21,11 +21,13 @@ export async function forceSubmissions({ hostId }: ForceSubmissionsParams) {
   }
 
   const { allPlayers, voteOptions } = room.data;
+
   const allIds = allPlayers.map((player) => player.playerId);
   const submittedIds = voteOptions.map((opt) => opt.creatorId);
   const notSubmittedIds = allIds.filter(
     (playerId) => !submittedIds.includes(playerId),
   );
+
   const completeVoteOptions = [
     ...voteOptions,
     ...notSubmittedIds.map((id) => ({

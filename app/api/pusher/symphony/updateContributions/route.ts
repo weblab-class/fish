@@ -8,11 +8,11 @@ interface Username {
 }
 
 export async function POST(req: NextRequest) {
-    const {hostUsername, voted } = (await req.json()) as Username;
+    const {hostUsername } = (await req.json()) as Username;
 
 
     await pusherServer.trigger(`presence-ss-${hostUsername}`, "updateData", {
-        voted:voted
+
 
     });
 

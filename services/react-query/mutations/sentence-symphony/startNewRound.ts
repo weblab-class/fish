@@ -35,7 +35,7 @@ export async function startNewRound({
   const pickedOpt = maxVoteOptions[_random(0, maxVoteOptions.length - 1)];
 
   // append sentence
-  sentences.push(pickedOpt.sentence);
+  sentences.push({sentence: pickedOpt.sentence, creatorId: pickedOpt.creatorId});
 
   // now tally everyone's score based on votes
   const scoresMap = new Map<string, number>();
