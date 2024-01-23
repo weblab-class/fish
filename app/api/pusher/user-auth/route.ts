@@ -16,20 +16,20 @@ export async function POST(req: NextRequest) {
   return await authorizeApiRoute(req, async (session) => {
     const data = await req.text(); // contains socket id and channel name
     const socketId = data.split("&")[0].split("=")[1];
-    const uid = session.user.uid!;
+    const uid = "zob5s4teag4g3rq";
 
     // get player data for pusher
     const playerData = (await getPlayer(uid))?.data;
     if (!playerData)
-      return NextResponse.json(
-        {
-          message: "Player not found",
-          code: CustomErrorCode.PLAYER_NOT_FOUND,
-        } as ICustomError,
-        {
-          status: 404,
-        },
-      );
+    return NextResponse.json(
+      {
+        message: "Player not found",
+        code: CustomErrorCode.PLAYER_NOT_FOUND,
+      } as ICustomError,
+      {
+        status: 404,
+      },
+    );
 
     // make user data accessible to all channels
     const userData = {
@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       user_info: { uid, socket_id: socketId, sprite: playerData.animalSprite, username: playerData.username } as PusherPresenceUserInfo,
     } as UserChannelData;
     const authRes = await pusherServer.authenticateUser(socketId, userData);
+    console.log("user auth ", authRes)
 
     return new NextResponse(JSON.stringify(authRes));
   });

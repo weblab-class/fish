@@ -19,7 +19,6 @@ export default async function ProtectedLayout({
   children: React.ReactNode;
 }) {
   await mongooseConnect();
-  pusherClient.signin();
   
   // make sure they logged in
   const session = await getPageSession();

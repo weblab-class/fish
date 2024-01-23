@@ -15,7 +15,7 @@ import {
 import { MAX_PLAYERS } from "@/phaser/settings/consts";
 import { addPlayerToRoom } from "@/services/react-query/mutations/player-room";
 import { getDefaultPosition } from "@/phaser/settings/functions";
-import { getPlayerByUsername } from "@/services/react-query/queries/player";
+import { getPlayer, getPlayerByUsername } from "@/services/react-query/queries/player";
 import { getPlayerRoom } from "@/services/react-query/queries/player-room";
 
 interface IChannelsRes {
@@ -44,6 +44,18 @@ export async function POST(req: NextRequest) {
 
     // player data (no matter if its the host or not)
     const playerUid = session.user.uid!;
+    const playerData = (await getPlayer(session!.uid))?.data;
+    if (!playerData)
+    return NextResponse.json(
+      {
+        message: "Player not found",
+        code: CustomErrorCode.PLAYER_NOT_FOUND,
+      } as ICustomError,
+      {
+        status: 404,
+      },
+    );
+
 
     // get host data for comparison
     const hostUsername = channelName.split("-").at(-1)!; // all channel names will end with host username

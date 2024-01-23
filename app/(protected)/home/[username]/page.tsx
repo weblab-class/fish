@@ -114,7 +114,8 @@ export default function Home({ params }: { params: { username: string } }) {
   // set up pusher
   useEffect(() => {
     const homeChannelName = `presence-home-${params.username}`;
-
+    
+    console.log("FROM USE EFFECT", homeChannelName);
     const homeChannel = pusherClient.subscribe(
       homeChannelName,
     ) as PresenceChannel;
@@ -123,47 +124,48 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind("pusher:subscription_succeeded", async (_: Members) => {
       useRedirectStore.setState({ redirect: false, errorCode: null });
 
-      // NOTE: we would set authorization here, but we want to get everyone's data first
       // **NOTE: when the player has loaded in, that's when we init the store AND send the data for others to add**
+      setAuthorized("authorized");
     });
 
     homeChannel.bind(
       "pusher:subscription_error",
       // if error, redirect
       async (error: NextResponse<ICustomError>) => {
+        console.log(error);
         setAuthorized("unauthorized");
 
-        const { message: errMsg, code: errCode } =
-          (await error.json()) as ICustomError;
-        const goRedirect = () =>
-          useRedirectStore.setState({ redirect: true, errorCode: errCode });
+        // const { message: errMsg, code: errCode } =
+        //   (await error.json()) as ICustomError;
+        // const goRedirect = () =>
+        //   useRedirectStore.setState({ redirect: true, errorCode: errCode });
 
-        switch (errCode) {
-          case CustomErrorCode.DUPLICATE_TABS:
-            const localUid = session!.user.uid;
-            const localSocketId = pusherClient.connection.socket_id;
+        // switch (errCode) {
+        //   case CustomErrorCode.DUPLICATE_TABS:
+        //     const localUid = session!.user.uid;
+        //     const localSocketId = pusherClient.connection.socket_id;
 
-            // if the socket ID match between tab and channel, then we are on the right tab and hence it was a rerender issue, so DON'T REDIRECT
-            if (localUid && localSocketId) {
-              // if they exist (which they should exist)
-              const storedUserInfo = (
-                homeChannel as PresenceChannel
-              ).members.get(localUid) as PresenceChannelData;
-              if (storedUserInfo) {
-                const { socket_id } =
-                  storedUserInfo.user_info! as PusherPresenceUserInfo;
-                if (localSocketId === socket_id) {
-                  return;
-                }
-              }
+        //     // if the socket ID match between tab and channel, then we are on the right tab and hence it was a rerender issue, so DON'T REDIRECT
+        //     if (localUid && localSocketId) {
+        //       // if they exist (which they should exist)
+        //       const storedUserInfo = (
+        //         homeChannel as PresenceChannel
+        //       ).members.get(localUid) as PresenceChannelData;
+        //       if (storedUserInfo) {
+        //         const { socket_id } =
+        //           storedUserInfo.user_info! as PusherPresenceUserInfo;
+        //         if (localSocketId === socket_id) {
+        //           return;
+        //         }
+        //       }
 
-              goRedirect();
-            }
-            break;
-          default:
-            console.error("Handle this error:", errCode);
-            goRedirect();
-        }
+        //       goRedirect();
+        //     }
+        //     break;
+        //   default:
+        //     console.error("Handle this error:", errCode);
+        //     goRedirect();
+        // }
       },
     );
 

@@ -39,5 +39,6 @@ export async function authorizeApiRoute(req: NextRequest, sessionResponse: (sess
 		return await sessionResponse(session);
 	}
 
+	console.log("BRUH");
 	return NextResponse.json({ message: "User has not logged in.", code: CustomErrorCode.PLAYER_NOT_AUTHENTICATED } as ICustomError, { status: 403, statusText: "User is not authenticated. Please go back to login."});
 }
