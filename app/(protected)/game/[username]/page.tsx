@@ -168,7 +168,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     gameChannel.bind(
       "pusher:member_added",
       (member: { id: any; info: any }) => {
-        console.log("success member added");
+        console.log("success member added,", member.info, member.id);
         setMemberCount(memberCount + 1);
       },
     );
@@ -215,7 +215,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
       handleGenerate;
     }
 
-    // TO DO: check if all members are subscribed to game channel before creating room
+    console.log(
+      (gameChannel as PresenceChannel).members.count,
+      "presence",
+      otherPlayers.size,
+      "size",
+    );
     if ((gameChannel as PresenceChannel).members.count < otherPlayers.size + 1)
       return;
     if (isHost && !gameRoomExists) {
@@ -255,6 +260,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       );
       hostChannel.bind("pusher:subscription_succeeded", () => {
         console.log("host success yay");
+        setIsSubscribed(true);
       });
     }
 
@@ -273,7 +279,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       });
       stopTimer();
     };
-  }, [isBothFinishedLoading]);
+  }, [isBothFinishedLoading, memberCount, isSubscribed]);
 
   // ONLY HOST changes current story, after voting is done
   useEffect(() => {
