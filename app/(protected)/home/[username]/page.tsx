@@ -10,7 +10,10 @@ import MailPopup from "@/components/MailPopup";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import { useSignOut } from "@/services/react-query/auth";
 import { useRouter } from "next/navigation";
-import { useGetPlayer } from "@/services/react-query/queries/player";
+import {
+  getPlayerByUsername,
+  useGetPlayer,
+} from "@/services/react-query/queries/player";
 import { PusherPresenceUserInfo, pusherClient } from "@/services/pusher";
 import { useHomeStore, useMultiplayerStore } from "@/phaser/stores";
 import { NextResponse } from "next/server";
@@ -24,8 +27,9 @@ import {
   IRedirectParams,
 } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
+import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 
-// TODO  fix the clouds when you enter the house and then exit
+// TODO sizing issue
 
 const DynamicGame = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
@@ -37,13 +41,20 @@ const DynamicGame = dynamic(() => import("@/phaser/Game"), {
   ),
 });
 
-interface IRedirectStoreState {
-  redirect: boolean;
+interface IErrorRedirectStoreState {
+  errorRedirect: boolean;
   errorCode: CustomErrorCode | null;
 }
-const useRedirectStore = create<IRedirectStoreState>((set) => ({
-  redirect: false,
+const useErrorRedirectStore = create<IErrorRedirectStoreState>((set) => ({
+  errorRedirect: false,
   errorCode: null,
+}));
+
+interface IGameRedirectStoreState {
+  gameRedirect: boolean;
+}
+const useGameRedirectStoreState = create<IGameRedirectStoreState>(() => ({
+  gameRedirect: false,
 }));
 
 /**
@@ -76,8 +87,8 @@ export default function Home({ params }: { params: { username: string } }) {
   const mailRef = useRef<HTMLDivElement>(null);
   const [logoutClicked, setLogoutClicked] = useState(false);
 
-  const [redirect, errorCode] = useRedirectStore((state) => [
-    state.redirect,
+  const [redirect, errorCode] = useErrorRedirectStore((state) => [
+    state.errorRedirect,
     state.errorCode,
   ]);
   // #endregion
@@ -126,7 +137,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
     // bindings
     homeChannel.bind("pusher:subscription_succeeded", async (_: Members) => {
-      useRedirectStore.setState({ redirect: false, errorCode: null });
+      useErrorRedirectStore.setState({ errorRedirect: false, errorCode: null });
 
       // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
@@ -183,21 +194,32 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
-    // TESTING!
-    // homeChannel.bind(
-    //   "pusher:member_removed",
-    //   (leavingPlayer: { id: string; info: object }) => {
-    //     if (leavingPlayer.id === session!.user.uid) {
-    //       // reset multiplayer store
-    //       //  - the store will be emptied, but will be populated by default values if they go back to their home
-    //       useMultiplayerStore.getState().resetData();
-    //       return;
-    //     }
+    homeChannel.bind(
+      "pusher:member_removed",
+      async (leavingPlayer: { id: string; info: object }) => {
+        if (useGameRedirectStoreState.getState().gameRedirect) {
+          useGameRedirectStoreState.setState({ gameRedirect: false });
+          return;
+        }
 
-    //     // remove the player from their store
-    //     useMultiplayerStore.getState().deleteOther(leavingPlayer.id);
-    //   },
-    // );
+        if (leavingPlayer.id === session!.user.uid) {
+          // reset multiplayer store
+          //  - the store will be emptied, but will be populated by default values if they go back to their home
+          useMultiplayerStore.getState().resetData();
+          const host = await getPlayerByUsername(params.username);
+          if (!host?.data?.at(0)) return;
+
+          await deletePlayerFromRoom({
+            hostId: host.data[0]._id.toString(),
+            guestId: leavingPlayer.id,
+          });
+          return;
+        }
+
+        // remove the player from their store
+        useMultiplayerStore.getState().deleteOther(leavingPlayer.id);
+      },
+    );
 
     homeChannel.bind(
       "recieve-player-data",
@@ -216,11 +238,10 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "redirect",
       async ({ redirectLink, targetId }: IRedirectParams) => {
-        console.log("HELLO OUTSIDE");
         // if there's no specific target ID, assume that this is for everyone, including the sender
         // if there is a specific target ID, only that person will be redirected
         if (!targetId || targetId === session!.user.uid) {
-          console.log("HELLO");
+          useGameRedirectStoreState.setState({ gameRedirect: true });
           router.push(redirectLink);
         }
       },

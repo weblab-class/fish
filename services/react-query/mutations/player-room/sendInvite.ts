@@ -34,7 +34,7 @@ export async function sendInvite({
     );
   }
 
-  return;
+  return false;
 }
 
 export function useSendInvite() {

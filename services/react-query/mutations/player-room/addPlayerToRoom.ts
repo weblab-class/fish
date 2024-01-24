@@ -24,23 +24,26 @@ export async function addPlayerToRoom({
   const playerRoom = (await getPlayerRoom(hostId))?.data;
   if (!playerRoom) throw Error("Room could not be found.");
 
+  // make sure the person isn't added twice
   const players = playerRoom.allPlayers;
-  players.push({
-    playerId: guestId,
-    x,
-    y,
-  });
+  if (!players.filter(p => p.playerId === guestId).length) {
+    players.push({
+      playerId: guestId,
+      x,
+      y,
+    });
 
-  // update guest
+      // update guest
   await updateCurrentRoomId({ uid: guestId, roomHostId: hostId });
-
-  console.log("players", players);
 
   // add to all players
   return await axios.post(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/db/player-room/update`,
     { hostId, allPlayers: [...players] } as UpdatePlayerRoomInput,
   );
+  }
+
+  return false;
 }
 
 export function useAddPlayerToRoom() {
