@@ -214,7 +214,7 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "redirect",
       async ({ redirectLink, targetId }: IRedirectParams) => {
-        console.log("HELLO OUTSIDE")
+        console.log("HELLO OUTSIDE");
         // if there's no specific target ID, assume that this is for everyone, including the sender
         // if there is a specific target ID, only that person will be redirected
         if (!targetId || targetId === session!.user.uid) {

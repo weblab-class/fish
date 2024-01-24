@@ -12,7 +12,10 @@ import VoteCount from "@/components/symphony/VoteCount";
 import { useMultiplayerStore } from "@/phaser/stores";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import dynamic from "next/dynamic";
-import { useGetPlayer, useGetPlayerByUsername } from "@/services/react-query/queries/player";
+import {
+  useGetPlayer,
+  useGetPlayerByUsername,
+} from "@/services/react-query/queries/player";
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 
 import {
@@ -57,6 +60,19 @@ type FullResponse = {
 export default function GamePage({ params }: { params: { username: string } }) {
   // NOTE: subscribes once even though it may render multiple-times
   const gameChannel = pusherClient.subscribe(`presence-ss-${params.username}`);
+  const [
+    hostUsername,
+    currentPlayerPhaserSprite,
+    currentPlayer,
+    otherPlayers,
+    deleteOther,
+  ] = useMultiplayerStore((state) => [
+    state.hostUsername,
+    state.currentPlayerPhaserSprite,
+    state.currentPlayer,
+    state.otherPlayers,
+    state.deleteOther,
+  ]);
 
   // session data
   const { session } = useLuciaSession();
