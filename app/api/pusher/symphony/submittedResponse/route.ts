@@ -35,11 +35,9 @@ export async function PUT(req: NextRequest) {
     // get voted responses from db
     responseVotes=[]//somethings from db containing responses voted for
 
-    // calculate the most voted response
-    const mostVotedResponse="this is :)";
 
     // send mostVoted to host and host will combine it with the story and display the most voted response
-    await pusherServer.trigger(`presence-ss-${hostUsername}`,'mostVoted',{mostVotedResponse:mostVotedResponse})
+    await pusherServer.trigger(`presence-ss-${hostUsername}`,'mostVoted',{})
 
 
 

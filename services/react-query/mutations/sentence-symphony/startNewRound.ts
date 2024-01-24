@@ -5,6 +5,7 @@ import { takeWhile as _takeWhile, random as _random } from "lodash";
 import {
   NewPlayerInput,
   NewSentenceSymphonyGameRoomInput,
+  SSVoteOption,
   UpdateSentenceSymphonyGameRoomInput,
 } from "../../../mongo/models";
 import { mongooseConnect } from "../../../mongo";
@@ -12,10 +13,12 @@ import { getSentenceSymphony } from "../../queries/sentence-symphony";
 
 interface StartNewRoundParams {
   hostId: string;
+  prevWinner: SSVoteOption;
 }
 
 export async function startNewRound({
   hostId,
+  prevWinner
 }: StartNewRoundParams) {
   // WARNING may break?
   const room = await getSentenceSymphony(hostId);
@@ -26,16 +29,9 @@ export async function startNewRound({
   // determine sentence to be appended by sorting high to low votes
   // NOTE: if tie, pick a random sentence
   const { voteOptions, sentences, scores } = room.data;
-  voteOptions.sort((a, b) => b.voteIds.length - a.voteIds.length);
 
-  const maxVoteOptions = _takeWhile(
-    voteOptions,
-    (v) => v.voteIds.length === voteOptions[0].voteIds.length,
-  );
-  const pickedOpt = maxVoteOptions[_random(0, maxVoteOptions.length - 1)];
-
-  // append sentence
-  sentences.push({sentence: pickedOpt.sentence, creatorId: pickedOpt.creatorId});
+  // append winner sentence
+  sentences.push({sentence: prevWinner.sentence, creatorId: prevWinner.creatorId});
 
   // now tally everyone's score based on votes
   const scoresMap = new Map<string, number>();
@@ -56,7 +52,8 @@ export async function startNewRound({
         playerId: key,
         score: val,
       })),
-      sentences,
+      sentences
+
     } as UpdateSentenceSymphonyGameRoomInput,
   );
 }

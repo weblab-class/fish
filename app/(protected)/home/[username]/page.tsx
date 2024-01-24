@@ -23,6 +23,7 @@ import {
   ISendDataParams,
   IRedirectParams,
 } from "@/phaser/types";
+import ChatLog from "@/components/symphony/ChatLog";
 
 // TODO  fix the clouds when you enter the house and then exit
 
@@ -249,7 +250,7 @@ export default function Home({ params }: { params: { username: string } }) {
           </div>
           <div className="absolute bottom-3 left-3 z-10">
             <button
-              className="rounded-md bg-red-400 px-1 py-3"
+              className="rounded-xl bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl text-white outline"
               onClick={async () => {
                 // TODO put this somewhere better
                 // TODO prevent someone from spam clicking this
@@ -263,9 +264,16 @@ export default function Home({ params }: { params: { username: string } }) {
                 );
               }}
             >
-              Join Symphony Sentence Game
+              Join Sentence Symphony Game
             </button>
           </div>
+          {/* TODO CHAT LOG FOR MULTIPLAYER PHASER */}
+          {/* <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
+            <ChatLog
+              username={player?.data ? player?.data?.username : "anonymous"}
+              hostUsername={params.username}
+            />
+          </div> */}
           {/* nav bar */}
           <div></div>
           <div

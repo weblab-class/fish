@@ -21,6 +21,7 @@ export default function ChatLog(props: {
   const presenceChannel = pusherClient.subscribe(
     `presence-ss-chat-${props.hostUsername}`,
   );
+
   const chatLogRef = useRef<HTMLDivElement>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const [showChat, setShowChat] = useState<boolean>(false);
@@ -67,16 +68,6 @@ export default function ChatLog(props: {
   }, [messages, showChat]);
 
   useEffect(() => {
-    // const handleClickOutside = (event: MouseEvent) => {
-    //   if (
-    //     chatBoxRef.current &&
-    //     !chatBoxRef.current.contains(event.target as Node)
-    //   ) {
-    //     setShowChat(false);
-    //   }
-    // };
-    // document.addEventListener("click", handleClickOutside);
-
     const handleEscapePress = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         if (showChat) {
@@ -119,7 +110,7 @@ export default function ChatLog(props: {
                 className={`${
                   message.message == ""
                     ? "text-white "
-                    : message.username == "user"
+                    : message.username == props.username
                       ? "text-green-200 "
                       : "text-pink-200"
                 }`}

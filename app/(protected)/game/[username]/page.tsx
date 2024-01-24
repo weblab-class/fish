@@ -26,6 +26,8 @@ import {
   useSubmitSentence,
   useCreateSentenceSymphony,
   useDeleteSentenceSymphony,
+  useCalculateWinner,
+  calculateWinner,
   useUpdateVote,
   startNewRound,
   useStartNewRound,
@@ -34,7 +36,8 @@ import {
 } from "@/services/react-query/mutations/sentence-symphony";
 import { PlayerInfo } from "@/phaser/types";
 import { AiFillSkype } from "react-icons/ai";
-import { GamePlayerInfo } from "@/services/mongo/models";
+import { GamePlayerInfo, SSVoteOption } from "@/services/mongo/models";
+import { ImFilePdf } from "react-icons/im";
 
 const PieChartWithoutSSR = dynamic(
   () => import("@/components/symphony/PieScore"),
@@ -120,6 +123,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [currentStory, setCurrentStory] = useState("");
   const [oldStory, setOldStory] = useState("");
   const [mostVoted, setMostVoted] = useState<string>("");
+  const [prevWinner, setPrevWinner] = useState<SSVoteOption>();
   const [votedWinner, setVotedWinner] = useState<string>("");
   const [responses, setResponses] = useState<FullResponse[]>([]);
   const [roundNumber, setRoundNumber] = useState<number>(0);
@@ -296,21 +300,13 @@ export default function GamePage({ params }: { params: { username: string } }) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
       );
-      hostChannel.bind(
-        "mostVoted",
-        async (data: { mostVotedResponse: string }) => {
-          console.log(data.mostVotedResponse, "mostVoted");
-          setCurrentStory(currentStory + data.mostVotedResponse);
-          console.log(currentStory);
-          setMostVoted(data.mostVotedResponse);
-
-          await axios.post("/api/pusher/symphony/roundChange", {
-            newRound: "voted",
-            roundNumber: roundNumber + 1,
-            hostUsername: params.username,
-          });
-        },
-      );
+      hostChannel.bind("mostVoted", async () => {
+        await axios.post("/api/pusher/symphony/roundChange", {
+          newRound: "voted",
+          roundNumber: roundNumber + 1,
+          hostUsername: params.username,
+        });
+      });
       return () => {
         if (isHost) {
           hostChannel.unbind("mostVoted");
@@ -413,8 +409,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
           roundType === "voted" &&
           gameRoomData.sentences.length > 0
         ) {
-          console.log("update data 2", roundType);
-
           const winner =
             gameRoomData.sentences[
               gameRoomData.sentences.length - 1
@@ -422,12 +416,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
           const winnerName = allPlayers.find(
             ({ playerId }) => playerId === winner,
           )?.gameName!;
-          // const winnerName = allPlayers.find(
-          //   (player: { playerId: string }) => player.playerId === winner,
-          // ).gameName;
+
           setMostVoted(
             gameRoomData.sentences[gameRoomData.sentences.length - 1].sentence,
           );
+          console.log("most voted", mostVoted);
           setVotedWinner(winnerName);
 
           const newContributions = contributions.map((player) => {
@@ -445,7 +438,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
           );
 
           setCurrentStory(
-            +" " +
+            currentStory +
+              " " +
               gameRoomData.sentences[
                 gameRoomData.sentences.length - 1
               ].sentence.toString(),
@@ -532,7 +526,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           };
           deleteGame();
 
-          router.push(`/home/${player?.data?.username}`);
+          router.push(`/home/${params.username}`);
         }
 
         // only host controls roundChangeFunc
@@ -542,9 +536,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
           // clears responses for new round and calculates the winning prompt
           if (isHost) {
             const startNewRoundFunc = async () => {
-              if (!host?.data) return;
+              if (!host?.data || !prevWinner) return;
               await startNewRound.mutateAsync({
                 hostId: host.data[0]._id.toString(),
+                prevWinner: prevWinner,
               });
             };
             startNewRoundFunc();
@@ -668,12 +663,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
       setTime(10);
       const roundChange = async () => {
         setTopContributor(
-          contributions
-            .reduce(
-              (max, current) => (current.value > max.value ? current : max),
-              contributions[0],
-            )
-            .toString(),
+          contributions.reduce(
+            (max, current) => (current.value > max.value ? current : max),
+            contributions[0],
+          ).playerName,
         );
 
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -718,6 +711,20 @@ export default function GamePage({ params }: { params: { username: string } }) {
         await axios.put("/api/pusher/symphony/submittedResponse", {
           currentStory: currentStory,
           hostUsername: params.username,
+        });
+
+        // CALCULATE WINNER
+        if (!host?.data) return;
+        console.log("calculate winners");
+        const winningResponse = await calculateWinner({
+          hostId: host.data[0]._id.toString(),
+        });
+        setPrevWinner(winningResponse);
+        setMostVoted(winningResponse.sentence);
+
+        await axios.post("/api/pusher/symphony/updateData", {
+          hostUsername: params.username,
+          voted: true,
         });
 
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -770,7 +777,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           {roundType === "voting" ? (
             <div>
               <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
-                Vote for the best response!
+                Vote for the Best Response!
               </p>
               <p>{prompt}</p>
             </div>
@@ -804,17 +811,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
             </div>
           ) : roundType === "leaderboard" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-5xl text-white">
                 Overall Contributions
               </p>
-              <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
+              <p className="rounded-2xl p-1 text-4xl text-amber-950 underline">
                 {topContributor} was the top Contributor!
               </p>
               <p>{prompt}</p>
             </div>
           ) : (
             <div>
-              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] text-4xl text-white">
+              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] text-5xl text-white">
                 Final Story!
               </p>
               <p>{prompt}</p>
@@ -832,7 +839,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 : roundType === "story"
                   ? "h-1/3 text-4xl"
                   : "max-h-72"
-            } justify-center overflow-auto text-wrap break-all bg-cover bg-no-repeat p-7 pt-2`}
+            } justify-center overflow-auto text-wrap break-words bg-cover bg-no-repeat p-7 pt-2`}
           >
             {currentStory}
           </div>
@@ -867,7 +874,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
                 disabled={submissionLoading && !isHost}
                 onClick={() => {
-                  console.log("clicked");
                   const stopTimer = async () => {
                     await axios.delete("/api/pusher/symphony/gameTimer");
                   };
@@ -994,6 +1000,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                         : "host-not-found"
                     }
                     won={mostVoted === response.sentence}
+                    winningResponse={mostVoted}
                   />
                 ))}
               </div>
