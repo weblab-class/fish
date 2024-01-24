@@ -22,7 +22,6 @@ import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
 import {
-  IRequestDataParams,
   ISendDataParams,
   IRedirectParams,
 } from "@/phaser/types";
@@ -149,6 +148,7 @@ export default function Home({ params }: { params: { username: string } }) {
       async (error: NextResponse<ICustomError>) => {
         console.log(error);
         setAuthorized("unauthorized");
+        router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`)
 
         // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =

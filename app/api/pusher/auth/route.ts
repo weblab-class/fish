@@ -94,10 +94,13 @@ export async function POST(req: NextRequest) {
       if (userIds.includes(playerUid)) {
         // this might be a signal that the user created another tab, so check in the component
         return NextResponse.json(
-          { message: socketId, code: CustomErrorCode.DUPLICATE_TABS },
+          {error: CustomErrorCode.DUPLICATE_TABS, type: CustomErrorCode.DUPLICATE_TABS},
           {
             status: 403,
             statusText: CustomErrorCode.DUPLICATE_TABS,
+            headers: {
+              error: CustomErrorCode.DUPLICATE_TABS, type: CustomErrorCode.DUPLICATE_TABS
+            }
           },
         );
       }
