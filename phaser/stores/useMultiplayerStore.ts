@@ -113,6 +113,7 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
       });
 
       phaserSprite.setPosition(defaultPlayerInfo.x, defaultPlayerInfo.y);
+      
     },
     addOrUpdateOther: (playerInfo) => {
       get().otherPlayers.set(playerInfo.uid, playerInfo);

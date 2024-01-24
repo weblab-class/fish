@@ -54,12 +54,13 @@ export const GET = async (req: NextRequest) => {
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/", // redirect to home 
+        Location: `${process.env.NEXT_PUBLIC_DOMAIN}`, // redirect to home 
       },
     });
   } catch (e) {
     if (e instanceof OAuthRequestError) {
       // invalid code
+      console.error(e)
       return new Response(e.message, {
         status: 400,
       });

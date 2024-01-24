@@ -10,7 +10,7 @@ interface SendInviteParams {
 }
 
 /**
- * Adds the player to the room. This will also update the guest's currentPlayerRoomId.
+ * Send an invite.
  */
 export async function sendInvite({
   hostId,
