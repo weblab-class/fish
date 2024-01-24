@@ -336,17 +336,16 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [gameRoomExists, isSubscribed]);
 
   useEffect(() => {
+    console.log(allPlayers);
     if (allPlayers.length > 0) {
-      setContributions((prevPlayers) => {
-        return [
-          ...allPlayers.map((player: { gameName: string }) => ({
-            playerName: player.gameName,
-            value: 0,
-          })),
-        ];
-      });
+      setContributions([
+        ...allPlayers.map(({ gameName }) => ({
+          playerName: gameName,
+          value: 0,
+        })),
+      ]);
     }
-  }, [JSON.stringify(allPlayers)]);
+  }, [allPlayers.length]);
 
   // timer events
   // dependencies: roundType, endScreen, player?.data
@@ -455,12 +454,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
             voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
           }));
           setResponses(voteOpts);
-          if (gameRoomData.sentences) {
+          if (gameRoomData.sentences.length > 0) {
             setCurrentStory(
-              currentStory +
-                gameRoomData.sentences[
-                  gameRoomData.sentences.length - 1
-                ].sentence.toString(),
+              currentStory + gameRoomData.sentences.at(-1)!.sentence,
             );
           }
         }
@@ -1005,6 +1001,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         {isSubscribed && !waiting && gameRoomExists && (
           <div className="h-full w-full">
             {/* player 1 (host) */}
+
             <div className="absolute bottom-0 left-0 h-1/5 w-10/12 bg-[url('/players/bunnyHead.png')] bg-contain bg-no-repeat "></div>
             <div className="absolute bottom-0 left-0 flex h-23% w-10% items-start justify-center">
               <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-pink-200">
@@ -1013,13 +1010,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
             </div>
 
             {/* player 2 */}
-            <div className="absolute bottom-0 left-0 flex h-1/5 w-1/5 justify-end bg-[url('/players/shibaHead.png')] bg-contain bg-right bg-no-repeat">
-              <div className="absolute -top-15% bottom-0 flex h-full w-1/2 items-start justify-center">
-                <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-green-200">
-                  {allPlayers[1].gameName}
-                </p>
+            {allPlayers.length > 1 && (
+              <div className="absolute bottom-0 left-0 flex h-1/5 w-1/5 justify-end bg-[url('/players/shibaHead.png')] bg-contain bg-right bg-no-repeat">
+                <div className="absolute -top-15% bottom-0 flex h-full w-1/2 items-start justify-center">
+                  <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-green-200">
+                    {allPlayers[1].gameName}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* player 3 */}
             {allPlayers.length > 2 && (
@@ -1044,8 +1043,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             )}
 
             {/* player 5 */}
-            {/* {allPlayers.length > 4 && ( */}
-            {true && (
+            {allPlayers.length > 4 && (
               <div className="w-48% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/penguinHead.png')] bg-contain bg-right bg-no-repeat ">
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/5 items-start justify-center">
                   <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-blue-200">
