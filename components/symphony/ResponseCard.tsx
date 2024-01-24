@@ -13,19 +13,25 @@ export default function ResponseCard(props: {
 }) {
   const [clicked, setClicked] = useState(false);
   const responseBoxRef = useRef<HTMLDivElement>(null);
+  const [allowUnsubscribe, setAllowUnsubscribe] = useState<boolean>(false);
   const updateVote = useUpdateVote();
 
   // unclicks a response if clicked outside of box
   useEffect(() => {
+    console.log("clicked called");
     const presenceChannel = pusherClient.subscribe(
       `presence-ss-vote-${props.hostUsername}`,
     );
     presenceChannel.bind("countVotes", () => {
       // +1 to the response in the data base if clicked
+      console.log("countVotes responses comonent binding called");
+      setAllowUnsubscribe(true);
+      console.log("subsubcribe true");
 
       if (clicked) {
         // send player id as voter id to db
         console.log("voted for: ", props.creatorId, props.response);
+
         const updateVoteFunc = async () => {
           await updateVote.mutateAsync({
             hostId: props.hostId,
@@ -37,12 +43,21 @@ export default function ResponseCard(props: {
           });
         };
         updateVoteFunc();
+        console.log("votecount vote func ran");
+        presenceChannel.unbind("countVotes");
+        presenceChannel.unsubscribe();
+      } else {
+        presenceChannel.unbind("countVotes");
+        presenceChannel.unsubscribe();
       }
     });
 
     return () => {
-      presenceChannel.unbind("countVotes");
-      presenceChannel.unsubscribe();
+      if (allowUnsubscribe) {
+        presenceChannel.unbind("countVotes");
+        presenceChannel.unsubscribe();
+        console.log(props.creatorId, "dying component");
+      }
     };
   }, [clicked]);
 
@@ -66,7 +81,7 @@ export default function ResponseCard(props: {
     <div
       className={`${
         clicked ? "outline" : ""
-      } justify-center" z-50 ml-2 mr-2  overflow-y-scroll ${props.creatorId === props.voterId ? "cursor-not-allowed bg-gray-700 text-gray-200 opacity-50 " : "bg-[url('/backgrounds/whiteGrayBg.png')] hover:cursor-pointer hover:outline "} flex h-2/5 w-1/5 items-center break-words rounded-lg text-center text-3xl text-gray-700 outline-4 outline-yellow-400 `}
+      } justify-center" z-50 ml-2 mr-2 overflow-y-scroll p-3 ${props.creatorId === props.voterId ? "cursor-not-allowed bg-gray-700 text-gray-200 opacity-50 " : "bg-[url('/backgrounds/whiteGrayBg.png')] hover:cursor-pointer hover:outline "} flex h-2/5 w-1/5 items-center break-words rounded-lg text-center text-3xl text-gray-700 outline-4 outline-yellow-400 `}
       ref={responseBoxRef}
       onClick={() => {
         if (!(props.creatorId === props.voterId)) {
@@ -74,7 +89,7 @@ export default function ResponseCard(props: {
         }
       }}
     >
-      <p className="w-full break-words p-2 text-center">{props.response}</p>
+      <p className="w-full break-words p-3 text-center">{props.response}</p>
     </div>
   );
 }

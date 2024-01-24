@@ -2,12 +2,12 @@
 import { Cell, Pie, PieChart } from "recharts";
 
 const COLORS = [
-  "#EBA8BF",
-  "#BCEBA8",
-  "#CE93F2",
-  "#F07A7A",
-  "#94C4F6",
-  "#F2DE93",
+  "#EBA8BF", // pink
+  "#BCEBA8", // green
+  "#CE93F2", // purple
+  "#F07A7A", // red
+  "#94C4F6", //blue
+  "#F2DE93", //yellow
   ,
 ];
 

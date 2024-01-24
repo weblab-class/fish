@@ -1,5 +1,5 @@
 "use client";
-
+// TO DO: dont create sentence symphony until all players are subscribed
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { pusherClient } from "@/services/pusher";
@@ -134,26 +134,59 @@ export default function GamePage({ params }: { params: { username: string } }) {
     formState: { isSubmitting },
   } = useForm<Input>();
 
-  // one time events
+  // immediate game channel subscription events
   useEffect(() => {
-    // makes sure timer is stopped before starting a new timer
-    const stopTimer = async () => {
-      await axios.delete("/api/pusher/symphony/gameTimer");
-    };
-
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
     );
-    console.log(gameChannel);
 
-    console.log("init use effect called");
+    gameChannel.bind("pusher:subscription_succeeded", () => {
+      console.log("success yay");
+      setIsSubscribed(true);
+    });
+
+    gameChannel.bind("pusher:subscription_error", (error: any) => {
+      console.log("error", error);
+    });
+
+    gameChannel.bind(
+      "pusher:member_added",
+      (member: { id: any; info: any }) => {
+        console.log("success member added");
+      },
+    );
+
+    // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE
+    gameChannel.bind(
+      "pusher:member_removed",
+      (member: { id: any; info: any }) => {
+        console.log("removed member");
+      },
+    );
+
+    gameChannel.bind("gameRoomCreated", () => {
+      console.log("game room binding received");
+      setGameRoomExists(true);
+    });
+    // all players listen for new generated prompts (only host can control prompt generation)
+    gameChannel.bind("generatePrompt", (data: { prompt: string }) => {
+      setPrompt(data.prompt);
+      setSubmissionLoading(false);
+    });
+  });
+
+  // events after host and player data are loaded
+  useEffect(() => {
+    // makes sure timer is stopped before unloading
+    const stopTimer = async () => {
+      await axios.delete("/api/pusher/symphony/gameTimer");
+    };
 
     // makes sure host data and player data are loaded
     if (!host?.data || !host.data[0] || !player?.data) return;
 
     const hostId = host?.data[0]._id;
     const playerId = player?.data?._id;
-    setPrompt(handleGenerate);
 
     if (hostId === playerId) {
       setIsHost(true);
@@ -161,12 +194,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
       setIsHost(false);
     }
 
-    // TO DO: change 1 to otherPlayers.length (using multiplayer store)
+    if (isHost) {
+      handleGenerate;
+    }
+
+    // TO DO: check if all members are subscribed to game channel before creating room
     if (isHost && !gameRoomExists) {
       const createSentenceSymphonyFunc = async () => {
+        if (!host.data) return;
         await createSentenceSymphony.mutateAsync({
           hostInfo: {
-            uid: session!.user.uid,
+            uid: host.data[0]._id.toString(),
             username: params.username,
             sprite: "bunny" as AnimalSprite,
             x: 0,
@@ -233,14 +271,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       gameRoomCreatedFunc();
     }
 
-    console.log("binding");
-    console.log(gameChannel);
-    console.log("all channels", pusherClient.allChannels);
-    gameChannel.bind("pusher:subscription_succeeded", () => {
-      console.log("success yay");
-      setIsSubscribed(true);
-    });
-
     if (isHost) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
@@ -249,30 +279,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
         console.log("host success yay");
       });
     }
-
-    gameChannel.bind("pusher:subscription_error", (error: any) => {
-      console.log("error", error);
-    });
-
-    gameChannel.bind(
-      "pusher:member_added",
-      (member: { id: any; info: any }) => {
-        console.log("success member added");
-      },
-    );
-
-    // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE
-    gameChannel.bind(
-      "pusher:member_removed",
-      (member: { id: any; info: any }) => {
-        console.log("removed member");
-      },
-    );
-    // all players listen for new generated prompts (only host can control prompt generation)
-    gameChannel.bind("generatePrompt", (data: { prompt: string }) => {
-      setPrompt(data.prompt);
-      setSubmissionLoading(false);
-    });
 
     // host makes sure timer stops before unloading
     window.addEventListener("beforeunload", () => {
@@ -325,7 +331,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
   useEffect(() => {
     if (gameRoomExists) {
       const gameRoomRecFunc = async function () {
-        const gameRoomRes = await getSentenceSymphony(session!.user.uid);
+        if (!host?.data) return;
+        const gameRoomRes = await getSentenceSymphony(
+          host!.data[0]._id.toString(),
+        );
         const gameRoomPlayers = gameRoomRes.data?.allPlayers;
         console.log(gameRoomRes.data, "data");
         console.log(gameRoomRes.data?.allPlayers, "players");
@@ -360,14 +369,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // only host controls timer
     // if (!player?.data) return;
 
+    if (!gameRoomExists) return;
+
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
     );
-
-    gameChannel.bind("gameRoomCreated", () => {
-      console.log("game room binding received");
-      setGameRoomExists(true);
-    });
 
     let timerDuration = 6;
 
@@ -376,14 +382,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
 
     // start timer after new round
-
-    const timer = async () => {
-      await axios.post(`/api/pusher/symphony/gameTimer`, {
-        time: timerDuration,
-        hostUsername: params.username,
-      });
-    };
-    timer();
+    if (isHost) {
+      const timer = async () => {
+        await axios.post(`/api/pusher/symphony/gameTimer`, {
+          time: timerDuration,
+          hostUsername: params.username,
+        });
+      };
+      timer();
+    }
 
     gameChannel.bind("updateData", async (data: { voted: boolean }) => {
       if (!host?.data) return;
@@ -459,12 +466,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
             voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
           }));
           setResponses(voteOpts);
-          setCurrentStory(
-            currentStory +
-              gameRoomData.sentences[
-                gameRoomData.sentences.length - 1
-              ].sentence.toString(),
-          );
+          if (gameRoomData.sentences) {
+            setCurrentStory(
+              currentStory +
+                gameRoomData.sentences[
+                  gameRoomData.sentences.length - 1
+                ].sentence.toString(),
+            );
+          }
         }
       }
     });
@@ -562,7 +571,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       gameChannel.unbind("timer");
       gameChannel.unbind("roundChange");
     };
-  }, [roundType, endScreen]);
+  }, [roundType, gameRoomExists]);
 
   //   submitting responses
   const onSubmit: SubmitHandler<Input> = (data) => {
@@ -611,17 +620,18 @@ export default function GamePage({ params }: { params: { username: string } }) {
     const randomNumber = Math.round(
       Math.random() * (randomTestPrompts.length - 1),
     );
+    const randomPrompt = "Prompt: " + randomTestPrompts[randomNumber];
 
     const generatePrompt = async () => {
       // server will trigger an event signalling a prompt change for all players to update
       await axios.post("/api/pusher/symphony/generatePrompt", {
-        prompt: "Prompt: " + randomTestPrompts[randomNumber],
+        prompt: randomPrompt,
         hostUsername: params.username,
       });
     };
     generatePrompt();
 
-    return randomTestPrompts[randomNumber];
+    return randomPrompt;
   }
 
   // handles round changes, host makes postn requests and the server triggers changes for all players
@@ -797,7 +807,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
               <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
                 Overall Contributions
               </p>
-              <p className="text-5xl text-pink-200">
+              <p className="rounded-2xl p-1 text-5xl text-amber-950 underline">
                 {topContributor} was the top Contributor!
               </p>
               <p>{prompt}</p>
@@ -830,7 +840,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       </div>
 
       {isBothFinishedLoading && (
-        <div className="top-17 absolute top-20 z-50 ml-6 flex h-1/5 w-22% items-end">
+        <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
           <ChatLog
             username={player?.data ? player?.data?.username : "anonymous"}
             hostUsername={params.username}
@@ -841,7 +851,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       {/* selecting round */}
       {
         roundType === "selecting" ? (
-          <div className="z-40 flex items-center justify-center">
+          <div className="z-50 flex items-center justify-center">
             {/* TO DO: only host has access to these buttons */}
             <button
               className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-4xl text-white outline outline-white`}
@@ -959,9 +969,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
             )}
           </div>
         ) : roundType === "voted" ? (
-          <div className="z-30 h-full w-full">
+          <div className="z-40 h-full w-full">
             {responses && (
-              <div className="z-20 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
+              <div className="z-50 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
                 {responses.map((response) => (
                   <VoteCount
                     key={response.creatorId}
@@ -1004,7 +1014,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         )
         // Most voted response screen
       }
-      <div>
+      <div className="z-0">
         {isSubscribed && !waiting && gameRoomExists && (
           <div className="h-full w-full">
             {/* player 1 (host) */}
@@ -1024,22 +1034,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
               </div>
             </div>
 
-            {/* player 5 */}
-            {allPlayers.length > 4 && (
-              <div className="absolute bottom-0 left-0 flex h-1/5 w-30% items-end justify-end bg-[url('/players/cowHead.png')] bg-contain bg-right bg-no-repeat ">
-                <div className="absolute -top-15% bottom-0 flex h-full w-1/3 items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-blue-200">
-                    {allPlayers[4].gameName}
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* player 3 */}
             {allPlayers.length > 2 && (
-              <div className="w-73% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/pigHead.png')] bg-contain bg-right bg-no-repeat ">
-                <div className="absolute -top-15% bottom-0 flex h-full w-1/6 items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-purple-300">
+              <div className="absolute bottom-0 left-0 flex h-1/5 w-30% items-end justify-end bg-[url('/players/cowHead.png')] bg-contain bg-right bg-no-repeat ">
+                <div className="absolute -top-15% bottom-0 flex h-full w-1/3 items-start justify-center">
+                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-purple-200">
                     {allPlayers[2].gameName}
                   </p>
                 </div>
@@ -1057,9 +1056,21 @@ export default function GamePage({ params }: { params: { username: string } }) {
               </div>
             )}
 
+            {/* player 5 */}
+            {/* {allPlayers.length > 4 && ( */}
+            {true && (
+              <div className="w-48% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/penguinHead.png')] bg-contain bg-right bg-no-repeat ">
+                <div className="absolute -top-15% bottom-0 flex h-full w-1/5 items-start justify-center">
+                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-blue-200">
+                    {allPlayers[4].gameName}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* player 6 */}
             {allPlayers.length > 5 && (
-              <div className="w-76% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
+              <div className="w-56% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
                 <div className="absolute -top-15% bottom-0 flex h-full w-12% items-start justify-center">
                   <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-yellow-200">
                     {allPlayers[5].gameName}

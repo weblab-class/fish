@@ -7,7 +7,10 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './phaser/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar')({ nocompatible: true }),
+
+  ],
   theme: {
     extend: {
       backgroundImage: {
@@ -51,7 +54,10 @@ const config: Config = {
         "19%":"19%",
         '10%':'10%',
         '73%':"73%",
-        '76%':"76%"
+        '76%':"76%",
+        '67%':"67%",
+        '56%':"56%",
+        '48%':"48%"
       },
       spacing:{
         '15%':"15%",

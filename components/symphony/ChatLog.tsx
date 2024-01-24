@@ -95,10 +95,15 @@ export default function ChatLog(props: {
 
   return (
     // className="w-full h-full flex justify-end flex-col p-1 z-50" for bottom corner
-    <div className="z-50 h-full w-full p-1" key={id} ref={chatBoxRef}>
+    //z-50 h-full w-full p-1 for top corner
+    <div
+      className="z-50 flex h-full w-full flex-col justify-end p-1"
+      key={id}
+      ref={chatBoxRef}
+    >
       {showChat ? (
         <div
-          className="z-50 h-3/4 w-full overflow-x-hidden overflow-y-scroll rounded-t-2xl border-4 border-b-0 bg-white bg-opacity-20 p-1 pr-3 text-black"
+          className="scrollbar-thumb-pink-300 scrollbar-track-rounded-3xl  scrollbar-thin scrollbar-track-gray-100 scrollbar-corner-red-300 z-50 h-full w-full overflow-x-hidden overflow-y-scroll rounded-t-2xl border-4 border-b-0 bg-white bg-opacity-20 p-1 pr-3 text-black"
           ref={chatLogRef}
           onClick={() => {
             setShowChat(false);
@@ -175,7 +180,8 @@ export default function ChatLog(props: {
           </button>
         </span>
       </form>
-      <div
+      {/* TO DO REALIGN THE ARROWS */}
+      {/* <div
         className={`absolute inset-y-2 text-5xl ${
           showChat ? "right-5" : "right-2"
         } -z-10 h-fit w-fit`}
@@ -189,7 +195,7 @@ export default function ChatLog(props: {
             <MdOutlineExpandMore />
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
