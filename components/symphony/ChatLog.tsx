@@ -173,7 +173,7 @@ export default function ChatLog(props: {
         </span>
         <span className="w-1/4">
           <button
-            className="w-full rounded-br-xl border-4 border-t-0 bg-[url(/backgrounds/pinkBg.png)] bg-cover p-2 text-2xl text-white hover:bg-[url(/backgrounds/redBg.png)]"
+            className="w-full rounded-br-xl border-4 border-t-0 bg-[url(/backgrounds/redBg.png)] bg-cover p-2 text-2xl text-white hover:bg-[url(/backgrounds/pinkBg.png)]"
             type="submit"
           >
             Send

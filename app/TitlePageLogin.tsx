@@ -49,11 +49,11 @@ export default function TitlePageLogin() {
         {/* login cloud */}
         <a
           href="/api/auth/login/google"
-          className="h-270 w-500 absolute bottom-32 bg-[url('/objects/loginCloud.png')] bg-cover hover:bg-[url('/objects/loginCloudHover.png')]"
+          className="absolute bottom-32 h-270 w-500 bg-[url('/objects/loginCloud.png')] bg-cover hover:bg-[url('/objects/loginCloudHover.png')]"
         ></a>
         {/* help cloud */}
         <div
-          className="h-170 w-300 absolute right-8 top-8 bg-[url('/objects/helpCloud.png')] bg-cover hover:bg-[url('/objects/helpCloudHover.png')]"
+          className="absolute right-8 top-8 h-170 w-300 bg-[url('/objects/helpCloud.png')] bg-cover hover:bg-[url('/objects/helpCloudHover.png')]"
           onClick={() => {
             setShowHelpPopup(true);
           }}

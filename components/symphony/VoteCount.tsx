@@ -13,7 +13,7 @@ export default function VoteCount(props: {
         className={` ml-2 mr-2 bg-[url('/backgrounds/whiteGrayBg.png')] ${
           props.won &&
           "animate__animated animate__tada outline outline-yellow-300"
-        } justify-center" z-50 flex h-full w-full flex-col items-center break-words rounded-lg text-center text-3xl text-gray-700 outline-4`}
+        } justify-center" z-50 flex h-full w-full flex-col items-center break-words rounded-lg text-center text-2xl text-gray-700 outline-4`}
       >
         <p className="w-full break-words rounded-2xl bg-[url[/backgrounds/brownBg.png]] p-1 text-center">
           Written by {props.creatorUsername}
@@ -23,8 +23,8 @@ export default function VoteCount(props: {
           {props.response}
         </p>
 
-        <div className="h-1/12 absolute flex w-15% justify-end">
-          <div className="flex h-1/2 w-1/2 items-center justify-center rounded-full bg-[url(/backgrounds/pinkBg.png)] text-4xl text-white">
+        <div className="h-1/12 absolute flex w-1/4 justify-end">
+          <div className="flex h-1/2 w-1/5 items-center justify-center rounded-full bg-[url(/backgrounds/pinkBg.png)] text-3xl text-white">
             {props.votes}
           </div>
         </div>

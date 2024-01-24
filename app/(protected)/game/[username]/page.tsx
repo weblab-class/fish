@@ -103,7 +103,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [votedWinner, setVotedWinner] = useState<string>("");
   const [responses, setResponses] = useState<FullResponse[]>();
   const [roundNumber, setRoundNumber] = useState<number>(0);
-  const [oldResponses, setOldResponses] = useState<FullResponse[]>();
   const [topContributor, setTopContributor] = useState<string>("");
 
   const randomTestPrompts = [
@@ -769,52 +768,52 @@ export default function GamePage({ params }: { params: { username: string } }) {
         <div className="top-0 z-10 h-fit w-3/6 flex-row justify-center text-wrap rounded-b-3xl bg-[url('/backgrounds/whiteGrayBg.png')] bg-cover bg-no-repeat p-3 text-center text-4xl text-gray-600">
           {roundType === "voting" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
                 Vote for the best response!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "scores" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
                 Current Contributions
               </p>{" "}
               <p>{prompt}</p>
             </div>
           ) : roundType === "voted" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
                 Votes are in!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "writing" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
                 Write a Story Snippet!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "selecting" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Select a Prompt for your Story!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "leaderboard" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-5xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
                 Overall Contributions
               </p>
-              <p className="rounded-2xl p-1 text-5xl text-amber-950 underline">
+              <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
                 {topContributor} was the top Contributor!
               </p>
               <p>{prompt}</p>
             </div>
           ) : (
             <div>
-              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] text-5xl text-white">
+              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] text-4xl text-white">
                 Final Story!
               </p>
               <p>{prompt}</p>
@@ -832,7 +831,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 : roundType === "story"
                   ? "h-1/3 text-4xl"
                   : "max-h-72"
-            } justify-center overflow-auto text-wrap break-all bg-cover bg-no-repeat p-7`}
+            } justify-center overflow-auto text-wrap break-all bg-cover bg-no-repeat p-7 pt-2`}
           >
             {currentStory}
           </div>
@@ -854,7 +853,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           <div className="z-50 flex items-center justify-center">
             {/* TO DO: only host has access to these buttons */}
             <button
-              className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-4xl text-white outline outline-white`}
+              className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
               disabled={submissionLoading && !isHost}
               onClick={handleGenerate}
             >
@@ -864,7 +863,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             </button>
             {isHost && (
               <button
-                className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-4xl text-white outline outline-white`}
+                className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
                 disabled={submissionLoading && !isHost}
                 onClick={() => {
                   console.log("clicked");
@@ -904,7 +903,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {/* text area input box */}
             <div className="flex justify-center">
               <textarea
-                className={`z-20 h-40 w-1/3 rounded-xl p-3 text-3xl text-gray-700 ${
+                className={`z-20 h-40 w-1/3 rounded-xl p-3 text-2xl text-gray-700 ${
                   buttonPressed
                     ? " cursor-not-allowed bg-white opacity-60 outline"
                     : " opacity-90"
@@ -920,7 +919,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             </div>
             <div className="flex justify-center">
               <button
-                className={`z-20 mt-5 h-fit rounded-2xl p-4 text-4xl text-white outline-white hover:bg-[url(/backgrounds/brightRedBg.png)] hover:outline ${
+                className={`z-20 mt-5 h-fit rounded-2xl p-4 text-3xl text-white outline-white hover:bg-[url(/backgrounds/brightRedBg.png)] hover:outline ${
                   submittedResponse || submissionLoading
                     ? "cursor-not-allowed bg-[url(/backgrounds/brightRedBg.png)] text-white outline outline-white"
                     : "bg-[url(/backgrounds/redBg.png)] opacity-90"
@@ -1020,7 +1019,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {/* player 1 (host) */}
             <div className="absolute bottom-0 left-0 h-1/5 w-10/12 bg-[url('/players/bunnyHead.png')] bg-contain bg-no-repeat "></div>
             <div className="absolute bottom-0 left-0 flex h-23% w-10% items-start justify-center">
-              <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-pink-200">
+              <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-pink-200">
                 {params.username}
               </p>
             </div>
@@ -1028,7 +1027,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {/* player 2 */}
             <div className="absolute bottom-0 left-0 flex h-1/5 w-1/5 justify-end bg-[url('/players/shibaHead.png')] bg-contain bg-right bg-no-repeat">
               <div className="absolute -top-15% bottom-0 flex h-full w-1/2 items-start justify-center">
-                <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-green-200">
+                <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-green-200">
                   {allPlayers[1].gameName}
                 </p>
               </div>
@@ -1038,7 +1037,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {allPlayers.length > 2 && (
               <div className="absolute bottom-0 left-0 flex h-1/5 w-30% items-end justify-end bg-[url('/players/cowHead.png')] bg-contain bg-right bg-no-repeat ">
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/3 items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-purple-200">
+                  <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-purple-200">
                     {allPlayers[2].gameName}
                   </p>
                 </div>
@@ -1049,7 +1048,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {allPlayers.length > 3 && (
               <div className="absolute bottom-0 left-0 flex h-1/5 w-2/5 justify-end bg-[url('/players/bearHead.png')] bg-contain bg-right bg-no-repeat">
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/4 items-start  justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-red-300">
+                  <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-red-300">
                     {allPlayers[3].gameName}
                   </p>
                 </div>
@@ -1061,7 +1060,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {true && (
               <div className="w-48% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/penguinHead.png')] bg-contain bg-right bg-no-repeat ">
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/5 items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-blue-200">
+                  <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-blue-200">
                     {allPlayers[4].gameName}
                   </p>
                 </div>
@@ -1072,7 +1071,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {allPlayers.length > 5 && (
               <div className="w-56% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
                 <div className="absolute -top-15% bottom-0 flex h-full w-12% items-start justify-center">
-                  <p className="w-fit rounded-xl bg-white bg-opacity-15 pl-2 pr-2 text-center text-2xl text-yellow-200">
+                  <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-yellow-200">
                     {allPlayers[5].gameName}
                   </p>
                 </div>
