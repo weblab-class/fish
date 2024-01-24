@@ -286,6 +286,7 @@ export default class exterior extends Scene {
   
             const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
             if (otherSprite) {  // we know the other player still existed
+              console.log("I AM SETTING");
               otherSprite.setPosition(info.x, info.y);
               keepAlive.set(playerKey, true)
   
@@ -293,7 +294,9 @@ export default class exterior extends Scene {
             }
   
             // these are people who have uid in the store but not in the registry, meaning they just joined
-            const hasJoined = registryOthers.filter(reg => !reg.endsWith(uid)).length > 0;
+            const hasJoined = registryOthers.filter(reg => !reg.endsWith(uid)).length === 0;
+
+            console.log(hasJoined);
             if (hasJoined) {
               this.registry.set(playerKey, this.add.sprite(info.x, info.y, info.sprite));
               keepAlive.set(playerKey, true);
@@ -305,7 +308,7 @@ export default class exterior extends Scene {
         })
       )
 
-      console.log(registryOthers, keepAlive);
+      console.log(Object.getOwnPropertyNames(this.registry.getAll()), registryOthers, keepAlive);
   
       // delete other people
       for (const regPlayerKey of registryOthers) {
