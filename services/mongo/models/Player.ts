@@ -12,12 +12,14 @@ import { ModelWithQueryHelpers } from "./types";
 import { AnimalSprite } from "@/types";
 
 const MAX_MAIL = 8;
-const MAX_INBOX_CHARS = 400;  
+const MAX_INBOX_CHARS = 400;
 
 @pre<Mail>("save", function (next) {
   if (this.content.length > MAX_INBOX_CHARS) {
-    const err = new mongoose.Error(`Content exceeded ${MAX_INBOX_CHARS} character limit.`);
-    throw(err);
+    const err = new mongoose.Error(
+      `Content exceeded ${MAX_INBOX_CHARS} character limit.`,
+    );
+    throw err;
   }
 
   next();
@@ -34,26 +36,14 @@ class Mail {
   public content!: string;
 }
 
-// QUERY HELPERS
-interface PlayerQueryHelpers {
-  findByUsername: types.AsQueryMethod<typeof findByUsername>;
-}
-function findByUsername(
-  this: types.QueryHelperThis<typeof Player, PlayerQueryHelpers>,
-  username: Player["username"],
-) {
-  return this.find({ username });
-}
-
 @pre<Player>("save", function (next) {
   if (this.inbox.length > MAX_MAIL) {
     const err = new mongoose.Error(`This player has too much mail!`);
-    throw (err);
+    throw err;
   }
 
   next();
 })
-@queryMethod(findByUsername)
 export class Player {
   @prop({ required: true, ref: () => UserSchema, type: () => String })
   public _id!: TypeRef<UserSchema, string>;
@@ -71,13 +61,9 @@ export class Player {
   public inbox!: Mail[];
 }
 
-export const PlayerModel: ModelWithQueryHelpers<
-  typeof Player,
-  PlayerQueryHelpers
-> =
-  (mongoose.models.Player as ModelWithQueryHelpers<
-    typeof Player,
-    PlayerQueryHelpers
-  >) || getModelForClass<typeof Player, PlayerQueryHelpers>(Player);
+export const PlayerModel: mongoose.Model<Player> =
+  mongoose.models.Player || getModelForClass(Player);
 
 export type NewPlayerInput = Omit<Player, "currentPlayerRoomId" | "inbox">;
+
+export type UpdatePlayerInput = {uid: Player["_id"]} & Partial<Omit<Player, "_id">>

@@ -5,7 +5,9 @@ import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
 import { getPageSession } from "@/services/lucia/functions";
 import { mongooseConnect } from "@/services/mongo";
 import ReactQueryHydrate from "@/services/react-query/ReactQueryHydrate";
-import getQueryClient, { getPlayer } from "@/services/react-query";
+import getQueryClient from "@/services/react-query";
+import { pusherClient } from "@/services/pusher";
+import { getPlayer } from "@/services/react-query/queries/player";
 
 /**
  * Any pages in here will be automatically protected from unauthorized access.

@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
-import { useCreatePlayer } from "@/services/react-query/mutations";
+import { useCreatePlayer } from "@/services/react-query/mutations/player";
 import { useRouter } from "next/navigation";
 import { AnimalSprite } from "@/types";
 
