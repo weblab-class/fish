@@ -134,6 +134,7 @@ export default function Home({ params }: { params: { username: string } }) {
         console.log(error);
         setAuthorized("unauthorized");
 
+        // TODO fix
         // const { message: errMsg, code: errCode } =
         //   (await error.json()) as ICustomError;
         // const goRedirect = () =>
@@ -182,7 +183,7 @@ export default function Home({ params }: { params: { username: string } }) {
       (leavingPlayer: { id: string; info: object }) => {
         if (leavingPlayer.id === session!.user.uid) {
           // reset multiplayer store
-          //  - the store will be emptied, but then populated by default values when they go back to their home
+          //  - the store will be emptied, but will be populated by default values if they go back to their home
           useMultiplayerStore.getState().resetData();
           return;
         }

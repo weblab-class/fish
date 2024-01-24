@@ -141,114 +141,6 @@ export default class exterior extends Scene {
     this.registry.set("cursors", this.input.keyboard!.createCursorKeys());
     this.registry.set("physics", this.physics);
 
-    // // listens for successful subscription
-    // presenceChannel.bind(
-    //   "pusher:subscription_succeeded",
-    //   async (members: any) => {
-    //     // useRedirectStore.setState({ redirect: false });
-    //     // const pos = useMultiplayerStore.getState().getPosition();
-    //     const x = player.x;
-    //     const y = player.y;
-
-    //     // new user gets current players on screen
-    //     this.registry.set("socket_id", pusherClient.connection.socket_id);
-
-    //     await axios.post("/api/pusher/currentPlayers", {
-    //       x: 0,
-    //       y: 450,
-    //       playerId: this.registry.get("socket_id") as string,
-    //     });
-    //   },
-    // );
-
-    // presenceChannel.bind(
-    //   "pusher:subscription_error",
-    //   async (error: any) => {
-    //     switch (error.status) {
-    //       case 403:
-    //         const localUid = session.data?.user.uid;
-    //         const localSocketId = pusherClient.connection.socket_id;
-
-    //         // if the socket ID match, then we are on the right tab and hence it was a rerender issue, so DON'T REDIRECT
-    //         if (localUid && localSocketId) {
-    //           const storedUserInfo = (
-    //             presenceChannel as PresenceChannel
-    //           ).members.get(localUid) as PresenceChannelData;
-    //           console.log("stored", storedUserInfo);
-    //           if (storedUserInfo) {
-    //             const { socket_id } =
-    //               storedUserInfo.user_info! as PlayerRoomUserInfo;
-    //             console.log("local", localSocketId);
-    //             if (localSocketId === socket_id) {
-    //               return;
-    //             }
-    //           }
-
-    //           useRedirectStore.setState({ redirect: true });
-    //         }
-    //         break;
-    //     }
-    //   },
-    // );
-
-    // listens for when a new member subscribes to channel
-    // presenceChannel.bind(
-    //   "pusher:member_added",
-    //   async (player: { id: string; info: object }) => {
-    //     if (player.id != (this.registry.get("socket_id") as string)) {
-    //       addOtherPlayer(this, { x: 100, y: 450, playerId: player.id });
-    //     }
-    //   },
-    // );
-
-    // // deletes player when they unsubscribe from channel
-    // presenceChannel.bind(
-    //   "pusher:member_removed",
-    //   (player: { id: string; info: object }) => {
-    //     const playerId = player.id;
-    //     otherPlayers.getChildren().forEach(function (otherPlayer) {
-    //       if (playerId === (otherPlayer.data.get("playerId") as string)) {
-    //         otherPlayer.destroy();
-    //       }
-    //     });
-    //   },
-    // );
-
-    // listens for when new players join and adds current players to the new player's screen
-    // presenceChannel.bind(
-    //   "currentPlayers",
-    //   (data: { players: any; newPlayerId: string }) => {
-    //     console.log("current players", data.players);
-    //     const playerId = this.registry.get("socket_id");
-    //     console.log("ids", playerId, data.newPlayerId);
-
-    //     if (playerId === data.newPlayerId) {
-    //       Object.keys(data.players).forEach(function (id) {
-    //         console.log("h", id, data.players[id]);
-    //         addOtherPlayer(self, data.players[id]);
-    //       });
-    //     }
-    //   },
-    // );
-
-    // // updates location of other players
-    // presenceChannel.bind("playerMoved", (playerInfo: PlayerInfo) => {
-    //   const otherPlayers = this.data.get(
-    //     "otherPlayers",
-    //   ) as Phaser.GameObjects.Group;
-
-    //   (otherPlayers.getChildren() as Phaser.GameObjects.Sprite[]).forEach(
-    //     function (otherPlayer) {
-    //       if (
-    //         playerInfo.playerId ===
-    //         (otherPlayer.data.get("playerId") as string)
-    //       ) {
-    //         otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-    //       }
-    //     },
-    //   );
-    // });
-
     // create animations
     this.anims.create({
       key: "move",
@@ -304,9 +196,10 @@ export default class exterior extends Scene {
       for (const regPlayerKey of registryOthers) {
         if (currentPlayers.has(regPlayerKey)) continue;
 
-        console.log("DELETING");
-        (this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite).destroy();
+        console.log("DELETING");  // TODO check if this deletes
+        const oldSprite = this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite;
         this.registry.remove(regPlayerKey);
+        oldSprite.destroy(true);  // TEST
       }
     }
 
