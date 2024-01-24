@@ -183,20 +183,21 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
-    homeChannel.bind(
-      "pusher:member_removed",
-      (leavingPlayer: { id: string; info: object }) => {
-        if (leavingPlayer.id === session!.user.uid) {
-          // reset multiplayer store
-          //  - the store will be emptied, but will be populated by default values if they go back to their home
-          useMultiplayerStore.getState().resetData();
-          return;
-        }
+    // TESTING!
+    // homeChannel.bind(
+    //   "pusher:member_removed",
+    //   (leavingPlayer: { id: string; info: object }) => {
+    //     if (leavingPlayer.id === session!.user.uid) {
+    //       // reset multiplayer store
+    //       //  - the store will be emptied, but will be populated by default values if they go back to their home
+    //       useMultiplayerStore.getState().resetData();
+    //       return;
+    //     }
 
-        // remove the player from their store
-        useMultiplayerStore.getState().deleteOther(leavingPlayer.id);
-      },
-    );
+    //     // remove the player from their store
+    //     useMultiplayerStore.getState().deleteOther(leavingPlayer.id);
+    //   },
+    // );
 
     homeChannel.bind(
       "recieve-player-data",

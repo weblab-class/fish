@@ -160,6 +160,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   // immediate game channel subscription events
   useEffect(() => {
+    console.log(otherPlayers, currentPlayer, hostUsername, "otherPlayers");
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
     );

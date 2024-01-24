@@ -167,6 +167,7 @@ export default class exterior extends Scene {
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
+    console.log(useMultiplayerStore.getState())
 
     if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
@@ -187,12 +188,12 @@ export default class exterior extends Scene {
           console.log(playerKey, "has joined")
           this.registry.set(playerKey, this.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite));
         }
-        
+
         currentPlayers.set(playerKey, true);
       }
 
       const registryOthers = Object.getOwnPropertyNames(this.registry.getAll()).filter(key => key.startsWith("player-"));
-  
+
       // delete people who have left
       for (const regPlayerKey of registryOthers) {
         if (currentPlayers.has(regPlayerKey)) continue;
@@ -208,7 +209,7 @@ export default class exterior extends Scene {
 
     // detect overlap between player and door
     self.physics.add.overlap(player, door, () => {
-      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object 
+      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
     });
 
