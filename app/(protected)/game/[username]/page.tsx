@@ -272,6 +272,20 @@ export default function GamePage({ params }: { params: { username: string } }) {
         console.log("host success yay");
         setIsSubscribed(true);
       });
+      hostChannel.bind(
+        "pusher:member_removed",
+        (member: { id: any; info: any }) => {
+          if (member.info.username === params.username) {
+            const deleteGame = async () => {
+              if (!host?.data) return;
+              await deleteSentenceSymphony.mutateAsync({
+                hostId: host?.data[0]._id.toString(),
+              });
+            };
+            deleteGame();
+          }
+        },
+      );
     }
 
     // host makes sure timer stops before unloading
@@ -358,7 +372,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         })),
       ]);
     }
-  }, [allPlayers.length]);  // TODO maybe this should be JSON.stringify because there might be some replacement, not just adding and deleting
+  }, [allPlayers.length]); // TODO maybe this should be JSON.stringify because there might be some replacement, not just adding and deleting
 
   // timer events
   // dependencies: roundType, endScreen, player?.data
