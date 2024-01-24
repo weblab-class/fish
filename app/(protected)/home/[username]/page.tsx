@@ -14,6 +14,8 @@ import exterior from "../../../../phaser/exterior";
 import interior from "../../../../phaser/interior";
 import studyroom from "../../../../phaser/studyroom";
 import { useGetPlayer } from "@/services/react-query";
+import Timer from "@/components/timer";
+import Stopwatch from "@/components/stopwatch";
 
 const DynamicComponentWithNoSSR = dynamic(
   () => import("../../../../phaser/Game"),
@@ -65,26 +67,71 @@ export default function Home() {
 
   const isInterior = useGameStore.getState().scenes[0] == interior;
   const isStudyroom = useGameStore.getState().scenes[0] == studyroom;
+  const isExterior = useGameStore.getState().scenes[0] == exterior;
 
-  console.log(isInterior, isStudyroom)
+  const time = new Date();
+  let total = document.getElementById("h")?.value * 60 * 60 + document.getElementById("m")?.value * 60 + document.getElementById("s")?.value;
+  time.setSeconds(time.getSeconds() + total);
 
   return (
     <main>
       <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
         <DynamicComponentWithNoSSR />
       </div>
+      {/* studyroom */}
+      { isStudyroom && (
+        <div>
+          <span
+            className = "absolute z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat top-10 right-20 hover:bg-[url('/objects/leave_hover.png')]"
+            onClick={() => {
+              setData({scenes:[interior, studyroom, exterior]})
+            }}
+          />
+          <div className="w-full h-full flex items-center justify-center select-none">
+            <div
+              id = "studyroom_load_sprites"
+              className = "absolute flex flex-wrap bottom-0 z-10 h-3/5 w-1/2 justify-evenly"
+            >
+            </div>
+          </div>
+          <div className="w-70 z-30 h-52 flex items-center justify-center m-9">
+            {/* <span className = "absolute flex flex-wrap top-0 z-30 h-1/5 w-1/5 m-16 justify-center top-0">
+              <form id='duration' className = "z-40 right-0 select-none">
+                <input id='h' name='h' type='number' min='0' max='23' className = "cursor-text opacity-50"/>
+                <label htmlFor='h' className = "p-1">h</label>
+                <input id='m' name='m' type='number' min='0' max='59' className = "cursor-text opacity-50"/>
+                <label htmlFor='m' className = "p-1">m</label>
+                <input id='s' name='s' type='number' min='0' max='59' className = "cursor-text opacity-50"/>
+                <label htmlFor='s' className = "p-1">s</label>
+              </form>
+            </span> */}
+            {
+              total ? (
+                <span className = "z-30 w-70">
+                  <Timer expiryTimestamp={time} />
+                </span>
+              ) : (
+                <span className = "z-30 w-70">
+                  <Stopwatch />
+                </span>
+              )
+            }
+          </div>
+        </div>
+        )
+      }
       {/* nav bar */}
-      {!isInterior && !isStudyroom && (
+      {isExterior && (
         <div>
           <div
             className="absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]"
             onClick={() => console.log("return to title screen")}
           />
           <div
-            id="studyroom_id"
             className="absolute inset-y-0 right-64 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/studyCloudHover.png')]"
-            onClick={() => {
+            onClick={() => { 
               setData({ scenes: [studyroom, interior, exterior] });
+              //game?.scene.switch("exterior", "studyroom");
             }}
           />
           <div
@@ -97,10 +144,10 @@ export default function Home() {
           />
           <div className="absolute flex w-full justify-center">
             <div
-              id="interior_id"
               className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/houseCloudHover.png')]"
-              onClick={() => {
-                setData({ scenes: [interior, studyroom, exterior] });
+              onClick={() => { 
+                setData({ scenes: [interior, exterior, studyroom] });
+                //game?.scene.switch("exterior", "interior");
               }}
             />
           </div>

@@ -13,6 +13,7 @@ const config: Config = {
       height: {
         '270': '270px',
         '170':'170px',
+        '45%':'45%'
       },
       width: {
         '500': '500px',

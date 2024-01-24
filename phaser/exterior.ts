@@ -305,7 +305,7 @@ class exterior extends Phaser.Scene {
 
         // enters house when enter key is pressed
         if (isDown && !updatedShowInvite && !updatedShowMail) {
-          useGameStore.setState({ scenes: [interior, studyroom, exterior] })
+          useGameStore.setState({ scenes: [interior, exterior, studyroom] })
         }
       } else if (
         isOverlappingSwan &&

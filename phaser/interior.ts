@@ -45,8 +45,8 @@ class interior extends Phaser.Scene {
     this.load.image("tv", "/objects/Tv.png");
     this.load.image("stairs", "/objects/Stairs.png");
 
-    this.load.image("tiles", "/backgrounds/Interior.png");
-    this.load.tilemapTiledJSON("map", "/backgrounds/interior.json");
+    this.load.image("interior_tiles", "/backgrounds/Interior.png");
+    this.load.tilemapTiledJSON("map2", "/backgrounds/interior.json");
     this.load.image("transparent", "/backgrounds/transparent.png");
 
     loadSprites(this);
@@ -158,22 +158,29 @@ class interior extends Phaser.Scene {
     ) as Phaser.Types.Input.Keyboard.CursorKeys;
 
     // create one-tile tilemap
-    const map = this.make.tilemap({
-      key: "map",
+    const map2 = this.make.tilemap({
+      key: "map2",
       tileWidth: 1500,
       tileHeight: 838,
     });
 
     //create single tile for interior
-    const tileset = map.addTilesetImage("Interior", "tiles");
-    const layer = map.createLayer("layer", tileset!, 0, 0);
+    const tileset = map2.addTilesetImage("Interior", "interior_tiles");
+    const layer = map2.createLayer("layer", tileset!, 0, 0);
 
     // pusher values
     const presenceChannel = pusherClient.subscribe("presence-channel");
     // this.registry.set("socket_id", pusherClient.connection.socket_id);
 
+
     // display player sprite
-    const player = this.physics.add.sprite(725, 830, "bunny");
+    let player;
+    if (useGameStore.getState().scenes[1] == studyroom) {
+      player = this.physics.add.sprite(1020, 400, "bunny");
+    }
+    else {
+      player = this.physics.add.sprite(725, 830, "bunny");
+    }
 
     // collisions
     this.physics.add.collider(player, couch_collider);
@@ -195,14 +202,14 @@ class interior extends Phaser.Scene {
     this.physics.world.enable(player);
 
     // camera bounds
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(0, 0, map2.widthInPixels, map2.heightInPixels);
 
     // world bounds
     this.physics.world.setBounds(
       200,
       290,
-      map.widthInPixels - 395,
-      map.heightInPixels - 410,
+      map2.widthInPixels - 395,
+      map2.heightInPixels - 410,
     );
 
     player.setDataEnabled();
@@ -386,9 +393,10 @@ class interior extends Phaser.Scene {
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
-      // enters house when enter key is pressed
+      // leaves house when enter key is pressed
       if (isDown) {
         useGameStore.setState({ scenes: [exterior, interior, studyroom] })
+        //this.scene.switch("exterior")
       }
     }
 
@@ -408,10 +416,11 @@ class interior extends Phaser.Scene {
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
-      // enters house when enter key is pressed
+      // enters studyroom when enter key is pressed
       if (isDown) {
         useGameStore.setState({ scenes: [studyroom, interior, exterior] })
-      }
+        //this.scene.switch("studyroom")
+      } 
     }
 
     /* entering game menu */
