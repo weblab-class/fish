@@ -8,7 +8,8 @@ import { mongooseConnect } from "@/services/mongo";
 import TitlePageLogin from "./TitlePageLogin";
 import LuciaSessionProvider from "@/services/lucia/LuciaSessionProvider";
 import ReactQueryProvider from "@/services/react-query/ReactQueryProvider";
-import { getPlayer } from "@/services/react-query";
+import { getPlayer } from "@/services/react-query/queries/player";
+import { pusherClient } from "@/services/pusher";
 
 /**
  * This is the title page. If you need to render stuff dynamically, use `session`. Any client components should be
@@ -16,7 +17,7 @@ import { getPlayer } from "@/services/react-query";
  */
 export default async function TitlePage() {
   await mongooseConnect();
-  
+
   const session = await getPageSession();
   const player = session ? await getPlayer(session.user.uid) : null;
   if (player?.data) redirect(`/home/${player.data.username}`);

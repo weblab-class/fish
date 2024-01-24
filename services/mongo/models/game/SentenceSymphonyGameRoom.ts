@@ -1,7 +1,8 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import {
   getDiscriminatorModelForClass,
   modelOptions,
+  pre,
   pre,
   prop,
 } from "@typegoose/typegoose";
@@ -10,10 +11,10 @@ import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { GameRoomModel, GameRoom } from "./BaseGameRoom";
 import { Player } from "..";
 import { GameRoomType } from "@/types";
-import { PlayerInfo } from "@/phaser/types";
+import { MAX_SENTENCE_SYMPHONY_PLAYERS } from "@/phaser/settings/consts";
 
 @pre<SentenceSymphonyGameRoom>("save", function (next) {
-  if (this.allPlayers.length > 6) {
+  if (this.allPlayers.length > MAX_SENTENCE_SYMPHONY_PLAYERS) {
     const err = new mongoose.Error("The game is full.");
     throw err;
   }
@@ -64,6 +65,7 @@ export class SSSentence {
   @prop({ required: true, ref: () => Player, type: () => String })
   public creatorId!: TypeRef<Player, string>;
 }
+
 
 export const SentenceSymphonyGameRoomModel =
   mongoose.models.SentenceSymphony ||

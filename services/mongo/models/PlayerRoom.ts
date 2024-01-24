@@ -8,8 +8,7 @@ import mongoose, { model, Schema, Types, Error } from "mongoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { Player } from "./Player";
 import { PlayerRoomStatus } from "@/types";
-
-const MAX_PLAYERS = 6;
+import { MAX_PLAYERS } from "@/phaser/settings/consts";
 
 @modelOptions({ schemaOptions: { _id: false } })
 export class PlayerData {
@@ -43,6 +42,9 @@ export class PlayerRoom {
   @prop({ required: true, enum: () => PlayerRoomStatus, type: String })
   public hostStatus!: PlayerRoomStatus;
 
+  @prop({ required: true, type: String, default: [] })
+  public whitelist!: string[];
+
   @prop({ required: true, type: PlayerData, default: [] })
   public allPlayers!: PlayerData[]; // NOTE: This includes host.
 }
@@ -54,3 +56,6 @@ export type PlayerRoomInput = Omit<
   PlayerRoom,
   "_id" | "hostStatus" | "allPlayers"
 >;
+
+export type UpdatePlayerRoomInput = {hostId: PlayerRoom["hostId"]} & Partial<Omit<PlayerRoom, "hostId">>
+

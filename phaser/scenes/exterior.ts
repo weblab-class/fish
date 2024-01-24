@@ -5,21 +5,26 @@ import { pusherClient } from "@/services/pusher";
 import { AnimalSprite } from "@/types";
 import { useHomeStore, useMultiplayerStore } from "../stores";
 import loadSprites from "../functions";
+import { FRAME_BUFFER } from "../settings/consts";
+import { PlayerInfo } from "../types";
 
 /**
  * The exterior scene in `/home`.
  */
 export default class exterior extends Scene {
+  private hostUsername: string;
   private uid: string;
   private username: string;
   private sprite: AnimalSprite;
+  private frameCounter = 0;
 
-  constructor(uid: string, username: string, sprite: AnimalSprite) {
+  constructor(hostUsername: string, uid: string, username: string, sprite: AnimalSprite) {
     super("exterior");
+
+    this.hostUsername = hostUsername;
     this.uid = uid;
     this.username = username;
     this.sprite = sprite;
-    useMultiplayerStore.getState().initCurrent(uid, username, sprite);
   }
 
   preload() {
@@ -44,7 +49,7 @@ export default class exterior extends Scene {
     });
 
     const tileset = map.addTilesetImage("homeBg", "tiles");
-    const layer = map.createLayer("layer", tileset!, 0, 0);
+    map.createLayer("layer", tileset!, 0, 0);
 
     // create static house and door
     const house = this.physics.add.image(730, 400, "house");
@@ -74,7 +79,6 @@ export default class exterior extends Scene {
     lowerPond.setOrigin(0.5, 0.5);
     lowerPond.setSize(630, 190);
     lowerPond.setOffset(0, 0);
-    const self = this as Phaser.Scene;
 
     const upperPond = this.physics.add.image(2415, 1230, "transparent");
     upperPond.setImmovable(true);
@@ -88,13 +92,10 @@ export default class exterior extends Scene {
     midPond.setSize(430, 30);
     midPond.setOffset(0, 0);
 
-    // pusher values
-    const presenceChannel = pusherClient.subscribe("presence-channel");
-    // this.registry.set("socket_id", pusherClient.connection.socket_id);
-
     // display player sprite
-    const { currentPlayer } = useMultiplayerStore.getState();
-    const player = this.physics.add.sprite(currentPlayer!.x, currentPlayer!.y, currentPlayer!.sprite);
+    const player = this.physics.add.sprite(-100, -100, this.sprite);  // position will change when calling initCurrent
+    useMultiplayerStore.getState().initCurrent(this.uid, this.username, this.sprite, player, this.hostUsername);
+    useMultiplayerStore.getState().sendMyData({ });
 
     // collision between player and house
     this.physics.add.collider(player, house);
@@ -134,120 +135,11 @@ export default class exterior extends Scene {
     const otherPlayers = this.physics.add.group({
       collideWorldBounds: true,
     });
-
-    this.data.set("otherPlayers", otherPlayers);
+    this.registry.set("otherPlayers", otherPlayers);
 
     // controls
     this.registry.set("cursors", this.input.keyboard!.createCursorKeys());
     this.registry.set("physics", this.physics);
-
-    // listens for successful subscription
-    presenceChannel.bind(
-      "pusher:subscription_succeeded",
-      async (members: any) => {
-        // useRedirectStore.setState({ redirect: false });
-        // const pos = useMultiplayerStore.getState().getPosition();
-        const x = player.x;
-        const y = player.y;
-
-        // new user gets current players on screen
-        this.registry.set("socket_id", pusherClient.connection.socket_id);
-
-        await axios.post("/api/pusher/currentPlayers", {
-          x: 0,
-          y: 450,
-          playerId: this.registry.get("socket_id") as string,
-        });
-      },
-    );
-
-    // presenceChannel.bind(
-    //   "pusher:subscription_error",
-    //   async (error: any) => {
-    //     switch (error.status) {
-    //       case 403:
-    //         const localUid = session.data?.user.uid;
-    //         const localSocketId = pusherClient.connection.socket_id;
-
-    //         // if the socket ID match, then we are on the right tab and hence it was a rerender issue, so DON'T REDIRECT
-    //         if (localUid && localSocketId) {
-    //           const storedUserInfo = (
-    //             presenceChannel as PresenceChannel
-    //           ).members.get(localUid) as PresenceChannelData;
-    //           console.log("stored", storedUserInfo);
-    //           if (storedUserInfo) {
-    //             const { socket_id } =
-    //               storedUserInfo.user_info! as PlayerRoomUserInfo;
-    //             console.log("local", localSocketId);
-    //             if (localSocketId === socket_id) {
-    //               return;
-    //             }
-    //           }
-
-    //           useRedirectStore.setState({ redirect: true });
-    //         }
-    //         break;
-    //     }
-    //   },
-    // );
-
-    // listens for when a new member subscribes to channel
-    // presenceChannel.bind(
-    //   "pusher:member_added",
-    //   async (player: { id: string; info: object }) => {
-    //     if (player.id != (this.registry.get("socket_id") as string)) {
-    //       addOtherPlayer(this, { x: 100, y: 450, playerId: player.id });
-    //     }
-    //   },
-    // );
-
-    // // deletes player when they unsubscribe from channel
-    // presenceChannel.bind(
-    //   "pusher:member_removed",
-    //   (player: { id: string; info: object }) => {
-    //     const playerId = player.id;
-    //     otherPlayers.getChildren().forEach(function (otherPlayer) {
-    //       if (playerId === (otherPlayer.data.get("playerId") as string)) {
-    //         otherPlayer.destroy();
-    //       }
-    //     });
-    //   },
-    // );
-
-    // listens for when new players join and adds current players to the new player's screen
-    // presenceChannel.bind(
-    //   "currentPlayers",
-    //   (data: { players: any; newPlayerId: string }) => {
-    //     console.log("current players", data.players);
-    //     const playerId = this.registry.get("socket_id");
-    //     console.log("ids", playerId, data.newPlayerId);
-
-    //     if (playerId === data.newPlayerId) {
-    //       Object.keys(data.players).forEach(function (id) {
-    //         console.log("h", id, data.players[id]);
-    //         addOtherPlayer(self, data.players[id]);
-    //       });
-    //     }
-    //   },
-    // );
-
-    // // updates location of other players
-    // presenceChannel.bind("playerMoved", (playerInfo: PlayerInfo) => {
-    //   const otherPlayers = this.data.get(
-    //     "otherPlayers",
-    //   ) as Phaser.GameObjects.Group;
-
-    //   (otherPlayers.getChildren() as Phaser.GameObjects.Sprite[]).forEach(
-    //     function (otherPlayer) {
-    //       if (
-    //         playerInfo.playerId ===
-    //         (otherPlayer.data.get("playerId") as string)
-    //       ) {
-    //         otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-    //       }
-    //     },
-    //   );
-    // });
 
     // create animations
     this.anims.create({
@@ -267,20 +159,55 @@ export default class exterior extends Scene {
     });
   }
 
-  async update() {
+  update() {
     const self = this as Phaser.Scene;
     const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
     const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
+    const otherPlayers = useMultiplayerStore.getState().otherPlayers;
 
-    // send data (may need to move this somewhere later on in this function)
-    useMultiplayerStore.getState().sendMyData(player);
+    if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
+      this.frameCounter = 0;
 
-    // detect overlap betweesn player and door
+      const currentPlayers: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
+
+      // update existing players
+      for (const [ otherUid, otherInfo ] of Array.from(otherPlayers)) {
+        const playerKey = `player-${otherUid}`;
+
+        const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
+        if (otherSprite) {
+          console.log(playerKey, "has updated")
+          otherSprite.setPosition(otherInfo.x, otherInfo.y);
+        }
+        else { // joined players
+          console.log(playerKey, "has joined")
+          this.registry.set(playerKey, this.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite));
+        }
+        
+        currentPlayers.set(playerKey, true);
+      }
+
+      const registryOthers = Object.getOwnPropertyNames(this.registry.getAll()).filter(key => key.startsWith("player-"));
+  
+      // delete people who have left
+      for (const regPlayerKey of registryOthers) {
+        if (currentPlayers.has(regPlayerKey)) continue;
+
+        console.log("DELETING");  // TODO check if this deletes
+        const oldSprite = this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite;
+        this.registry.remove(regPlayerKey);
+        oldSprite.destroy(true);  // TEST
+      }
+    }
+
+    this.frameCounter++;
+
+    // detect overlap between player and door
     self.physics.add.overlap(player, door, () => {
-      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
+      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object 
       const isDown = keyObj.isDown;
     });
 
@@ -358,13 +285,10 @@ export default class exterior extends Scene {
       | { x: number; y: number }
       | undefined;
 
-    // checks if position changed
-    if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y)) {
-      await axios.post("/api/pusher/playerMoved", {
-        x,
-        y,
-        playerId: self.registry.get("socket_id") as string,
-      });
+    // checks if position changed and if we are in multiplayer mode
+    if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y) && useMultiplayerStore.getState().otherPlayers.size > 0) {
+      // send data to everyone
+      useMultiplayerStore.getState().sendMyData({ });
     }
 
     // saves old position

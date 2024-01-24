@@ -156,7 +156,7 @@ class interior extends Scene {
     stairs.setScale(0.7, 0.7);
 
     // pusher values
-    const presenceChannel = pusherClient.subscribe("presence-channel");
+    // const presenceChannel = pusherClient.subscribe("presence-channel");
     // this.registry.set("socket_id", pusherClient.connection.socket_id);
 
     // display player sprite
@@ -214,23 +214,23 @@ class interior extends Scene {
     this.registry.set("physics", this.physics);
 
     // listens for successful subscription
-    presenceChannel.bind(
-      "pusher:subscription_succeeded",
-      async (members: any) => {
-        // useRedirectStore.setState({ redirect: false });
-        const x = player.x;
-        const y = player.y;
-        this.registry.set("socket_id", pusherClient.connection.socket_id);
-        // alerts server of new player and server loads current players
-        console.log("subcribed");
-        console.log("added and posting", this.registry.get("socket_id"));
-        await axios.post("/api/pusher/currentPlayers", {
-          x: 0,
-          y: 450,
-          playerId: this.registry.get("socket_id") as string,
-        });
-      },
-    );
+    // presenceChannel.bind(
+    //   "pusher:subscription_succeeded",
+    //   async (members: any) => {
+    //     // useRedirectStore.setState({ redirect: false });
+    //     const x = player.x;
+    //     const y = player.y;
+    //     this.registry.set("socket_id", pusherClient.connection.socket_id);
+    //     // alerts server of new player and server loads current players
+    //     console.log("subcribed");
+    //     console.log("added and posting", this.registry.get("socket_id"));
+    //     await axios.post("/api/pusher/currentPlayers", {
+    //       x: 0,
+    //       y: 450,
+    //       playerId: this.registry.get("socket_id") as string,
+    //     });
+    //   },
+    // );
 
     // presenceChannel.bind(
     //   "pusher:subscription_error",
@@ -478,29 +478,29 @@ class interior extends Scene {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-330);
     }
 
-    // stores current player's location
-    const x = player.x;
-    const y = player.y;
+    // // stores current player's location
+    // const x = player.x;
+    // const y = player.y;
 
-    // stores current player's previous location
-    const oldPosition = player.data?.get("oldPosition") as
-      | { x: number; y: number }
-      | undefined;
+    // // stores current player's previous location
+    // const oldPosition = player.data?.get("oldPosition") as
+    //   | { x: number; y: number }
+    //   | undefined;
 
-    // checks if position changed
-    if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y)) {
-      await axios.post("/api/pusher/playerMoved", {
-        x,
-        y,
-        playerId: self.registry.get("socket_id") as string,
-      });
-    }
+    // // checks if position changed
+    // if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y)) {
+    //   await axios.post("/api/pusher/playerMoved", {
+    //     x,
+    //     y,
+    //     playerId: self.registry.get("socket_id") as string,
+    //   });
+    // }
 
-    // saves old position
-    player.data?.set("oldPosition", {
-      x,
-      y,
-    });
+    // // saves old position
+    // player.data?.set("oldPosition", {
+    //   x,
+    //   y,
+    // });
   }
 }
 

@@ -15,7 +15,7 @@
     "@typegoose/typegoose": "^12.1.0",
     "@types/lodash": "^4.14.202",
     "axios": "^1.6.5",
-    "lodash.takewhile": "^4.6.0",
+    "lodash": "^4.17.21",
     "lucia": "^2.7.6",
     "mongoose": "^8.0.4",
     "next": "14.0.4",
