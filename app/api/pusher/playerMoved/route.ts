@@ -5,12 +5,10 @@ import { authorizeApiRoute } from "@/services/lucia/functions";
 
 export async function POST(req: NextRequest) {
   return await authorizeApiRoute(req, async (session) => {
-    const { x, y, playerId } = (await req.json()) as PlayerInfo;
+    const {  x, y, uid, sprite, username, roomStatus } = (await req.json()) as PlayerInfo;
 
     await pusherServer.trigger("presence-channel", "playerMoved", {
-      x,
-      y,
-      playerId,
+      x, y, uid, sprite, username, roomStatus
     });
 
     return NextResponse.json({ status: 200 });

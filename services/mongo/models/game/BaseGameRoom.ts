@@ -21,7 +21,7 @@ export class GameRoom {
   @prop({ required: true, ref: () => Player, type: () => String })
   public hostId!: TypeRef<Player, string>;
 
-  @prop({ required: true, type: () => GamePlayerInfo, default: [] })
+  @prop({ required: true, type: () => GamePlayerInfo })
   public allPlayers!: GamePlayerInfo[];
 }
 

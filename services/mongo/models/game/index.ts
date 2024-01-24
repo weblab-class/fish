@@ -4,4 +4,4 @@
 // https://github.com/Automattic/mongoose/issues/10435
 
 export { GameRoomModel } from "./BaseGameRoom";
-export { SentenceSymphonyGameRoomModel } from "./SentenceSymphonyGameRoom";
+export { SentenceSymphonyGameRoom, SentenceSymphonyGameRoomModel, type NewSentenceSymphonyGameRoomInput, type UpdateSentenceSymphonyGameRoomInput } from "./SentenceSymphonyGameRoom";

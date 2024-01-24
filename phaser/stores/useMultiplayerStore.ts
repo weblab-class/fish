@@ -2,16 +2,9 @@ import { create } from "zustand";
 
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 import { StoreStateFunc } from "./types";
+import { PlayerInfo } from "../types";
 
 // PLAYER DATA
-type PlayerInfo = {
-  uid: string;
-  username: string;
-  sprite: AnimalSprite;
-  x: number;
-  y: number;
-  roomStatus: PlayerRoomStatus;
-};
 const getDefaultPlayerInfo = (
   uid: string,
   username: string,

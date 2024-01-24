@@ -98,7 +98,6 @@ export default function Home() {
       <div
         className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
         onClick={() => {
-          console.log("hi mailajmailamalalalm");
           showPopup("invite");
         }}
       />
