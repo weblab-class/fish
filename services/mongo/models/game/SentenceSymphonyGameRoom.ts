@@ -3,7 +3,6 @@ import {
   getDiscriminatorModelForClass,
   modelOptions,
   pre,
-  pre,
   prop,
 } from "@typegoose/typegoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
@@ -12,6 +11,7 @@ import { GameRoomModel, GameRoom } from "./BaseGameRoom";
 import { Player } from "..";
 import { GameRoomType } from "@/types";
 import { MAX_SENTENCE_SYMPHONY_PLAYERS } from "@/phaser/settings/consts";
+import { PlayerInfo } from "@/phaser/types";
 
 @pre<SentenceSymphonyGameRoom>("save", function (next) {
   if (this.allPlayers.length > MAX_SENTENCE_SYMPHONY_PLAYERS) {
