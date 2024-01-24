@@ -13,7 +13,7 @@ export default function ErrorPage() {
       </h2>
       <ul className="list-disc pl-5">
         {Object.values(CustomErrorCode).map((err) => (
-          <li>{err}</li>
+          <li key={err}>{err}</li>
         ))}
       </ul>
       <div className="mt-3">
