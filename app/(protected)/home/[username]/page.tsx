@@ -173,7 +173,7 @@ export default function Home({ params }: { params: { username: string } }) {
       async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
-        useMultiplayerStore.getState().sendMyData({ to: session!.user.uid });
+        useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
       },
     );
 
