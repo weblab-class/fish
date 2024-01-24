@@ -5,6 +5,8 @@ import { pusherClient } from "@/services/pusher";
 import { AnimalSprite } from "@/types";
 import { useHomeStore, useMultiplayerStore } from "../stores";
 import loadSprites from "../functions";
+import { FRAME_BUFFER } from "../settings/consts";
+import { PlayerInfo } from "../types";
 
 /**
  * The exterior scene in `/home`.
@@ -14,6 +16,7 @@ export default class exterior extends Scene {
   private uid: string;
   private username: string;
   private sprite: AnimalSprite;
+  private frameCounter = 0;
 
   constructor(hostUsername: string, uid: string, username: string, sprite: AnimalSprite) {
     super("exterior");
@@ -264,7 +267,14 @@ export default class exterior extends Scene {
     });
   }
 
-  async update() {
+  update() {
+    if (this.frameCounter < FRAME_BUFFER) {
+      this.frameCounter++;
+      return;
+    }
+
+    this.frameCounter = 0;
+  
     const self = this as Phaser.Scene;
     const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
@@ -274,45 +284,30 @@ export default class exterior extends Scene {
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
 
     if (otherPlayers.size > 0) {
+      const currentPlayers: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
+
+      // update existing players
+      for (const [ otherUid, otherInfo ] of Array.from(otherPlayers)) {
+        const playerKey = `player-${otherUid}`;
+
+        const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
+        if (otherSprite) {
+          console.log(playerKey, "has updated")
+          otherSprite.setPosition(otherInfo.x, otherInfo.y);
+        }
+        else { // joined players
+          console.log(playerKey, "has joined")
+          this.registry.set(playerKey, this.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite));
+        }
+        
+        currentPlayers.set(playerKey, true);
+      }
+
       const registryOthers = Object.getOwnPropertyNames(this.registry.getAll()).filter(key => key.startsWith("player-"));
-      const keepAlive: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
-
-      // update or add other players
-      await Promise.all(
-        Array.from(otherPlayers).map(([ uid, info ]) => {
-          new Promise<void>((resolve) => {
-            const playerKey = `player-${uid}`;
-            console.log(playerKey);
   
-            const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
-            if (otherSprite) {  // we know the other player still existed
-              console.log("I AM SETTING");
-              otherSprite.setPosition(info.x, info.y);
-              keepAlive.set(playerKey, true)
-  
-              return resolve();
-            }
-  
-            // these are people who have uid in the store but not in the registry, meaning they just joined
-            const hasJoined = registryOthers.filter(reg => !reg.endsWith(uid)).length === 0;
-
-            console.log(hasJoined);
-            if (hasJoined) {
-              this.registry.set(playerKey, this.add.sprite(info.x, info.y, info.sprite));
-              keepAlive.set(playerKey, true);
-              console.log("I AM ADDING");
-            }
-  
-            return resolve();
-          })
-        })
-      )
-
-      console.log(Object.getOwnPropertyNames(this.registry.getAll()), registryOthers, keepAlive);
-  
-      // delete other people
+      // delete people who have left
       for (const regPlayerKey of registryOthers) {
-        if (keepAlive.has(regPlayerKey)) return;
+        if (currentPlayers.has(regPlayerKey)) continue;
 
         console.log("DELETING");
         (this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite).destroy();
