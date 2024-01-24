@@ -181,6 +181,7 @@ export default class exterior extends Scene {
         if (otherSprite) {
           console.log(playerKey, "has updated")
           otherSprite.setPosition(otherInfo.x, otherInfo.y);
+          // TODO set anim based on current animation frame here
         }
         else { // joined players
           console.log(playerKey, "has joined")
@@ -196,7 +197,7 @@ export default class exterior extends Scene {
       for (const regPlayerKey of registryOthers) {
         if (currentPlayers.has(regPlayerKey)) continue;
 
-        console.log("DELETING");  // TODO check if this deletes
+        console.log("DELETING");  // !BUG Does not work
         const oldSprite = this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite;
         this.registry.remove(regPlayerKey);
         oldSprite.destroy(true);  // TEST

@@ -69,7 +69,7 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
     sendMyData: async ({ to: targetId }) => {
       const playerSprite = get().currentPlayerPhaserSprite;
       if (!playerSprite)
-        throw Error("You must initalize before sending your data!");
+        throw new Error("You must initalize before sending your data!");
 
       const { x: newX, y: newY } = playerSprite.body!.position;
       const roomStatus = playerSprite.scene.scene.key as PlayerRoomStatus;
@@ -85,7 +85,7 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
             },
           };
 
-        throw Error("You must initalize before sending your data!");
+        throw new Error("You must initalize before sending your data!");
       });
 
       // TODO: axios post to notify others to add your data via addOrUpdateOther()

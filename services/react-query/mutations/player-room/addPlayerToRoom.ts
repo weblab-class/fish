@@ -34,9 +34,10 @@ export async function addPlayerToRoom({
   // update guest
   await updateCurrentRoomId({ uid: guestId, roomHostId: hostId });
 
+  // add to all players
   return await axios.post(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/db/player-room/update`,
-    {} as UpdatePlayerRoomInput,
+    { hostId, allPlayers: [...players] } as UpdatePlayerRoomInput,
   );
 }
 

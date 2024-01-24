@@ -1,0 +1,122 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "JSON with Comments", "JavaScript", "JSON", "Markdown", "CSS", "comment", "blank", "total"
+"/Users/kennethchap/Documents/GitHub/fish/.eslintrc.json", "JSON", 0, 0, 0, 0, 3, 0, 0, 0, 1, 4
+"/Users/kennethchap/Documents/GitHub/fish/.prettierrc", "JSON", 0, 0, 0, 0, 5, 0, 0, 0, 0, 5
+"/Users/kennethchap/Documents/GitHub/fish/README.md", "Markdown", 0, 0, 0, 0, 0, 23, 0, 0, 14, 37
+"/Users/kennethchap/Documents/GitHub/fish/app.d.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 1, 0, 8
+"/Users/kennethchap/Documents/GitHub/fish/app/(errors)/no-duplicate-tabs/page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/kennethchap/Documents/GitHub/fish/app/(protected)/example-sign-out/page.tsx", "TypeScript JSX", 0, 25, 0, 0, 0, 0, 0, 4, 4, 33
+"/Users/kennethchap/Documents/GitHub/fish/app/(protected)/game/[username]/page.tsx", "TypeScript JSX", 0, 897, 0, 0, 0, 0, 0, 85, 104, 1086
+"/Users/kennethchap/Documents/GitHub/fish/app/(protected)/home/[username]/page.tsx", "TypeScript JSX", 0, 211, 0, 0, 0, 0, 0, 54, 30, 295
+"/Users/kennethchap/Documents/GitHub/fish/app/(protected)/layout.tsx", "TypeScript JSX", 0, 28, 0, 0, 0, 0, 0, 7, 7, 42
+"/Users/kennethchap/Documents/GitHub/fish/app/TitlePageLogin.tsx", "TypeScript JSX", 0, 192, 0, 0, 0, 0, 0, 10, 9, 211
+"/Users/kennethchap/Documents/GitHub/fish/app/TitlePageOnboarding.tsx", "TypeScript JSX", 0, 245, 0, 0, 0, 0, 0, 23, 21, 289
+"/Users/kennethchap/Documents/GitHub/fish/app/api/auth/login/google/callback/route.ts", "TypeScript", 58, 0, 0, 0, 0, 0, 0, 4, 12, 74
+"/Users/kennethchap/Documents/GitHub/fish/app/api/auth/login/google/route.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 3, 4, 25
+"/Users/kennethchap/Documents/GitHub/fish/app/api/auth/logout/route.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 3, 8, 29
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/player-room/get/route.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 4, 13
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/player-room/update/route.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 4, 18
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/player/create/route.ts", "TypeScript", 24, 0, 0, 0, 0, 0, 0, 0, 5, 29
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/player/get-by-username/route.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 5, 18
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/player/get/route.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 4, 13
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/player/update/route.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 4, 15
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/sentence-symphony/create/route.ts", "TypeScript", 29, 0, 0, 0, 0, 0, 0, 0, 4, 33
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/sentence-symphony/delete/route.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/sentence-symphony/get/route.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 4, 13
+"/Users/kennethchap/Documents/GitHub/fish/app/api/db/sentence-symphony/update/route.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/auth/route.ts", "TypeScript", 151, 0, 0, 0, 0, 0, 0, 30, 21, 202
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/home/requestData/route.ts", "TypeScript", 17, 0, 0, 0, 0, 0, 0, 0, 5, 22
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/home/sendData/route.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 0, 5, 23
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/gameRoomCreated/route.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 12, 24
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/gameTimer/route.ts", "TypeScript", 27, 0, 0, 0, 0, 0, 0, 1, 14, 42
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/generatePrompt/route.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 10, 24
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/newMessage/route.ts", "TypeScript", 15, 0, 0, 0, 0, 0, 0, 0, 4, 19
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/roundChange/route.ts", "TypeScript", 26, 0, 0, 0, 0, 0, 0, 0, 12, 38
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/submittedResponse/route.ts", "TypeScript", 26, 0, 0, 0, 0, 0, 0, 20, 21, 67
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/updateContributions/route.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 11, 23
+"/Users/kennethchap/Documents/GitHub/fish/app/api/pusher/symphony/updateData/route.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 10, 23
+"/Users/kennethchap/Documents/GitHub/fish/app/globals.css", "CSS", 0, 0, 0, 0, 0, 0, 3, 0, 2, 5
+"/Users/kennethchap/Documents/GitHub/fish/app/layout.tsx", "TypeScript JSX", 0, 23, 0, 0, 0, 0, 0, 0, 4, 27
+"/Users/kennethchap/Documents/GitHub/fish/app/not-found.tsx", "TypeScript JSX", 0, 8, 0, 0, 0, 0, 0, 0, 2, 10
+"/Users/kennethchap/Documents/GitHub/fish/app/page.tsx", "TypeScript JSX", 0, 29, 0, 0, 0, 0, 0, 4, 4, 37
+"/Users/kennethchap/Documents/GitHub/fish/components/InvitePopup.tsx", "TypeScript JSX", 0, 72, 0, 0, 0, 0, 0, 1, 8, 81
+"/Users/kennethchap/Documents/GitHub/fish/components/Mail.tsx", "TypeScript JSX", 0, 54, 0, 0, 0, 0, 0, 7, 5, 66
+"/Users/kennethchap/Documents/GitHub/fish/components/MailPopup.tsx", "TypeScript JSX", 0, 76, 0, 0, 0, 0, 0, 1, 8, 85
+"/Users/kennethchap/Documents/GitHub/fish/components/ReadMailPopup.tsx", "TypeScript JSX", 0, 22, 0, 0, 0, 0, 0, 7, 3, 32
+"/Users/kennethchap/Documents/GitHub/fish/components/SendMailPopup.tsx", "TypeScript JSX", 0, 72, 0, 0, 0, 0, 0, 3, 4, 79
+"/Users/kennethchap/Documents/GitHub/fish/components/symphony/ChatLog.tsx", "TypeScript JSX", 0, 158, 0, 0, 0, 0, 0, 31, 13, 202
+"/Users/kennethchap/Documents/GitHub/fish/components/symphony/PieScore.tsx", "TypeScript JSX", 0, 63, 0, 0, 0, 0, 0, 2, 6, 71
+"/Users/kennethchap/Documents/GitHub/fish/components/symphony/ResponseCard.tsx", "TypeScript JSX", 0, 85, 0, 0, 0, 0, 0, 4, 7, 96
+"/Users/kennethchap/Documents/GitHub/fish/components/symphony/VoteCount.tsx", "TypeScript JSX", 0, 32, 0, 0, 0, 0, 0, 0, 3, 35
+"/Users/kennethchap/Documents/GitHub/fish/environment.d.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 2, 15
+"/Users/kennethchap/Documents/GitHub/fish/global.d.ts", "TypeScript", 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/kennethchap/Documents/GitHub/fish/next.config.js", "JavaScript", 0, 0, 0, 8, 0, 0, 0, 2, 3, 13
+"/Users/kennethchap/Documents/GitHub/fish/package-lock.json", "JSON", 0, 0, 0, 0, 5779, 0, 0, 0, 1, 5780
+"/Users/kennethchap/Documents/GitHub/fish/package.json", "JSON", 0, 0, 0, 0, 47, 0, 0, 0, 1, 48
+"/Users/kennethchap/Documents/GitHub/fish/phaser/Game.tsx", "TypeScript JSX", 0, 76, 0, 0, 0, 0, 0, 3, 11, 90
+"/Users/kennethchap/Documents/GitHub/fish/phaser/functions.ts", "TypeScript", 50, 0, 0, 0, 0, 0, 0, 7, 0, 57
+"/Users/kennethchap/Documents/GitHub/fish/phaser/scenes/exterior.ts", "TypeScript", 210, 0, 0, 0, 0, 0, 0, 34, 57, 301
+"/Users/kennethchap/Documents/GitHub/fish/phaser/scenes/interior.ts", "TypeScript", 264, 0, 0, 0, 0, 0, 0, 166, 78, 508
+"/Users/kennethchap/Documents/GitHub/fish/phaser/scenes/studyroom.ts", "TypeScript", 15, 0, 0, 0, 0, 0, 0, 5, 5, 25
+"/Users/kennethchap/Documents/GitHub/fish/phaser/settings/consts.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/kennethchap/Documents/GitHub/fish/phaser/settings/functions.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 1, 2, 21
+"/Users/kennethchap/Documents/GitHub/fish/phaser/stores/index.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/kennethchap/Documents/GitHub/fish/phaser/stores/types.ts", "TypeScript", 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/kennethchap/Documents/GitHub/fish/phaser/stores/useHomeStore.ts", "TypeScript", 43, 0, 0, 0, 0, 0, 0, 3, 7, 53
+"/Users/kennethchap/Documents/GitHub/fish/phaser/stores/useMultiplayerStore.ts", "TypeScript", 107, 0, 0, 0, 0, 0, 0, 10, 14, 131
+"/Users/kennethchap/Documents/GitHub/fish/phaser/types/IRequestDataParams.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 5
+"/Users/kennethchap/Documents/GitHub/fish/phaser/types/ISendDataParams.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/kennethchap/Documents/GitHub/fish/phaser/types/index.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/kennethchap/Documents/GitHub/fish/phaser/types/player.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 1, 10
+"/Users/kennethchap/Documents/GitHub/fish/postcss.config.js", "JavaScript", 0, 0, 0, 6, 0, 0, 0, 0, 1, 7
+"/Users/kennethchap/Documents/GitHub/fish/public/backgrounds/background.json", "JSON", 0, 0, 0, 0, 41, 0, 0, 0, 0, 41
+"/Users/kennethchap/Documents/GitHub/fish/public/backgrounds/interior.json", "JSON", 0, 0, 0, 0, 41, 0, 0, 0, 1, 42
+"/Users/kennethchap/Documents/GitHub/fish/services/lucia/LuciaSessionProvider.tsx", "TypeScript JSX", 0, 27, 0, 0, 0, 0, 0, 10, 7, 44
+"/Users/kennethchap/Documents/GitHub/fish/services/lucia/functions.ts", "TypeScript", 23, 0, 0, 0, 0, 0, 0, 12, 9, 44
+"/Users/kennethchap/Documents/GitHub/fish/services/lucia/index.ts", "TypeScript", 28, 0, 0, 0, 0, 0, 0, 4, 6, 38
+"/Users/kennethchap/Documents/GitHub/fish/services/lucia/models.ts", "TypeScript", 33, 0, 0, 0, 0, 0, 0, 1, 11, 45
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/index.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 4, 2, 7
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/Player.ts", "TypeScript", 55, 0, 0, 0, 0, 0, 0, 0, 14, 69
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/PlayerRoom.ts", "TypeScript", 48, 0, 0, 0, 0, 0, 0, 0, 14, 62
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/game/BaseGameRoom.ts", "TypeScript", 22, 0, 0, 0, 0, 0, 0, 0, 7, 29
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/game/SentenceSymphonyGameRoom.ts", "TypeScript", 67, 0, 0, 0, 0, 0, 0, 0, 18, 85
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/game/index.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 4, 2, 8
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/index.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/models/types.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 2, 7
+"/Users/kennethchap/Documents/GitHub/fish/services/mongo/mongoose.ts", "TypeScript", 24, 0, 0, 0, 0, 0, 0, 7, 7, 38
+"/Users/kennethchap/Documents/GitHub/fish/services/pusher/client.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 1, 2, 17
+"/Users/kennethchap/Documents/GitHub/fish/services/pusher/index.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/kennethchap/Documents/GitHub/fish/services/pusher/server.ts", "TypeScript", 8, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"/Users/kennethchap/Documents/GitHub/fish/services/pusher/types.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 1, 1, 9
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/ReactQueryHydrate.tsx", "TypeScript JSX", 0, 5, 0, 0, 0, 0, 0, 0, 2, 7
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/ReactQueryProvider.tsx", "TypeScript JSX", 0, 11, 0, 0, 0, 0, 0, 1, 6, 18
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/auth/index.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/auth/signOut.ts", "TypeScript", 10, 0, 0, 0, 0, 0, 0, 0, 4, 14
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/index.ts", "TypeScript", 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/player-room/addPlayerToRoom.ts", "TypeScript", 37, 0, 0, 0, 0, 0, 0, 5, 7, 49
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/player-room/deletePlayerFromRoom.ts", "TypeScript", 32, 0, 0, 0, 0, 0, 0, 7, 6, 45
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/player-room/index.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/player/createPlayer.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 4, 16
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/player/index.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/player/updateCurrentRoomId.ts", "TypeScript", 24, 0, 0, 0, 0, 0, 0, 3, 4, 31
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/createSentenceSymphony.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 4, 16
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/deleteSentenceSymphony.ts", "TypeScript", 15, 0, 0, 0, 0, 0, 0, 0, 5, 20
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/forceSubmissions.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 1, 9, 55
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/index.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/startNewRound.ts", "TypeScript", 54, 0, 0, 0, 0, 0, 0, 5, 10, 69
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/submitSentence.ts", "TypeScript", 36, 0, 0, 0, 0, 0, 0, 1, 7, 44
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/mutations/sentence-symphony/updateVote.ts", "TypeScript", 46, 0, 0, 0, 0, 0, 0, 1, 7, 54
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/player-room/getPlayerRoom.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 4, 16
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/player-room/index.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/player/getPlayer.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/player/getPlayerByUsername.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 4, 16
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/player/index.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/sentence-symphony/getSentenceSymphony.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"/Users/kennethchap/Documents/GitHub/fish/services/react-query/queries/sentence-symphony/index.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/kennethchap/Documents/GitHub/fish/tailwind.config.ts", "TypeScript", 80, 0, 0, 0, 0, 0, 0, 0, 7, 87
+"/Users/kennethchap/Documents/GitHub/fish/tsconfig.json", "JSON with Comments", 0, 0, 29, 0, 0, 0, 0, 0, 1, 30
+"/Users/kennethchap/Documents/GitHub/fish/types/AnimalSprites.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 0, 14
+"/Users/kennethchap/Documents/GitHub/fish/types/CustomErrors.ts", "TypeScript", 15, 0, 0, 0, 0, 0, 0, 0, 1, 16
+"/Users/kennethchap/Documents/GitHub/fish/types/GameRoomType.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/kennethchap/Documents/GitHub/fish/types/PlayerRoomStatus.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/kennethchap/Documents/GitHub/fish/types/index.ts", "TypeScript", 4, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"Total", "-", 2190, 2417, 29, 14, 5916, 23, 3, 604, 846, 12042

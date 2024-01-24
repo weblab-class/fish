@@ -59,11 +59,14 @@ export class Player {
 
   @prop({ required: true, type: Mail, default: [] })
   public inbox!: Mail[];
+
+  @prop({ required: true, type: String, default: [] })
+  public invitesFrom!: string[];
 }
 
 export const PlayerModel: mongoose.Model<Player> =
   mongoose.models.Player || getModelForClass(Player);
 
-export type NewPlayerInput = Omit<Player, "currentPlayerRoomId" | "inbox">;
+export type NewPlayerInput = Omit<Player, "currentPlayerRoomId" | "inbox" | "invitesFrom">;
 
 export type UpdatePlayerInput = {uid: Player["_id"]} & Partial<Omit<Player, "_id">>

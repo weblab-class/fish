@@ -13,7 +13,7 @@ import {
   ICustomError,
 } from "@/types";
 import { MAX_PLAYERS } from "@/phaser/settings/consts";
-import { addPlayerToRoom } from "@/services/react-query/mutations/player-room";
+import { sendInvite } from "@/services/react-query/mutations/player-room";
 import { getDefaultPosition } from "@/phaser/settings/functions";
 import { getPlayer, getPlayerByUsername } from "@/services/react-query/queries/player";
 import { getPlayerRoom } from "@/services/react-query/queries/player-room";
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
         /// SUCCESS! we will add them to the database
         console.log("AS A GUEST, I AM ADDING MYSELF TO THE HOST ROOM");
 
-        await addPlayerToRoom({
+        await sendInvite({
           hostId: host._id.toString(),
           guestId: playerUid,
           ...getDefaultPosition(hostRoom.hostStatus),

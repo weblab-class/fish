@@ -18,7 +18,11 @@ import { CustomErrorCode, ICustomError } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
-import { IRequestDataParams, ISendDataParams } from "@/phaser/types";
+import {
+  IRequestDataParams,
+  ISendDataParams,
+  IRedirectParams,
+} from "@/phaser/types";
 
 // TODO  fix the clouds when you enter the house and then exit
 
@@ -26,8 +30,8 @@ const DynamicGame = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
   loading: ({}) => (
     <div>
-      Add your loading screen here. Note that this doesn't mean that the game
-      finished loading, but rather the import is.
+      Add your loading screen here. Note that this doesn&apos;t mean that the
+      game finished loading, but rather the import is.
     </div>
   ),
 });
@@ -114,7 +118,7 @@ export default function Home({ params }: { params: { username: string } }) {
   // set up pusher
   useEffect(() => {
     const homeChannelName = `presence-home-${params.username}`;
-    
+
     const homeChannel = pusherClient.subscribe(
       homeChannelName,
     ) as PresenceChannel;
@@ -123,7 +127,7 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind("pusher:subscription_succeeded", async (_: Members) => {
       useRedirectStore.setState({ redirect: false, errorCode: null });
 
-      // **NOTE: when the player has loaded in, that's when we init the store AND send the data for others to add**
+      // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
     });
 
@@ -134,7 +138,7 @@ export default function Home({ params }: { params: { username: string } }) {
         console.log(error);
         setAuthorized("unauthorized");
 
-        // TODO fix
+        // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =
         //   (await error.json()) as ICustomError;
         // const goRedirect = () =>
@@ -207,6 +211,19 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
+    homeChannel.bind(
+      "redirect",
+      async ({ redirectLink, targetId }: IRedirectParams) => {
+        console.log("HELLO OUTSIDE")
+        // if there's no specific target ID, assume that this is for everyone, including the sender
+        // if there is a specific target ID, only that person will be redirected
+        if (!targetId || targetId === session!.user.uid) {
+          console.log("HELLO");
+          router.push(redirectLink);
+        }
+      },
+    );
+
     return () => {
       if (!homeChannel.members.me) return; // this means subscription failed, so no point in unsubscribing and unbinding
 
@@ -229,6 +246,25 @@ export default function Home({ params }: { params: { username: string } }) {
                 playerAnimalSprite={player.data.animalSprite}
               />
             )}
+          </div>
+          <div className="absolute bottom-3 left-3 z-10">
+            <button
+              className="rounded-md bg-red-400 px-1 py-3"
+              onClick={async () => {
+                // TODO put this somewhere better
+                // TODO prevent someone from spam clicking this
+
+                await axios.post(
+                  `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
+                  {
+                    channelName: `presence-home-${params.username}`,
+                    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${params.username}`,
+                  } as IRedirectParams,
+                );
+              }}
+            >
+              Join Symphony Sentence Game
+            </button>
           </div>
           {/* nav bar */}
           <div></div>
@@ -271,7 +307,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 className="flex items-center justify-center bg-white"
                 ref={inviteRef}
               >
-                <InvitePopup />
+                <InvitePopup hostId={session!.user.uid} />
               </div>
             </div>
           )}
@@ -287,6 +323,7 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
         </div>
       ) : (
+        // TODO Make this much more interesting
         <p>Verifying...</p>
       )}
     </main>
