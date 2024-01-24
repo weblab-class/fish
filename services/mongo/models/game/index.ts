@@ -3,5 +3,5 @@
 // https://dorukgunes.medium.com/nested-discriminator-with-mongoose-ffa0afef5eca
 // https://github.com/Automattic/mongoose/issues/10435
 
-export { GameRoomModel } from "./BaseGameRoom";
+export { GameRoomModel, GamePlayerInfo } from "./BaseGameRoom";
 export { SentenceSymphonyGameRoom, SentenceSymphonyGameRoomModel, type NewSentenceSymphonyGameRoomInput, type UpdateSentenceSymphonyGameRoomInput } from "./SentenceSymphonyGameRoom";

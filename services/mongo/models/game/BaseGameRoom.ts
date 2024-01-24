@@ -16,7 +16,7 @@ export class GameRoom {
 }
 
 @modelOptions({ schemaOptions: { _id: false } })
-class GamePlayerInfo {
+export class GamePlayerInfo {
   @prop({ required: true, ref: () => Player, type: () => String })
   public playerId!: TypeRef<Player, string>;
 

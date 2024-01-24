@@ -34,6 +34,7 @@ import {
 } from "@/services/react-query/mutations/sentence-symphony";
 import { PlayerInfo } from "@/phaser/types";
 import { AiFillSkype } from "react-icons/ai";
+import { GamePlayerInfo } from "@/services/mongo/models";
 
 const PieChartWithoutSSR = dynamic(
   () => import("@/components/symphony/PieScore"),
@@ -78,7 +79,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const { session } = useLuciaSession();
   const playerId = session!.user.uid;
   const [isHost, setIsHost] = useState(true);
-  const [allPlayers, setAllPlayers] = useState<any>(); // TO DO: ADD TYPE
+  const [allPlayers, setAllPlayers] = useState<GamePlayerInfo[]>([]); // TO DO: ADD TYPE
   const [gameRoomExists, setGameRoomExists] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const router = useRouter();
@@ -117,7 +118,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [oldStory, setOldStory] = useState("");
   const [mostVoted, setMostVoted] = useState<string>("");
   const [votedWinner, setVotedWinner] = useState<string>("");
-  const [responses, setResponses] = useState<FullResponse[]>();
+  const [responses, setResponses] = useState<FullResponse[]>([]);
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [topContributor, setTopContributor] = useState<string>("");
   const [memberCount, setMemberCount] = useState<number>(0);
@@ -319,9 +320,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
         const gameRoomRes = await getSentenceSymphony(
           host!.data[0]._id.toString(),
         );
-        const gameRoomPlayers = gameRoomRes.data?.allPlayers;
+        const gameRoomPlayers = gameRoomRes.data?.allPlayers!; // gameRoomExists = true
         console.log(gameRoomRes.data, "data");
         console.log(gameRoomRes.data?.allPlayers, "players");
+
         setAllPlayers(gameRoomPlayers);
 
         setWaiting(false);
@@ -334,7 +336,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [gameRoomExists, isSubscribed]);
 
   useEffect(() => {
-    if (allPlayers) {
+    if (allPlayers.length > 0) {
       setContributions((prevPlayers) => {
         return [
           ...allPlayers.map((player: { gameName: string }) => ({
@@ -344,7 +346,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         ];
       });
     }
-  }, [allPlayers]);
+  }, [JSON.stringify(allPlayers)]);
 
   // timer events
   // dependencies: roundType, endScreen, player?.data
@@ -404,8 +406,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
               gameRoomData.sentences.length - 1
             ].creatorId.toString();
           const winnerName = allPlayers.find(
-            (player: { playerId: string }) => player.playerId === winner,
-          ).gameName;
+            ({ playerId }) => playerId === winner,
+          )?.gameName!;
+          // const winnerName = allPlayers.find(
+          //   (player: { playerId: string }) => player.playerId === winner,
+          // ).gameName;
           setMostVoted(
             gameRoomData.sentences[gameRoomData.sentences.length - 1].sentence,
           );
@@ -934,9 +939,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     response={response.sentence}
                     creatorUsername={
                       allPlayers.find(
-                        (player: { playerId: string }) =>
-                          player.playerId === response.creatorId,
-                      ).gameName
+                        (player) => player.playerId === response.creatorId,
+                      )?.gameName ?? "AI-wahhh"
                     }
                     voterId={session!.user.uid}
                     hostId={
@@ -964,9 +968,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     // GET USERNAME OF CREATOR useGetPlayer("creatorId")
                     creatorUsername={
                       allPlayers.find(
-                        (player: { playerId: string }) =>
-                          player.playerId === response.creatorId,
-                      ).gameName
+                        (player) => player.playerId === response.creatorId,
+                      )?.gameName ?? "AI-wahhh"
                     }
                     votes={
                       response.voteIds != undefined
