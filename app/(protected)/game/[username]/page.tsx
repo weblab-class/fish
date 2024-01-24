@@ -120,6 +120,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [responses, setResponses] = useState<FullResponse[]>();
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [topContributor, setTopContributor] = useState<string>("");
+  const [memberCount, setMemberCount] = useState<number>(0);
 
   const randomTestPrompts = [
     "A fish goes to the grocery store.",
@@ -168,6 +169,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       "pusher:member_added",
       (member: { id: any; info: any }) => {
         console.log("success member added");
+        setMemberCount(memberCount + 1);
       },
     );
 
@@ -214,6 +216,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
 
     // TO DO: check if all members are subscribed to game channel before creating room
+    if ((gameChannel as PresenceChannel).members.count < otherPlayers.size + 1)
+      return;
     if (isHost && !gameRoomExists) {
       const createSentenceSymphonyFunc = async () => {
         if (!host.data) return;
@@ -221,53 +225,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
           hostInfo: {
             uid: host.data[0]._id.toString(),
             username: params.username,
-            sprite: "bunny" as AnimalSprite,
+            sprite: AnimalSprite.BUNNY,
             x: 0,
             y: 0,
-            roomStatus: "interior" as PlayerRoomStatus,
+            roomStatus: PlayerRoomStatus.EXTERIOR,
           },
-          otherPlayerInfo: [
-            {
-              uid: "rqy478h7yarmrmc",
-              username: "kchapmit",
-              sprite: "hedgehog" as AnimalSprite,
-              x: 0,
-              y: 0,
-              roomStatus: "interior" as PlayerRoomStatus,
-            },
-            {
-              uid: "kxrguwi37czcyjc",
-              username: "kenn19",
-              sprite: "beaver" as AnimalSprite,
-              x: 0,
-              y: 0,
-              roomStatus: "interior" as PlayerRoomStatus,
-            },
-            {
-              uid: "kxrguwi37czcyjc",
-              username: "kenn19",
-              sprite: "beaver" as AnimalSprite,
-              x: 0,
-              y: 0,
-              roomStatus: "interior" as PlayerRoomStatus,
-            },
-            {
-              uid: "rqy478h7yarmrmc",
-              username: "kchapmit",
-              sprite: "hedgehog" as AnimalSprite,
-              x: 0,
-              y: 0,
-              roomStatus: "interior" as PlayerRoomStatus,
-            },
-            {
-              uid: "rqy478h7yarmrmc",
-              username: "kchapmit",
-              sprite: "hedgehog" as AnimalSprite,
-              x: 0,
-              y: 0,
-              roomStatus: "interior" as PlayerRoomStatus,
-            },
-          ],
+          otherPlayerInfo: Array.from(otherPlayers.values()),
           initialPrompt: "this is the first prompt",
         });
         await axios.post("/api/pusher/symphony/gameRoomCreated", {
