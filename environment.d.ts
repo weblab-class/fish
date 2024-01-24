@@ -5,7 +5,7 @@ namespace NodeJS {
     PUSHER_APP_SECRET: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
-    MONGODB_SECRET: string;
+    MONGODB_URI: string;
     NEXT_PUBLIC_DOMAIN: string;
 
     NODE_ENV: "development" | "production";

@@ -24,7 +24,7 @@ export async function mongooseConnect() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(process.env.MONGODB_SECRET, opts);
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts);
   }
 
   try {
