@@ -48,7 +48,7 @@ const renderCustomizedLabel = ({
 export default function PieScore(props: { data: any }) {
   return (
     <div className="h-fit w-fit">
-      <PieChart width={500} height={500}>
+      <PieChart width={470} height={470}>
         <Pie
           data={props.data}
           cx="50%" // Center X dynamically set to 50% of the container width
