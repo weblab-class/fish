@@ -26,7 +26,7 @@ const DynamicGame = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
   loading: ({}) => (
     <div>
-      Add your loading screen here. Note that this doesn't mean that the game
+      Add your loading screen here. Note that this doesnt mean that the game
       finished loading, but rather the import is.
     </div>
   ),
@@ -114,7 +114,7 @@ export default function Home({ params }: { params: { username: string } }) {
   // set up pusher
   useEffect(() => {
     const homeChannelName = `presence-home-${params.username}`;
-    
+
     const homeChannel = pusherClient.subscribe(
       homeChannelName,
     ) as PresenceChannel;
