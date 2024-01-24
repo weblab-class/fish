@@ -12,7 +12,7 @@ import VoteCount from "@/components/symphony/VoteCount";
 import { useMultiplayerStore } from "@/phaser/stores";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import dynamic from "next/dynamic";
-import { useGetPlayer, useGetPlayerByUsername } from "@/services/react-query";
+import { useGetPlayer, useGetPlayerByUsername } from "@/services/react-query/queries/player";
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 
 import {

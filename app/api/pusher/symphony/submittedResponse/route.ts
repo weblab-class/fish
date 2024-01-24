@@ -1,6 +1,5 @@
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
-import { number } from "zod";
 
 interface Players {
     playerSocketId: number,
