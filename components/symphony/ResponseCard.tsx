@@ -83,6 +83,11 @@ export default function ResponseCard(props: {
         clicked ? "outline" : ""
       } justify-center" z-50 ml-2 mr-2 overflow-y-scroll pt-8 ${props.creatorId === props.voterId ? "cursor-not-allowed bg-gray-700 text-gray-200 opacity-50 " : "bg-[url('/backgrounds/whiteGrayBg.png')] hover:cursor-pointer hover:outline "} flex h-2/5 w-1/5 items-center break-words rounded-lg text-center text-2xl text-gray-700 outline-4 outline-yellow-400 `}
       ref={responseBoxRef}
+      title={
+        props.creatorId === props.voterId
+          ? "You can not vote for your own response"
+          : ""
+      }
       onClick={() => {
         if (!(props.creatorId === props.voterId)) {
           setClicked(true);

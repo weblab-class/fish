@@ -60,7 +60,9 @@ type FullResponse = {
 
 export default function GamePage({ params }: { params: { username: string } }) {
   // NOTE: subscribes once even though it may render multiple-times
-  const gameChannel = pusherClient.subscribe(`presence-ss-${params.username}`);
+  const gameChannel = pusherClient.subscribe(
+    `presence-ss-${params.username}`,
+  ) as PresenceChannel;
   const [
     hostUsername,
     currentPlayerPhaserSprite,
@@ -79,7 +81,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const { session } = useLuciaSession();
   const playerId = session!.user.uid;
   const [isHost, setIsHost] = useState(true);
-  const [allPlayers, setAllPlayers] = useState<GamePlayerInfo[]>([]); // TO DO: ADD TYPE
+  const [allPlayers, setAllPlayers] = useState<GamePlayerInfo[]>([]);
+  const [allSprites, setAllSprites] = useState<AnimalSprite[]>([]);
   const [gameRoomExists, setGameRoomExists] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const router = useRouter();
@@ -155,7 +158,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   useEffect(() => {
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
-    );
+    ) as PresenceChannel;
 
     gameChannel.bind("pusher:subscription_succeeded", () => {
       console.log("success yay");
@@ -174,7 +177,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       },
     );
 
-    // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE
+    // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE AND IF MEMBER REMOVED IS HOST, REDIRECT
     gameChannel.bind(
       "pusher:member_removed",
       (member: { id: any; info: any }) => {
@@ -231,7 +234,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           hostInfo: {
             uid: host.data[0]._id.toString(),
             username: params.username,
-            sprite: AnimalSprite.BUNNY,
+            sprite: currentPlayer?.sprite!,
             x: 0,
             y: 0,
             roomStatus: PlayerRoomStatus.EXTERIOR,
@@ -258,7 +261,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     if (isHost) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
-      );
+      ) as PresenceChannel;
       hostChannel.bind("pusher:subscription_succeeded", () => {
         console.log("host success yay");
         setIsSubscribed(true);
@@ -273,7 +276,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // clean up
     return () => {
       gameChannel.unbind_all;
-      pusherClient.unsubscribe(`presence-ss-host-${params.username}`);
+      if (isHost) {
+        pusherClient.unsubscribe(`presence-ss-host-${params.username}`);
+      }
+
       pusherClient.unsubscribe(`presence-ss-${params.username}`);
       window.removeEventListener("beforeunload", () => {
         stopTimer();
@@ -321,10 +327,19 @@ export default function GamePage({ params }: { params: { username: string } }) {
           host!.data[0]._id.toString(),
         );
         const gameRoomPlayers = gameRoomRes.data?.allPlayers!; // gameRoomExists = true
-        console.log(gameRoomRes.data, "data");
+        const gameRoomSprites = [
+          ...gameRoomPlayers.map((player) => {
+            if (!gameChannel.members.get(player.playerId.toString())) return;
+            return gameChannel.members.get(player.playerId.toString()).info
+              .sprite;
+          }),
+        ];
+
         console.log(gameRoomRes.data?.allPlayers, "players");
 
         setAllPlayers(gameRoomPlayers);
+        setAllSprites(gameRoomSprites);
+        console.log(gameRoomSprites, "sprites");
 
         setWaiting(false);
       };
@@ -358,7 +373,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
-    );
+    ) as PresenceChannel;
 
     let timerDuration = 6;
 
@@ -754,28 +769,28 @@ export default function GamePage({ params }: { params: { username: string } }) {
         <div className="top-0 z-10 h-fit w-3/6 flex-row justify-center text-wrap rounded-b-3xl bg-[url('/backgrounds/whiteGrayBg.png')] bg-cover bg-no-repeat p-3 text-center text-4xl text-gray-600">
           {roundType === "voting" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
+              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Vote for the best response!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "scores" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
+              <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Current Contributions
               </p>{" "}
               <p>{prompt}</p>
             </div>
           ) : roundType === "voted" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Votes are in!
               </p>
               <p>{prompt}</p>
             </div>
           ) : roundType === "writing" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Write a Story Snippet!
               </p>
               <p>{prompt}</p>
@@ -789,7 +804,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             </div>
           ) : roundType === "leaderboard" ? (
             <div>
-              <p className="m-1 rounded-2xl bg-[url('/backgrounds/lighterBrownBg.png')] bg-cover p-1 text-4xl text-white">
+              <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Overall Contributions
               </p>
               <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
@@ -1001,17 +1016,30 @@ export default function GamePage({ params }: { params: { username: string } }) {
         {isSubscribed && !waiting && gameRoomExists && (
           <div className="h-full w-full">
             {/* player 1 (host) */}
-
-            <div className="absolute bottom-0 left-0 h-1/5 w-10/12 bg-[url('/players/bunnyHead.png')] bg-contain bg-no-repeat "></div>
-            <div className="absolute bottom-0 left-0 flex h-23% w-10% items-start justify-center">
-              <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-pink-200">
-                {params.username}
-              </p>
-            </div>
+            {allPlayers.length > 0 && (
+              <div className="h-full w-full">
+                <div
+                  className={`absolute bottom-0 left-0 h-1/5 w-10/12 bg-contain bg-no-repeat `}
+                  style={{
+                    backgroundImage: `url(/players/${allSprites[0]}Head.png)`,
+                  }}
+                ></div>
+                <div className="absolute bottom-0 left-0 flex h-23% w-10% items-start justify-center">
+                  <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-pink-200">
+                    {params.username}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* player 2 */}
             {allPlayers.length > 1 && (
-              <div className="absolute bottom-0 left-0 flex h-1/5 w-1/5 justify-end bg-[url('/players/shibaHead.png')] bg-contain bg-right bg-no-repeat">
+              <div
+                className={`absolute bottom-0 left-0 flex h-1/5 w-1/5 justify-end bg-contain bg-right bg-no-repeat`}
+                style={{
+                  backgroundImage: `url(/players/${allSprites[1]}Head.png)`,
+                }}
+              >
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/2 items-start justify-center">
                   <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-green-200">
                     {allPlayers[1].gameName}
@@ -1022,7 +1050,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 3 */}
             {allPlayers.length > 2 && (
-              <div className="absolute bottom-0 left-0 flex h-1/5 w-30% items-end justify-end bg-[url('/players/cowHead.png')] bg-contain bg-right bg-no-repeat ">
+              <div
+                className={`absolute bottom-0 left-0 flex h-1/5 w-30% items-end justify-end bg-contain bg-right bg-no-repeat `}
+                style={{
+                  backgroundImage: `url(/players/${allSprites[2]}Head.png)`,
+                }}
+              >
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/3 items-start justify-center">
                   <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-purple-200">
                     {allPlayers[2].gameName}
@@ -1033,7 +1066,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 4 */}
             {allPlayers.length > 3 && (
-              <div className="absolute bottom-0 left-0 flex h-1/5 w-2/5 justify-end bg-[url('/players/bearHead.png')] bg-contain bg-right bg-no-repeat">
+              <div
+                className={`absolute bottom-0 left-0 flex h-1/5 w-2/5 justify-end bg-[url('/players/${allSprites[3]}Head.png')] bg-contain bg-right bg-no-repeat `}
+                style={{
+                  backgroundImage: `url(/players/${allSprites[3]}Head.png)`,
+                }}
+              >
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/4 items-start  justify-center">
                   <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-red-300">
                     {allPlayers[3].gameName}
@@ -1044,7 +1082,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 5 */}
             {allPlayers.length > 4 && (
-              <div className="w-48% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-[url('/players/penguinHead.png')] bg-contain bg-right bg-no-repeat ">
+              <div
+                className={`w-48% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-contain bg-right bg-no-repeat `}
+                style={{
+                  backgroundImage: `url(/players/${allSprites[4]}Head.png)`,
+                }}
+              >
                 <div className="absolute -top-15% bottom-0 flex h-full w-1/5 items-start justify-center">
                   <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-blue-200">
                     {allPlayers[4].gameName}
@@ -1055,7 +1098,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
             {/* player 6 */}
             {allPlayers.length > 5 && (
-              <div className="w-56% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/catHead.png')] bg-contain bg-right bg-no-repeat">
+              <div
+                className={`w-56% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/${allSprites[5]}Head.png')] bg-contain bg-right bg-no-repeat`}
+                style={{
+                  backgroundImage: `url(/players/${allSprites[5]}Head.png)`,
+                }}
+              >
                 <div className="absolute -top-15% bottom-0 flex h-full w-12% items-start justify-center">
                   <p className="w-fit rounded-xl bg-black bg-opacity-30 pl-2 pr-2 text-center text-2xl text-yellow-200">
                     {allPlayers[5].gameName}
