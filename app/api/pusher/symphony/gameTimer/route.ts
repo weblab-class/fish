@@ -16,13 +16,19 @@ export async function POST(req: NextRequest) {
     intervalId = setInterval(async () => {
         console.log(time);
         time -= 1;
+        if (time>=0){
+          const triggerTimer = async () => {
+            await pusherServer.trigger(`presence-ss-${hostUsername}`, 'timer', {
+                time,
+            });
+            };
+            await triggerTimer();
 
-        const triggerTimer = async () => {
-        await pusherServer.trigger(`presence-ss-${hostUsername}`, 'timer', {
-            time,
-        });
-        };
-        await triggerTimer();
+        } else{
+          clearInterval(intervalId)
+        }
+
+
 
     }, 1000);
   return NextResponse.json({ status: 200 });
