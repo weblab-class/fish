@@ -162,7 +162,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   useEffect(() => {
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
-    ) as PresenceChannel;
+    );
 
     gameChannel.bind("pusher:subscription_succeeded", () => {
       console.log("success yay");
@@ -178,6 +178,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       (member: { id: any; info: any }) => {
         console.log("success member added,", member.info, member.id);
         setMemberCount(memberCount + 1);
+        console.log("channel info:", gameChannel);
       },
     );
 
@@ -265,7 +266,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     if (isHost) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
-      ) as PresenceChannel;
+      );
       hostChannel.bind("pusher:subscription_succeeded", () => {
         console.log("host success yay");
         setIsSubscribed(true);
@@ -369,7 +370,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
-    ) as PresenceChannel;
+    );
 
     let timerDuration = 6;
 
