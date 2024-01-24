@@ -268,13 +268,6 @@ export default class exterior extends Scene {
   }
 
   update() {
-    if (this.frameCounter < FRAME_BUFFER) {
-      this.frameCounter++;
-      return;
-    }
-
-    this.frameCounter = 0;
-  
     const self = this as Phaser.Scene;
     const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
@@ -283,7 +276,9 @@ export default class exterior extends Scene {
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
 
-    if (otherPlayers.size > 0) {
+    if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
+      this.frameCounter = 0;
+
       const currentPlayers: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
 
       // update existing players
@@ -315,6 +310,7 @@ export default class exterior extends Scene {
       }
     }
 
+    this.frameCounter++;
 
     // detect overlap between player and door
     self.physics.add.overlap(player, door, () => {
