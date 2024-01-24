@@ -428,9 +428,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
             gameRoomData.sentences[gameRoomData.sentences.length - 1],
             "sentencesss",
           );
-          console.log("update data 3", roundType);
+
           setCurrentStory(
-            currentStory +
+            +" " +
               gameRoomData.sentences[
                 gameRoomData.sentences.length - 1
               ].sentence.toString(),
@@ -454,11 +454,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
             voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
           }));
           setResponses(voteOpts);
-          if (gameRoomData.sentences.length > 0) {
-            setCurrentStory(
-              currentStory + gameRoomData.sentences.at(-1)!.sentence,
-            );
-          }
+          // if (gameRoomData.sentences.length > 0) {
+          //   setCurrentStory(
+          //     currentStory + gameRoomData.sentences.at(-1)!.sentence,
+          //   );
+          // }
         }
       }
     });

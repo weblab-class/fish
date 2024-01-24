@@ -12,27 +12,8 @@ interface Players {
 export async function POST(req: NextRequest) {
     let { playerSocketId, members } = (await req.json()) as Players;
 
-    // player who sent POST request sends their username and current number of players (by doing presenceChannel.members.count)
-    // server sends username who sent request to the database
-    // server gets usernames who submitted
+    // triggers host to check if all members submitted a response
 
-    let players= {}; //get from database
-
-    let allSubmitted=true;
-
-    // compare number of users who submitted in the database and current number of players in the channel
-    // members.forEach((member:number) => {
-    //     if (!(member in players)){
-    //         allSubmitted=false
-    //     } else{
-    //         const submitAll = async () => {
-    //             await pusherServer.trigger('presence-host-channel', 'submitResponses',{})
-    //           };
-    //           submitAll();
-
-    //     }
-
-    // });
 
 
 
