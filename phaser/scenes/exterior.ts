@@ -92,6 +92,7 @@ export default class exterior extends Scene {
     // display player sprite
     const player = this.physics.add.sprite(-100, -100, this.sprite);  // position will change when calling initCurrent
     useMultiplayerStore.getState().initCurrent(this.uid, this.username, this.sprite, player, this.hostUsername);
+    useMultiplayerStore.getState().sendMyData({ });
 
     // collision between player and house
     this.physics.add.collider(player, house);
@@ -271,18 +272,17 @@ export default class exterior extends Scene {
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
-    console.log(useMultiplayerStore.getState());
 
-    if (otherPlayers.size > 1) {
+    if (otherPlayers.size > 0) {
       const registryOthers = Object.getOwnPropertyNames(this.registry.getAll()).filter(key => key.startsWith("player-"));
       const keepAlive: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
-  
 
       // update or add other players
       await Promise.all(
         Array.from(otherPlayers).map(([ uid, info ]) => {
           new Promise<void>((resolve) => {
             const playerKey = `player-${uid}`;
+            console.log(playerKey);
   
             const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
             if (otherSprite) {  // we know the other player still existed
@@ -295,19 +295,23 @@ export default class exterior extends Scene {
             // these are people who have uid in the store but not in the registry, meaning they just joined
             const hasJoined = registryOthers.filter(reg => !reg.endsWith(uid)).length > 0;
             if (hasJoined) {
-              this.registry.set(playerKey, this.physics.add.sprite(info.x, info.y, info.sprite));
+              this.registry.set(playerKey, this.add.sprite(info.x, info.y, info.sprite));
               keepAlive.set(playerKey, true);
+              console.log("I AM ADDING");
             }
   
             return resolve();
           })
         })
       )
+
+      console.log(registryOthers, keepAlive);
   
       // delete other people
       for (const regPlayerKey of registryOthers) {
         if (keepAlive.has(regPlayerKey)) return;
 
+        console.log("DELETING");
         (this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite).destroy();
         this.registry.remove(regPlayerKey);
       }
@@ -395,7 +399,7 @@ export default class exterior extends Scene {
       | undefined;
 
     // checks if position changed and if we are in multiplayer mode
-    if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y) && useMultiplayerStore.getState().otherPlayers.size > 1) {
+    if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y) && useMultiplayerStore.getState().otherPlayers.size > 0) {
       // send data to everyone
       useMultiplayerStore.getState().sendMyData({ });
     }
