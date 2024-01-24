@@ -358,7 +358,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         })),
       ]);
     }
-  }, [allPlayers.length]);
+  }, [allPlayers.length]);  // TODO maybe this should be JSON.stringify because there might be some replacement, not just adding and deleting
 
   // timer events
   // dependencies: roundType, endScreen, player?.data
