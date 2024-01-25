@@ -28,7 +28,7 @@ export async function submitSentence({
   }
 
   const voteOptions = room.data.voteOptions;
-  console.log(creatorId,sentence,"hi pls submit")
+  console.log(creatorId,sentence,"SUBMITTING SENTENCE")
   voteOptions.push({ sentence, creatorId, voteIds: [] });
 
   return await axios.post(

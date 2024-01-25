@@ -700,7 +700,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       roundChange();
-    } else if (roundNumber === 10) {
+    } else if (roundNumber === 13) {
       setTime(10);
       const roundChange = async () => {
         const topContribution = contributions.reduce(
@@ -809,28 +809,28 @@ export default function GamePage({ params }: { params: { username: string } }) {
               <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Vote for the best response!
               </p>
-              <p>{prompt}</p>
+              <p className="text-3xl">{prompt}</p>
             </div>
           ) : roundType === "scores" ? (
             <div>
               <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Current Contributions
               </p>{" "}
-              <p>{prompt}</p>
+              <p className="text-3xl">{prompt}</p>
             </div>
           ) : roundType === "voted" ? (
             <div>
               <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Votes are in!
               </p>
-              <p>{prompt}</p>
+              <p className="text-3xl">{prompt}</p>
             </div>
           ) : roundType === "writing" ? (
             <div>
               <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Write a Story Snippet!
               </p>
-              <p>{prompt}</p>
+              <p className="text-3xl">{prompt}</p>
             </div>
           ) : roundType === "selecting" ? (
             <div>
@@ -847,7 +847,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
               <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
                 {topContributor} was the top Contributor!
               </p>
-              <p>{prompt}</p>
+              <p className="text-3xl">{prompt}</p>
             </div>
           ) : (
             <div>

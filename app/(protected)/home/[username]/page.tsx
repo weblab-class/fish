@@ -346,7 +346,15 @@ export default function Home({ params }: { params: { username: string } }) {
         </div>
       ) : (
         // TODO Make this much more interesting
-        <p>Verifying...</p>
+        <div>
+          <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/greenBg.png)] bg-cover bg-no-repeat">
+            <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/lightBlueBg.png)]">
+              <p className="animate-bounce p-16 pb-5 pl-20 pr-20 text-8xl text-white">
+                Verifying...
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );
