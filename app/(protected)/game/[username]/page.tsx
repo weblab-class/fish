@@ -539,7 +539,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       setTime(data.time);
 
-      if (data.time === 0 && roundNumber < 20) {
+      if (data.time === 0 && roundNumber < 25) {
         // only host controls stopTimer
         if (isHost) {
           const stopTimer = async () => {
@@ -691,7 +691,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       roundChange();
-    } else if (roundNumber === 8) {
+    } else if (roundNumber === 15) {
       setTime(10);
       console.log("almost ending game");
       const roundChange = async () => {
