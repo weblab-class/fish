@@ -611,7 +611,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // const responseData = { response: data.response, player: "player_id" };
 
-    console.log("submitting", submittedResponse, data.response);
+    console.log("submitting LOOK AT ME PLZ", submittedResponse, data.response);
 
     if (!submittedResponse && data.response.length > 0) {
       const submitSentenceFunc = async () => {
@@ -926,6 +926,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
               //disables submission after submitting once
               setSubmissionLoading(true);
               setSubmittedResponse(false);
+
               console.log("SUBMITTING");
 
               await handleSubmit(onSubmit)();
