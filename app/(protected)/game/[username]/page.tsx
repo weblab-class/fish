@@ -226,6 +226,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     const hostId = host?.data[0]._id;
     const playerId = player?.data?._id;
 
+    console.log(hostId, playerId);
     if (hostId === playerId) {
       setIsHost(true);
     } else {
@@ -485,27 +486,25 @@ export default function GamePage({ params }: { params: { username: string } }) {
           }
         }
 
-        if (roundType === "voting" && !data.voted) {
-          console.log("forcing submissions", roundType);
-          await forceSubmissions.mutateAsync({
-            hostId: host?.data[0]._id.toString(),
-          });
-          const gameRoomRes = await getSentenceSymphony(
-            host.data[0]._id.toString(),
-          );
-          const gameRoomData = gameRoomRes.data;
-          if (gameRoomData) {
-            const voteOpts = gameRoomData.voteOptions.map((info) => ({
-              ...info,
-              creatorId: info.creatorId.toString(),
-              voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
-            }));
-            setResponses(voteOpts);
-            // if (gameRoomData.sentences.length > 0) {
-            //   setCurrentStory(
-            //     currentStory + gameRoomData.sentences.at(-1)!.sentence,
-            //   );
-            // }
+        // TODO changed here <----
+        if (isHost) {
+          if (roundType === "voting" && !data.voted) {
+            console.log("forcing submissions", roundType);
+            await forceSubmissions.mutateAsync({
+              hostId: host?.data[0]._id.toString(),
+            });
+            const gameRoomRes = await getSentenceSymphony(
+              host.data[0]._id.toString(),
+            );
+            const gameRoomData = gameRoomRes.data;
+            if (gameRoomData) {
+              const voteOpts = gameRoomData.voteOptions.map((info) => ({
+                ...info,
+                creatorId: info.creatorId.toString(),
+                voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
+              }));
+              setResponses(voteOpts);
+            }
           }
         }
       },
@@ -520,7 +519,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         console.log("round change binding triggered", data.newRound);
         if (data.newRound === "voting") {
           // COMMENT THIS BACK IN GO BACK
-          // await handleSubmit(onSubmit)();
+          await handleSubmit(onSubmit)();
           resetField("response");
           setButtonPressed(false);
         }
