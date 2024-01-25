@@ -919,16 +919,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
               e.preventDefault();
               setButtonPressed(true);
               //TO DO: see what presenceChannel.members returns
-              axios.post("/api/pusher/symphony/submittedResponse", {
-                playerSocketId: pusherClient.connection.socket_id,
-                members: (gameChannel as PresenceChannel).members,
-                hostUsername: params.username,
-              });
+              // axios.post("/api/pusher/symphony/submittedResponse", {
+              //   playerSocketId: pusherClient.connection.socket_id,
+              //   members: (gameChannel as PresenceChannel).members,
+              //   hostUsername: params.username,
+              // });
               //disables submission after submitting once
               setSubmissionLoading(true);
+              setSubmittedResponse(false);
               console.log("SUBMITTING");
 
-              handleSubmit(onSubmit);
+              handleSubmit(onSubmit)();
             }}
           >
             {/* text area input box */}
