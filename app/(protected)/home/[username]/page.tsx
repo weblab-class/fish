@@ -16,6 +16,7 @@ import studyroom from "../../../../phaser/studyroom";
 import { useGetPlayer } from "@/services/react-query";
 import Timer from "@/components/timer";
 import Stopwatch from "@/components/stopwatch";
+import ReactAudioPlayer from "react-audio-player";
 
 const DynamicComponentWithNoSSR = dynamic(
   () => import("../../../../phaser/Game"),
@@ -78,9 +79,35 @@ export default function Home() {
       <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
         <DynamicComponentWithNoSSR />
       </div>
+      {/* music */}
+      <button 
+        className = "absolute z-10 h-16 w-16 bottom-10 right-20 bg-[url('/objects/music.png')] bg-no-repeat bg-contain rounded-full hover:bg-white hover:bg-opacity-70"
+        onClick = {() => {console.log("volume toggle")}}
+      />
+      {/* interior */}
+      { isInterior && (
+        <ReactAudioPlayer
+          src="/music/home-everyday-motion-avbe.mp3"
+          autoPlay
+          loop
+        />
+      )}
+      {/* exterior */}
+      { isExterior && (
+        <ReactAudioPlayer
+          src="/music/exterior-pixel-playground-color-parade.mp3"
+          autoPlay
+          loop
+        />
+      )}
       {/* studyroom */}
       { isStudyroom && (
         <div>
+          <ReactAudioPlayer
+            src="/music/studyroom-skylight-simon-folwar.mp3"
+            autoPlay
+            loop
+          />
           <span
             className = "absolute z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat top-10 right-20 hover:bg-[url('/objects/leave_hover.png')]"
             onClick={() => {

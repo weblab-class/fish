@@ -24,7 +24,6 @@ class studyroom extends Phaser.Scene {
 
     constructor() {
       super("studyroom");
-      this.i = 0;
     }
   
     preload() {
