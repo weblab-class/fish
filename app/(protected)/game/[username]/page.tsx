@@ -915,7 +915,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           <form
             id="responseInput"
             className="mt-5 h-1/3"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               setButtonPressed(true);
               //TO DO: see what presenceChannel.members returns
@@ -929,7 +929,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
               setSubmittedResponse(false);
               console.log("SUBMITTING");
 
-              handleSubmit(onSubmit)();
+              await handleSubmit(onSubmit)();
             }}
           >
             {/* text area input box */}
