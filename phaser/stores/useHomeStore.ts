@@ -6,7 +6,7 @@ type PopupType = "invite" | "mail";
 
 type HomeStoreStateData = {
   game: Phaser.Game | null;
-  hostUsername: string;
+  showClouds: boolean;
   showInvitePopup: boolean;
   showMailPopup: boolean;
   text: string;
@@ -14,7 +14,7 @@ type HomeStoreStateData = {
 const getDefaultHomeStoreStateData = () =>
   ({
     game: null,
-    hostUsername: "Host",
+    showClouds: true,
     showInvitePopup: false,
     showMailPopup: false,
     text: "",
@@ -23,6 +23,7 @@ const getDefaultHomeStoreStateData = () =>
 type HomeStoreStateFunc = {
   setDefault: () => void;
   showPopup: (popup: PopupType) => void;
+  setCloudVisbility: (visibility: boolean) => void;
 };
 
 type HomeStoreState = HomeStoreStateData &
@@ -35,7 +36,7 @@ type HomeStoreState = HomeStoreStateData &
 export const useHomeStore = create<HomeStoreState>((set) => ({
   ...getDefaultHomeStoreStateData(),
   setData: (data) => set({ ...data }),
-  setDefault: () => set({ ...getDefaultHomeStoreStateData() }),
+  setDefault: () => set({ showClouds: true, showInvitePopup: false, showMailPopup: false }),
   showPopup: (popup) => {
     const data = getDefaultHomeStoreStateData();
     switch (popup) {
@@ -47,6 +48,13 @@ export const useHomeStore = create<HomeStoreState>((set) => ({
         break;
     }
     set({ ...data });
+  },
+  setCloudVisbility: (visbility) => {
+    if (visbility) {
+      return set({ showClouds: true })
+    }
+
+    set({ showClouds: false, showInvitePopup: false, showMailPopup: false })
   },
   resetData: () => ({ ...getDefaultHomeStoreStateData() }),
 }));

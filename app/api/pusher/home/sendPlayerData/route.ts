@@ -1,10 +1,10 @@
-import { ISendDataParams } from "@/phaser/types";
+import { ISendPlayerDataParams } from "@/phaser/types";
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { channelName, senderData, targetId } =
-    (await req.json()) as ISendDataParams;
+    (await req.json()) as ISendPlayerDataParams;
 
   if (!channelName || !senderData) {
     throw new Error(
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     channelName,
     senderData,
     targetId,
-  } as ISendDataParams);
+  } as ISendPlayerDataParams);
 
   return NextResponse.json({ status: 200 });
 }

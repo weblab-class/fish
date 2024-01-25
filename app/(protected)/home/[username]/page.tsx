@@ -21,14 +21,10 @@ import { CustomErrorCode, ICustomError } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
-import {
-  ISendDataParams,
-  IRedirectParams,
-} from "@/phaser/types";
+import { ISendPlayerDataParams, IRedirectParams } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
-
-// TODO sizing issue
+import HostClouds from "@/components/HostClouds";
 
 const DynamicGame = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
@@ -64,27 +60,20 @@ const useGameRedirectStoreState = create<IGameRedirectStoreState>(() => ({
  *  - redirect unauthorized players from accessing other player's worlds (the game won't show up in time because it has to load)
  */
 export default function Home({ params }: { params: { username: string } }) {
+  const hostUsername = params.username;
+
   // #region states
   const router = useRouter();
   const { session } = useLuciaSession();
-  const signOutMutation = useSignOut();
   const { data: player } = useGetPlayer(session!.user.uid);
   const [authorized, setAuthorized] = useState<
     "waiting" | "authorized" | "unauthorized"
   >("waiting");
 
   // control display of game from client-side
-  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useHomeStore(
-    (state) => [
-      state.showInvitePopup,
-      state.showMailPopup,
-      state.showPopup,
-      state.setDefault,
-    ],
-  );
+  const [setDefault] = useHomeStore((state) => [state.setDefault]);
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
-  const [logoutClicked, setLogoutClicked] = useState(false);
 
   const [redirect, errorCode] = useErrorRedirectStore((state) => [
     state.errorRedirect,
@@ -128,7 +117,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
   // set up pusher
   useEffect(() => {
-    const homeChannelName = `presence-home-${params.username}`;
+    const homeChannelName = `presence-home-${hostUsername}`;
 
     const homeChannel = pusherClient.subscribe(
       homeChannelName,
@@ -148,7 +137,7 @@ export default function Home({ params }: { params: { username: string } }) {
       async (error: NextResponse<ICustomError>) => {
         console.log(error);
         setAuthorized("unauthorized");
-        router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`)
+        router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
         // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =
@@ -197,6 +186,7 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:member_removed",
       async (leavingPlayer: { id: string; info: object }) => {
+        // if redirecting to a game, then don't clear anything because we might want to come back
         if (useGameRedirectStoreState.getState().gameRedirect) {
           useGameRedirectStoreState.setState({ gameRedirect: false });
           return;
@@ -206,7 +196,7 @@ export default function Home({ params }: { params: { username: string } }) {
           // reset multiplayer store
           //  - the store will be emptied, but will be populated by default values if they go back to their home
           useMultiplayerStore.getState().resetData();
-          const host = await getPlayerByUsername(params.username);
+          const host = await getPlayerByUsername(hostUsername);
           if (!host?.data?.at(0)) return;
 
           await deletePlayerFromRoom({
@@ -223,7 +213,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "recieve-player-data",
-      async ({ senderData, targetId }: ISendDataParams) => {
+      async ({ senderData, targetId }: ISendPlayerDataParams) => {
         // if targetId doesn't exist, then it's meant for everyone besides the sender
         // if targetId does exist, then it's meant for that person
         if (
@@ -247,11 +237,13 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
+    homeChannel.bind("change-scene", async () => {});
+
     return () => {
-      if (!homeChannel.members.me) return; // this means subscription failed, so no point in unsubscribing and unbinding
+      useHomeStore.getState().resetData();
 
       homeChannel.unbind();
-      pusherClient.unsubscribe(`presence-home-${params.username}`);
+      pusherClient.unsubscribe(`presence-home-${hostUsername}`);
     };
   }, []);
   // #endregion
@@ -263,7 +255,7 @@ export default function Home({ params }: { params: { username: string } }) {
           <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
             {player && player.data && (
               <DynamicGame
-                hostUsername={params.username}
+                hostUsername={hostUsername}
                 playerId={player.data._id}
                 playerUsername={player.data.username}
                 playerAnimalSprite={player.data.animalSprite}
@@ -280,8 +272,8 @@ export default function Home({ params }: { params: { username: string } }) {
                 await axios.post(
                   `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
                   {
-                    channelName: `presence-home-${params.username}`,
-                    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${params.username}`,
+                    channelName: `presence-home-${hostUsername}`,
+                    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${hostUsername}`,
                   } as IRedirectParams,
                 );
               }}
@@ -293,68 +285,24 @@ export default function Home({ params }: { params: { username: string } }) {
           {/* <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
             <ChatLog
               username={player?.data ? player?.data?.username : "anonymous"}
-              hostUsername={params.username}
+              hostUsername={hostUsername}
             />
           </div> */}
           {/* nav bar */}
-          <div></div>
-          <div
-            className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
-            onClick={async () => {
-              setLogoutClicked(true);
-              await signOutMutation.mutateAsync();
-              router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
-              setLogoutClicked(false);
-            }}
-          />
-          <div
-            className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
-            onClick={() => console.log("go to study room")}
-          />
-          <div
-            className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
-            onClick={() => {
-              console.log("hi mailajmailamalalalm");
-              showPopup("invite");
-            }}
-          />
-          <div
-            className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
-            onClick={() => {
-              console.log("hi mailajmailamalalalm");
-              showPopup("mail");
-            }}
-          />
-          <div className="absolute flex w-full justify-center">
-            <div
-              className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
-              onClick={() => console.log("enter house")}
-            />
-          </div>
-          {showInvitePopup && (
-            <div className="flex h-screen w-screen items-center justify-center">
-              <div
-                className="flex items-center justify-center bg-white"
-                ref={inviteRef}
-              >
-                <InvitePopup hostId={session!.user.uid} />
-              </div>
-            </div>
-          )}
-          {showMailPopup && (
-            <div className="flex h-screen w-screen items-center justify-center">
-              <div
-                className="flex items-center justify-center bg-slate-200"
-                ref={mailRef}
-              >
-                <MailPopup />
-              </div>
+          {player?.data?.username === hostUsername ? (
+            <HostClouds hostUsername={hostUsername} inviteRef={inviteRef} mailRef={mailRef} />
+          ) : (
+            <div>
+              <p>Leave</p>
+              <p>Logout</p>
             </div>
           )}
         </div>
-      ) : (
+      ) : authorized === "unauthorized" ? (
         // TODO Make this much more interesting
-        <p>Verifying...</p>
+        <p>Authorization has failed</p>
+      ) : (
+        <div></div>
       )}
     </main>
   );

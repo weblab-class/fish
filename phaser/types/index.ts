@@ -1,3 +1,4 @@
 export type * from "./player";
-export type * from "./ISendDataParams";
+export type * from "./ISendPlayerDataParams";
 export type * from "./IRedirectParams";
+export type * from "./IChangeSceneParams";

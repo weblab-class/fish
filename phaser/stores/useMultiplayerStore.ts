@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 import { StoreStateFunc } from "./types";
-import { ISendDataParams, PlayerInfo } from "../types";
+import { ISendPlayerDataParams, PlayerInfo } from "../types";
 import { getDefaultPosition } from "@/phaser/settings/functions";
 import axios from "axios";
 
@@ -90,12 +90,12 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
 
       // TODO: axios post to notify others to add your data via addOrUpdateOther()
       await axios.post(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/sendData`,
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/sendPlayerData`,
         {
           channelName: `presence-home-${get().hostUsername}`,
           senderData: get().currentPlayer!,
           targetId: targetId ?? null,
-        } as ISendDataParams,
+        } as ISendPlayerDataParams,
       );
     },
     initCurrent: (uid, username, sprite, phaserSprite, hostUsername) => {

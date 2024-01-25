@@ -2,3 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* https://stackoverflow.com/questions/51764992/blink-border-3-times-1-second-per-loop-in-css */
+.active-border {
+    border: 1px #ff0000 solid;
+    
+    animation: blink 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes blink { 50% { border-color:#fff ; }  }
