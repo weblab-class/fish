@@ -18,19 +18,26 @@ export default function ResponseCard(props: {
 
   // unclicks a response if clicked outside of box
   useEffect(() => {
-    console.log("clicked called");
     const presenceChannel = pusherClient.subscribe(
       `presence-ss-vote-${props.hostUsername}`,
     );
     presenceChannel.bind("countVotes", () => {
       // +1 to the response in the data base if clicked
-      console.log("countVotes responses comonent binding called");
+      console.log(
+        "countVotes responses comonent binding called",
+        props.response,
+        clicked,
+      );
       setAllowUnsubscribe(true);
-      console.log("subsubcribe true");
 
       if (clicked) {
         // send player id as voter id to db
-        console.log("voted for: ", props.creatorId, props.response);
+        console.log(
+          props.voterId,
+          "voted for: ",
+          props.creatorId,
+          props.response,
+        );
 
         const updateVoteFunc = async () => {
           await updateVote.mutateAsync({
@@ -38,6 +45,7 @@ export default function ResponseCard(props: {
             creatorId: props.creatorId,
             voterId: props.voterId,
           });
+
           await axios.post("/api/pusher/symphony/updateData", {
             hostUsername: props.hostUsername,
           });

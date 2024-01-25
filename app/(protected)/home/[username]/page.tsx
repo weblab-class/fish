@@ -21,10 +21,7 @@ import { CustomErrorCode, ICustomError } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
-import {
-  ISendDataParams,
-  IRedirectParams,
-} from "@/phaser/types";
+import { ISendDataParams, IRedirectParams } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 
@@ -100,10 +97,7 @@ export default function Home({ params }: { params: { username: string } }) {
         (mailRef.current && !mailRef.current.contains(event.target as Node)) ||
         (inviteRef.current && !inviteRef.current.contains(event.target as Node))
       ) {
-        console.log(mailRef.current);
-        console.log(event.target);
         setDefault();
-        console.log("clicked outside");
       }
     };
     document.addEventListener("click", handleClickOutside);
@@ -148,7 +142,7 @@ export default function Home({ params }: { params: { username: string } }) {
       async (error: NextResponse<ICustomError>) => {
         console.log(error);
         setAuthorized("unauthorized");
-        router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`)
+        router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
         // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =
@@ -314,14 +308,12 @@ export default function Home({ params }: { params: { username: string } }) {
           <div
             className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
             onClick={() => {
-              console.log("hi mailajmailamalalalm");
               showPopup("invite");
             }}
           />
           <div
             className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
             onClick={() => {
-              console.log("hi mailajmailamalalalm");
               showPopup("mail");
             }}
           />

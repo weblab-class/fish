@@ -82,7 +82,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   // session data
   const { session } = useLuciaSession();
-  const playerId = session!.user.uid;
   const [isHost, setIsHost] = useState(true);
   const [allPlayers, setAllPlayers] = useState<GamePlayerInfo[]>([]);
   const [allSprites, setAllSprites] = useState<AnimalSprite[]>([]);
@@ -97,6 +96,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const { data: host, isLoading: isHostLoading } = useGetPlayerByUsername(
     params.username,
   );
+
   const isBothFinishedLoading = !isPlayerLoading && !isHostLoading; // make sure both is loaded in before creation
 
   // mutations
@@ -129,7 +129,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [topContributor, setTopContributor] = useState<string>("");
   const [memberCount, setMemberCount] = useState<number>(0);
+  const [changeChart, setChangeChart] = useState<boolean>(false);
 
+  // testing
   const randomTestPrompts = [
     "A fish goes to the grocery store.",
     "A cow is flying.",
@@ -140,17 +142,19 @@ export default function GamePage({ params }: { params: { username: string } }) {
     "A duck buys grapes.",
     "A shiba buys ramen.",
     "A beaver opens a cafe.",
+    "An ant takes over the world.",
+    "A pig makes a snowman.",
   ];
 
   interface Contribution {
     playerName: string;
     value: number;
   }
+
+  // data for pie chart
   const [contributions, setContributions] = useState<Contribution[]>([]);
 
-  //testing data (replace with multiplayer store)
-
-  // react hook form (for writing sentences)
+  // react hook form (for story snippet submissions)
   const {
     register,
     handleSubmit,
@@ -160,7 +164,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   // immediate game channel subscription events
   useEffect(() => {
-    console.log(otherPlayers, currentPlayer, hostUsername, "otherPlayers");
     const gameChannel = pusherClient.subscribe(
       `presence-ss-${params.username}`,
     );
@@ -179,7 +182,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       (member: { id: any; info: any }) => {
         console.log("success member added,", member.info, member.id);
         setMemberCount(memberCount + 1);
-        console.log("channel info:", gameChannel);
       },
     );
 
@@ -187,7 +189,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     gameChannel.bind(
       "pusher:member_removed",
       (member: { id: any; info: any }) => {
-        console.log("removed member");
+        console.log("removed member", member);
         if (member.info.username === params.username) {
           router.push(`/home/${params.username}`);
         }
@@ -198,20 +200,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
       console.log("game room binding received");
       setGameRoomExists(true);
     });
+
     // all players listen for new generated prompts (only host can control prompt generation)
     gameChannel.bind("generatePrompt", (data: { prompt: string }) => {
       setPrompt(data.prompt);
       setSubmissionLoading(false);
     });
-  });
+  }, []);
 
   // events after host and player data are loaded
+  // identifies host
   useEffect(() => {
-    // makes sure timer is stopped before unloading
-    const stopTimer = async () => {
-      await axios.delete("/api/pusher/symphony/gameTimer");
-    };
-
     // makes sure host data and player data are loaded
     if (!host?.data || !host.data[0] || !player?.data) return;
 
@@ -291,10 +290,19 @@ export default function GamePage({ params }: { params: { username: string } }) {
       );
     }
 
-    // host makes sure timer stops before unloading
-    window.addEventListener("beforeunload", () => {
-      stopTimer();
+    gameChannel.bind("topContributor", (data: { topContributor: string }) => {
+      setTopContributor(data.topContributor);
     });
+
+    // host makes sure timer stops before unloading
+    const stopTimer = async () => {
+      await axios.delete("/api/pusher/symphony/gameTimer");
+    };
+    if (isHost) {
+      window.addEventListener("beforeunload", () => {
+        stopTimer();
+      });
+    }
 
     // clean up
     return () => {
@@ -350,11 +358,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
           }),
         ];
 
-        console.log(gameRoomRes.data?.allPlayers, "players");
-
         setAllPlayers(gameRoomPlayers);
         setAllSprites(gameRoomSprites);
-        console.log(gameRoomSprites, "sprites");
 
         setWaiting(false);
       };
@@ -390,10 +395,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
       `presence-ss-${params.username}`,
     );
 
-    let timerDuration = 15;
+    let timerDuration = 6;
 
     if (roundType != "selecting") {
-      timerDuration = 15;
+      timerDuration = 6;
     }
 
     // start timer after new round
@@ -406,90 +411,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       };
       timer();
     }
-
-    gameChannel.bind("updateData", async (data: { voted: boolean }) => {
-      if (!host?.data) return;
-      console.log("update data", roundType);
-
-      const gameRoomRes = await getSentenceSymphony(
-        host.data[0]._id.toString(),
-      );
-      const gameRoomData = gameRoomRes.data;
-      if (gameRoomData) {
-        const voteOpts = gameRoomData.voteOptions.map((info) => ({
-          ...info,
-          creatorId: info.creatorId.toString(),
-          voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
-        }));
-        setResponses(voteOpts);
-
-        if (
-          gameRoomData.sentences &&
-          roundType === "voted" &&
-          gameRoomData.sentences.length > 0
-        ) {
-          const winner =
-            gameRoomData.sentences[
-              gameRoomData.sentences.length - 1
-            ].creatorId.toString();
-          const winnerName = allPlayers.find(
-            ({ playerId }) => playerId === winner,
-          )?.gameName!;
-
-          setMostVoted(
-            gameRoomData.sentences[gameRoomData.sentences.length - 1].sentence,
-          );
-          console.log("most voted", mostVoted);
-          setVotedWinner(winnerName);
-
-          const newContributions = contributions.map((player) => {
-            if (player.playerName === winnerName) {
-              return { ...player, value: player.value + 1 };
-            }
-
-            return { ...player };
-          });
-
-          setContributions(newContributions);
-          console.log(
-            gameRoomData.sentences[gameRoomData.sentences.length - 1],
-            "sentencesss",
-          );
-
-          setCurrentStory(
-            currentStory +
-              " " +
-              gameRoomData.sentences[
-                gameRoomData.sentences.length - 1
-              ].sentence.toString(),
-          );
-        }
-      }
-
-      if (roundType === "voting" && !data.voted) {
-        console.log("forcing submissions", roundType);
-        await forceSubmissions.mutateAsync({
-          hostId: host?.data[0]._id.toString(),
-        });
-        const gameRoomRes = await getSentenceSymphony(
-          host.data[0]._id.toString(),
-        );
-        const gameRoomData = gameRoomRes.data;
-        if (gameRoomData) {
-          const voteOpts = gameRoomData.voteOptions.map((info) => ({
-            ...info,
-            creatorId: info.creatorId.toString(),
-            voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
-          }));
-          setResponses(voteOpts);
-          // if (gameRoomData.sentences.length > 0) {
-          //   setCurrentStory(
-          //     currentStory + gameRoomData.sentences.at(-1)!.sentence,
-          //   );
-          // }
-        }
-      }
-    });
 
     // ALL PLAYERS the host makes a call to the server when the round should change. Then, all players listen for "roundChange" event to trigger. Then, every player updates their RoundType and RoundNumber
     // ROUND CHANGE BINDING
@@ -514,6 +435,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // gameChannel.bind("mostVoted",(data:{mostVotedPrompt:string,newPrompt}))
 
+    // TIMER BINDING
     gameChannel.bind("timer", (data: { time: number }) => {
       console.log(data.time);
 
@@ -521,6 +443,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       if (data.time === 0 && roundNumber < 15) {
         // only host controls stopTimer
+        console.log("timer stopped", roundType);
         if (isHost) {
           const stopTimer = async () => {
             await axios.delete("/api/pusher/symphony/gameTimer");
@@ -531,11 +454,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
         setTimesUp(true);
         setTimeout(() => {
           setTimesUp(false);
-          setTime(15);
+          setTime(6);
         }, 1000);
 
         if (roundType === "story") {
-          // TO DO CHANGE LINK
           if (!player?.data) return;
           const deleteGame = async () => {
             if (!host?.data) return;
@@ -548,31 +470,55 @@ export default function GamePage({ params }: { params: { username: string } }) {
           router.push(`/home/${params.username}`);
         }
 
+        // if (roundType === "voting") {
+        //   // CALCULATE WINNER TO DO: TOO EARLY ?
+        //   if (!host?.data) return;
+        //   console.log("calculate winners");
+        //   const getWinner = async function () {
+        //     if (!host?.data) return;
+        //     const winningResponse = await calculateWinner({
+        //       hostId: host.data[0]._id.toString(),
+        //     });
+        //     console.log(winningResponse, "winning response");
+        //     setPrevWinner(winningResponse);
+        //     setMostVoted(winningResponse.sentence);
+        //     console.log("most voted", winningResponse.sentence);
+
+        //     await axios.post("/api/pusher/symphony/updateContributions", {
+        //       hostUsername: params.username,
+        //       voted: true,
+        //     });
+        //   };
+        //   getWinner();
+        // }
+
         // only host controls roundChangeFunc
         if (roundType === "voted") {
-          console.log("starting the pie chart data", responses, roundType);
-
-          // clears responses for new round and calculates the winning prompt
-          if (isHost) {
-            const startNewRoundFunc = async () => {
-              if (!host?.data || !prevWinner) return;
-              await startNewRound.mutateAsync({
-                hostId: host.data[0]._id.toString(),
-                prevWinner: prevWinner,
-              });
-            };
-            startNewRoundFunc();
-            console.log("2 pt 2", roundType);
-            const updateData = async () => {
-              await axios.post("/api/pusher/symphony/updateData", {
-                hostUsername: params.username,
-                voted: true,
-              });
-            };
-            console.log("updating data");
-            updateData();
-            console.log("2 pt 3", roundType);
-          }
+          // console.log(
+          //   "starting the pie chart data",
+          //   responses,
+          //   prevWinner,
+          //   roundType,
+          // );
+          // // clears responses for new round and calculates the winning prompt
+          // if (isHost) {
+          //   const startNewRoundFunc = async () => {
+          //     if (!host?.data || !prevWinner) return;
+          //     await startNewRound.mutateAsync({
+          //       hostId: host.data[0]._id.toString(),
+          //       prevWinner: prevWinner,
+          //     });
+          //   };
+          //   startNewRoundFunc();
+          //   console.log("2 pt 2", roundType);
+          //   const updateData = async () => {
+          //     await axios.post("/api/pusher/symphony/updateData", {
+          //       hostUsername: params.username,
+          //       voted: true,
+          //     });
+          //   };
+          //   updateData();
+          // }
         }
         if (isHost) {
           roundChangeFunc(roundType);
@@ -580,30 +526,165 @@ export default function GamePage({ params }: { params: { username: string } }) {
       }
     });
 
+    // UPDATE DATA BINDING: updates after sentence or a vote is submitted
+    gameChannel.bind("updateData", async (data: { voted: boolean }) => {
+      console.log(gameChannel);
+      if (!host?.data) return;
+      console.log("update data binding", roundType);
+
+      // get updated game room data
+      let gameRoomRes = await getSentenceSymphony(host.data[0]._id.toString());
+      let gameRoomData = gameRoomRes.data;
+
+      // updates vote options and their vote count
+      if (gameRoomData) {
+        const voteOpts = gameRoomData.voteOptions.map((info) => ({
+          ...info,
+          creatorId: info.creatorId.toString(),
+          voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
+        }));
+        setResponses(voteOpts);
+      }
+
+      if (isHost) {
+        if (roundType === "voting" && !data.voted) {
+          console.log("forcing submissions", roundType);
+          await forceSubmissions.mutateAsync({
+            hostId: host?.data[0]._id.toString(),
+          });
+        }
+      }
+
+      gameRoomRes = await getSentenceSymphony(host.data[0]._id.toString());
+      gameRoomData = gameRoomRes.data;
+
+      // updates vote options and their vote count
+      if (gameRoomData) {
+        const voteOpts = gameRoomData.voteOptions.map((info) => ({
+          ...info,
+          creatorId: info.creatorId.toString(),
+          voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
+        }));
+        setResponses(voteOpts);
+      }
+    });
+
+    gameChannel.bind("updateContributions", async () => {
+      // updates the latest round winner
+      console.log("update contributions");
+      if (!host?.data) return;
+      const gameRoomRes = await getSentenceSymphony(
+        host.data[0]._id.toString(),
+      );
+      const gameRoomData = gameRoomRes.data;
+
+      // updates vote options and their vote count
+      if (gameRoomData) {
+        const voteOpts = gameRoomData.voteOptions.map((info) => ({
+          ...info,
+          creatorId: info.creatorId.toString(),
+          voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
+        }));
+        setResponses(voteOpts);
+
+        if (gameRoomData.sentences && gameRoomData.sentences.length > 0) {
+          const winnerId =
+            gameRoomData.sentences[
+              gameRoomData.sentences.length - 1
+            ].creatorId.toString();
+          const winnerName = allPlayers.find(
+            ({ playerId }) => playerId === winnerId,
+          )?.gameName!;
+
+          setMostVoted(
+            gameRoomData.sentences[gameRoomData.sentences.length - 1].sentence,
+          );
+
+          setVotedWinner(winnerName);
+
+          const newContributions = contributions.map((player) => {
+            if (player.playerName === winnerName) {
+              return { ...player, value: player.value + 1 };
+            }
+
+            return { ...player };
+          });
+
+          setContributions(newContributions);
+          console.log(
+            gameRoomData.sentences[gameRoomData.sentences.length - 1],
+            "sentencess",
+            roundType,
+          );
+
+          setCurrentStory(
+            currentStory +
+              " " +
+              gameRoomData.sentences[
+                gameRoomData.sentences.length - 1
+              ].sentence.toString(),
+          );
+          console.log(
+            "current story",
+            currentStory +
+              " " +
+              gameRoomData.sentences[
+                gameRoomData.sentences.length - 1
+              ].sentence.toString(),
+          );
+        }
+      }
+      setChangeChart(!changeChart);
+    });
+
     // clean up
     return () => {
       gameChannel.unbind("timer");
       gameChannel.unbind("roundChange");
+      gameChannel.unbind("updateData");
     };
   }, [roundType, gameRoomExists]);
 
+  useEffect(() => {
+    console.log(
+      "starting the pie chart data",
+      responses,
+      prevWinner,
+      roundType,
+    );
+    if (!prevWinner) return;
+
+    // clears responses for new round and calculates the winning prompt
+    if (isHost) {
+      const startNewRoundFunc = async () => {
+        if (!host?.data || !prevWinner) return;
+        await startNewRound.mutateAsync({
+          hostId: host.data[0]._id.toString(),
+          prevWinner: prevWinner,
+        });
+      };
+      startNewRoundFunc();
+      console.log("2 pt 2", roundType);
+      const updateData = async () => {
+        await axios.post("/api/pusher/symphony/updateData", {
+          hostUsername: params.username,
+          voted: true,
+        });
+      };
+
+      updateData();
+    }
+  }, [changeChart]);
+
   //   submitting responses
   const onSubmit: SubmitHandler<Input> = (data) => {
-    // data contains response, send player's id and response to db
-    // submit response to database
-    // response: player,votes
-    //disables change of submission
-
-    const responseData = { response: data.response, player: "player_id" };
-    // TO DO: send data to DB
-
     console.log("submitting", submittedResponse, data.response);
 
     if (!submittedResponse && data.response.length > 0) {
       const submitSentenceFunc = async () => {
+        console.log(!host?.data, "check submitting");
         if (!host?.data) return;
         await submitSentence.mutateAsync({
-          // TO DO CHANGE HOST ID
           hostId: host.data[0]._id.toString(),
           creatorId: session!.user.uid,
           sentence: data.response,
@@ -611,6 +692,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
       };
       submitSentenceFunc();
     }
+
+    console.log("made it out");
 
     setSubmittedResponse(true);
     setSubmissionLoading(false);
@@ -654,10 +737,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
       await axios.delete("/api/pusher/symphony/gameTimer");
     };
     stopTimer();
+    console.log("roundChangeFunc", roundTypeParam);
 
     // change from writing to voting
     if (roundTypeParam === "writing") {
-      setTime(15);
+      setTime(6);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "voting",
@@ -679,26 +763,27 @@ export default function GamePage({ params }: { params: { username: string } }) {
       };
       roundChange();
     } else if (roundNumber === 12) {
-      setTime(15);
+      setTime(6);
       const roundChange = async () => {
-        setTopContributor(
-          contributions.reduce(
-            (max, current) => (current.value > max.value ? current : max),
-            contributions[0],
-          ).playerName,
-        );
+        const topContribution = contributions.reduce(
+          (max, current) => (current.value > max.value ? current : max),
+          contributions[0],
+        ).playerName;
 
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "leaderboard",
           roundNumber: roundNumber + 1,
           hostUsername: params.username,
         });
+        await axios.post("/api/pusher/symphony/topContributor", {
+          topContributor: topContribution,
+        });
       };
       roundChange();
 
       // changes from voted screen to pie chart scores
     } else if (roundTypeParam === "voted") {
-      setTime(15);
+      setTime(6);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "scores",
@@ -710,7 +795,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from pie chart to writing
     } else if (roundTypeParam === "scores") {
-      setTime(15);
+      setTime(6);
 
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -723,40 +808,47 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from voting to vote count screen
     } else if (roundTypeParam === "voting") {
-      setTime(15);
+      setTime(6);
       // triggers counting of votes
-
       const countVotes = async () => {
         await axios.put("/api/pusher/symphony/submittedResponse", {
           currentStory: currentStory,
           hostUsername: params.username,
         });
 
-        // CALCULATE WINNER
-        if (!host?.data) return;
-        console.log("calculate winners");
-        const winningResponse = await calculateWinner({
-          hostId: host.data[0]._id.toString(),
-        });
-        setPrevWinner(winningResponse);
-        setMostVoted(winningResponse.sentence);
+        if (roundType === "voting") {
+          // CALCULATE WINNER TO DO: TOO EARLY ?
+          if (!host?.data) return;
+          console.log("calculate winners");
+          const getWinner = async function () {
+            if (!host?.data) return;
+            const winningResponse = await calculateWinner({
+              hostId: host.data[0]._id.toString(),
+            });
+            console.log(winningResponse, "winning response");
+            setPrevWinner(winningResponse);
+            setMostVoted(winningResponse.sentence);
+            console.log("most voted", winningResponse.sentence);
 
-        await axios.post("/api/pusher/symphony/updateData", {
-          hostUsername: params.username,
-          voted: true,
-        });
+            await axios.post("/api/pusher/symphony/updateContributions", {
+              hostUsername: params.username,
+              voted: true,
+            });
+          };
+          getWinner();
 
-        await axios.post("/api/pusher/symphony/roundChange", {
-          hostUsername: params.username,
-          newRound: "voted",
-          roundNumber: roundNumber + 1,
-        });
+          await axios.post("/api/pusher/symphony/roundChange", {
+            hostUsername: params.username,
+            newRound: "voted",
+            roundNumber: roundNumber + 1,
+          });
+        }
       };
       countVotes();
 
       // changes from selecting a prompt to writing the first sentence
     } else if (roundTypeParam === "selecting") {
-      setTime(15);
+      setTime(6);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "writing",
@@ -834,7 +926,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 Overall Contributions
               </p>
               <p className="rounded-2xl p-1 text-4xl text-amber-950 underline">
-                {topContributor} was the top Contributor!
+                {topContributor} was the top contributor!
               </p>
               <p>{prompt}</p>
             </div>
@@ -897,6 +989,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     await axios.delete("/api/pusher/symphony/gameTimer");
                   };
                   stopTimer();
+                  stopTimer();
 
                   // change to writing round for everyone
                   roundChangeFunc(roundType);
@@ -914,14 +1007,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
               e.preventDefault();
               setButtonPressed(true);
               //TO DO: see what presenceChannel.members returns
-              axios.post("/api/pusher/symphony/submittedResponse", {
-                playerSocketId: pusherClient.connection.socket_id,
-                members: (gameChannel as PresenceChannel).members,
-                hostUsername: params.username,
-              });
+
+              // TO DO: use later for submitting when all players submit
+              // axios.post("/api/pusher/symphony/submittedResponse", {
+              //   playerSocketId: pusherClient.connection.socket_id,
+              //   members: (gameChannel as PresenceChannel).members,
+              //   hostUsername: params.username,
+              // });
               //disables submission after submitting once
               setSubmissionLoading(true);
-              console.log("SUBMITTING");
 
               handleSubmit(onSubmit);
             }}
@@ -1002,6 +1096,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     creatorId={response.creatorId}
                     response={response.sentence}
                     // GET USERNAME OF CREATOR useGetPlayer("creatorId")
+
                     creatorUsername={
                       allPlayers.find(
                         (player) => player.playerId === response.creatorId,
@@ -1109,7 +1204,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {/* player 5 */}
             {allPlayers.length > 4 && (
               <div
-                className={`w-48% absolute bottom-0 left-0 flex h-1/5 items-end justify-end bg-contain bg-right bg-no-repeat `}
+                className={`absolute bottom-0 left-0 flex h-1/5 w-48% items-end justify-end bg-contain bg-right bg-no-repeat `}
                 style={{
                   backgroundImage: `url(/players/${allSprites[4]}Head.png)`,
                 }}
@@ -1125,7 +1220,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             {/* player 6 */}
             {allPlayers.length > 5 && (
               <div
-                className={`w-56% absolute bottom-0 left-0 flex h-1/5 justify-end bg-[url('/players/${allSprites[5]}Head.png')] bg-contain bg-right bg-no-repeat`}
+                className={`absolute bottom-0 left-0 flex h-1/5 w-56% justify-end bg-[url('/players/${allSprites[5]}Head.png')] bg-contain bg-right bg-no-repeat`}
                 style={{
                   backgroundImage: `url(/players/${allSprites[5]}Head.png)`,
                 }}

@@ -8,6 +8,7 @@ export default function VoteCount(props: {
   hostId: string;
   winningResponse: string;
 }) {
+  // not calculating winning response ?
   console.log(props.response, props.won, props.winningResponse);
   return (
     <div className="z-50 ml-2 mr-2 h-2/5 w-1/5">

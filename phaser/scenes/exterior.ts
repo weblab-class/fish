@@ -167,7 +167,7 @@ export default class exterior extends Scene {
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
-    console.log(useMultiplayerStore.getState())
+
 
     if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;

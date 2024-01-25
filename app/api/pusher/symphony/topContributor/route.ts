@@ -4,15 +4,15 @@ import { NextRequest, NextResponse } from "next/server";
 interface Username {
 
     hostUsername:string
-    voted:boolean
+    topContributor:string
 }
 
 export async function POST(req: NextRequest) {
-    const {hostUsername } = (await req.json()) as Username;
+    const {hostUsername, topContributor } = (await req.json()) as Username;
 
 
-    await pusherServer.trigger(`presence-ss-${hostUsername}`, "updateContributions", {
-
+    await pusherServer.trigger(`presence-ss-${hostUsername}`, "topContributor", {
+        topContributor
 
     });
 
