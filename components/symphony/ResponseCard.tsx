@@ -13,31 +13,29 @@ export default function ResponseCard(props: {
 }) {
   const [clicked, setClicked] = useState(false);
   const responseBoxRef = useRef<HTMLDivElement>(null);
-  const [allowUnsubscribe, setAllowUnsubscribe] = useState<boolean>(false);
+  const [allowUnsubscribe, setAllowUnsubscribe] = useState<boolean>(true);
   const updateVote = useUpdateVote();
+  const [bind, setBind] = useState(false);
 
   // unclicks a response if clicked outside of box
   useEffect(() => {
+    console.log("clicked called");
     const presenceChannel = pusherClient.subscribe(
       `presence-ss-vote-${props.hostUsername}`,
     );
     presenceChannel.bind("countVotes", () => {
+      setBind(true);
       // +1 to the response in the data base if clicked
+      setAllowUnsubscribe(false);
       console.log(
         "countVotes responses comonent binding called",
-        props.response,
         clicked,
+        props.response,
       );
-      setAllowUnsubscribe(true);
 
       if (clicked) {
         // send player id as voter id to db
-        console.log(
-          props.voterId,
-          "voted for: ",
-          props.creatorId,
-          props.response,
-        );
+        console.log("voted for: ", props.creatorId, props.response);
 
         const updateVoteFunc = async () => {
           await updateVote.mutateAsync({
@@ -45,18 +43,21 @@ export default function ResponseCard(props: {
             creatorId: props.creatorId,
             voterId: props.voterId,
           });
-
           await axios.post("/api/pusher/symphony/updateData", {
             hostUsername: props.hostUsername,
+            scores: false,
           });
         };
+
         updateVoteFunc();
         console.log("votecount vote func ran");
+        setAllowUnsubscribe(true);
         presenceChannel.unbind("countVotes");
         presenceChannel.unsubscribe();
       } else {
         presenceChannel.unbind("countVotes");
         presenceChannel.unsubscribe();
+        console.log(props.creatorId, "unsubscribing component");
       }
     });
 
@@ -76,7 +77,9 @@ export default function ResponseCard(props: {
         responseBoxRef.current &&
         !responseBoxRef.current.contains(event.target as Node)
       ) {
-        setClicked(false);
+        if (!bind) {
+          setClicked(false);
+        }
       }
     };
     document.addEventListener("click", handleClickOutside);
@@ -96,9 +99,12 @@ export default function ResponseCard(props: {
           ? "You can not vote for your own response"
           : ""
       }
+      aria-disabled={bind}
       onClick={() => {
         if (!(props.creatorId === props.voterId)) {
-          setClicked(true);
+          if (!bind) {
+            setClicked(true);
+          }
         }
       }}
     >
