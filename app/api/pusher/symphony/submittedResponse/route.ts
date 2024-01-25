@@ -32,13 +32,6 @@ export async function PUT(req: NextRequest) {
     // response card component will send the response to db is they are clicked
     await pusherServer.trigger(`presence-ss-vote-${hostUsername}`,'countVotes',{})
 
-    // get voted responses from db
-    // responseVotes=[]
-
-
-    // send mostVoted to host and host will combine it with the story and display the most voted response
-    // await pusherServer.trigger(`presence-ss-${hostUsername}`,'mostVoted',{})
-
 
 
   return NextResponse.json({ status: 200 });

@@ -1,5 +1,6 @@
 "use client";
-// TO DO: dont create sentence symphony until all players are subscribed
+
+// TO DO: core plugins error, event emitter
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { pusherClient } from "@/services/pusher";
@@ -393,8 +394,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [allPlayers.length]);
 
   // timer events
-  // dependencies: roundType, endScreen, player?.data
-
+  // dependencies: roundType, player?.data
   useEffect(() => {
     // only host controls timer
     // if (!player?.data) return;
@@ -422,6 +422,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       timer();
     }
 
+    // UPDATE DATA BINDING
     gameChannel.bind(
       "updateData",
       async (data: { voted: boolean; scores: boolean }) => {
@@ -440,13 +441,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
           }));
           setResponses(voteOpts);
 
-          if (
-            gameRoomData.sentences &&
-            roundType === "voted" &&
-            gameRoomData.sentences.length > 0
-          ) {
-            console.log("update data 2", roundType);
-
+          // TODO CHECK THIS <-----
+          if (roundType === "voted" && gameRoomData.sentences.length > 0) {
             const winner =
               gameRoomData.sentences[
                 gameRoomData.sentences.length - 1
@@ -523,7 +519,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
         //submit all responses when time runs out
         console.log("round change binding triggered", data.newRound);
         if (data.newRound === "voting") {
-          await handleSubmit(onSubmit)();
+          // COMMENT THIS BACK IN GO BACK
+          // await handleSubmit(onSubmit)();
           resetField("response");
           setButtonPressed(false);
         }
@@ -543,7 +540,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       setTime(data.time);
 
-      if (data.time === 0 && roundNumber < 15) {
+      if (data.time === 0 && roundNumber < 20) {
         // only host controls stopTimer
         if (isHost) {
           const stopTimer = async () => {
@@ -578,24 +575,19 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
           // clears responses for new round and calculates the winning prompt
           if (isHost) {
+            // TODO CHECK THIS <----- (async functions)
             const startNewRoundFunc = async () => {
               if (!host?.data) return;
               await startNewRound.mutateAsync({
                 hostId: host.data[0]._id.toString(),
               });
-            };
-            startNewRoundFunc();
-            console.log("2 pt 2", roundType);
-            const updateData = async () => {
               await axios.post("/api/pusher/symphony/updateData", {
                 hostUsername: params.username,
                 voted: true,
                 scores: true,
               });
             };
-            console.log("updating data");
-            updateData();
-            console.log("2 pt 3", roundType);
+            startNewRoundFunc();
           }
         }
         if (isHost) {
@@ -618,7 +610,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // response: player,votes
     //disables change of submission
 
-    const responseData = { response: data.response, player: "player_id" };
+    // const responseData = { response: data.response, player: "player_id" };
 
     console.log("submitting", submittedResponse, data.response);
 
@@ -700,8 +692,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       roundChange();
-    } else if (roundNumber === 13) {
+    } else if (roundNumber === 8) {
       setTime(10);
+      console.log("almost ending game");
       const roundChange = async () => {
         const topContribution = contributions.reduce(
           (max, current) => (current.value > max.value ? current : max),
@@ -851,10 +844,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
             </div>
           ) : (
             <div>
-              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/redBrownBg.png')] text-4xl text-white">
+              <p className="bg-coverp-1 m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] text-4xl text-white">
                 Final Story!
               </p>
-              <p>{prompt}</p>
+              <p className="text-3xl">{prompt}</p>
             </div>
           )}
 
