@@ -348,7 +348,7 @@ export default function Home({ params }: { params: { username: string } }) {
         // TODO Make this much more interesting
         <div>
           <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/greenBg.png)] bg-cover bg-no-repeat">
-            <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/lightBlueBg.png)]">
+            <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/pinkBigBg.png)] outline-dashed outline-4 outline-white">
               <p className="animate-bounce p-16 pb-5 pl-20 pr-20 text-8xl text-white">
                 Verifying...
               </p>
