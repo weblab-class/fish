@@ -357,10 +357,10 @@ class interior extends Scene {
     console.log("player is on:", this.registry.get("player").scene.scene.key);
     // logic for moving the tag
 
-    const top = this.hsv[this.i].color;
-    const bottom = this.hsv[359 - this.i].color;
+    // const top = this.hsv[this.i].color;
+    // const bottom = this.hsv[359 - this.i].color;
 
-    this.tvText1.setTint(top, top, bottom, bottom);
+    // this.tvText1.setTint(top, top, bottom, bottom);
 
     this.i++;
 
