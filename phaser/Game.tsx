@@ -46,11 +46,16 @@ export default function Game({
         default: "arcade",
         arcade: {
           gravity: { y: 0 },
-          debug: true,
+          debug: false,
         },
       },
       scene: [
-        new exterior(hostUsername, playerId.toString(), playerUsername, playerAnimalSprite),
+        new exterior(
+          hostUsername,
+          playerId.toString(),
+          playerUsername,
+          playerAnimalSprite,
+        ),
         interior,
         studyroom,
       ],

@@ -38,6 +38,20 @@ export default class exterior extends Scene {
     this.load.image("transparent", "/backgrounds/transparent.png");
 
     loadSprites(this);
+    this.load.on('fileprogress', function (file: { src: any; }) {
+      console.log(file.src);
+  });
+
+  this.load.on('progress', function (value: any) {
+    console.log("progress",value)
+});
+
+  this.load.on('complete', function () {
+      console.log('complete');
+  })
+
+
+
   }
 
   create() {
@@ -50,6 +64,9 @@ export default class exterior extends Scene {
 
     const tileset = map.addTilesetImage("homeBg", "tiles");
     map.createLayer("layer", tileset!, 0, 0);
+
+
+
 
     // create static house and door
     const house = this.physics.add.image(730, 400, "house");

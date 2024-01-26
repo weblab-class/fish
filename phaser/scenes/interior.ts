@@ -40,6 +40,18 @@ class interior extends Scene {
     this.load.image("interiorTiles", "/backgrounds/interior.png");
     this.load.tilemapTiledJSON("interiorMap", "/backgrounds/interior.json");
     this.load.image("transparent", "/backgrounds/transparent.png");
+
+    this.load.on('fileprogress', function (file: { src: any; }) {
+      console.log(file.src);
+  });
+
+  this.load.on('progress', function (value: any) {
+    console.log("interior progress",value)
+});
+
+  this.load.on('complete', function () {
+      console.log('interiorcomplete');
+  })
   }
 
   async create() {
