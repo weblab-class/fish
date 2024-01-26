@@ -508,6 +508,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           console.log("SUBMIT SENTENCE BINDING", data.response);
 
           const newResponses = [...responsesData, data.response];
+          if (responsesData.includes(data.response)) return;
           setResponsesData((prevSentences) => [
             ...prevSentences,
             data.response,
