@@ -32,7 +32,7 @@ export default function Game({
     if (!parentEl.current) return;
 
     const gameConfig: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
+      type: Phaser.CANVAS,
       parent: "phaser-container",
       width: 2000,
       height: 3000,
