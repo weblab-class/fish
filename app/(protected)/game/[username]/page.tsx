@@ -13,6 +13,7 @@ import VoteCount from "@/components/symphony/VoteCount";
 import { useMultiplayerStore } from "@/phaser/stores";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import dynamic from "next/dynamic";
+import { takeWhile as _takeWhile, random as _random } from "lodash";
 import {
   useGetPlayer,
   useGetPlayerByUsername,
@@ -78,6 +79,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
     state.deleteOther,
   ]);
 
+  type Response = {
+    creatorId: string;
+    sentence: string;
+    voterIds: string[];
+  };
   // session data
   const { session } = useLuciaSession();
   const playerId = session!.user.uid;
@@ -86,6 +92,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [allSprites, setAllSprites] = useState<AnimalSprite[]>([]);
   const [gameRoomExists, setGameRoomExists] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [responsesData, setResponsesData] = useState<Response[]>([]);
+
   const router = useRouter();
 
   // queries
@@ -112,6 +120,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [time, setTime] = useState<number>();
   const [timesUp, setTimesUp] = useState<boolean>(false);
 
+  type Winner = {
+    creatorId: string;
+    sentence: string;
+  };
   // specific game stuff
   const [roundType, setRoundType] = useState<string>("selecting");
   const [prompt, setPrompt] = useState<string>("Prompt/Theme");
@@ -122,6 +134,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [oldStory, setOldStory] = useState("");
   const [mostVoted, setMostVoted] = useState<string>("");
   const [votedWinner, setVotedWinner] = useState<string>("");
+  const [votedWinners, setVotedWinners] = useState<string[]>([]);
+  const [tie, setTie] = useState<boolean>(false);
+  const [sentenceWinners, setSentenceWinners] = useState<Winner[]>([]);
   const [responses, setResponses] = useState<FullResponse[]>([]);
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [topContributor, setTopContributor] = useState<string>("");
@@ -144,10 +159,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const forceSubmit = async function () {
     if (!host?.data) return;
     if (isHost) {
-      console.log("forcing submissions", roundType);
-      await forceSubmissions.mutateAsync({
-        hostId: host?.data[0]._id.toString(),
-      });
+      // console.log("forcing submissions", roundType);
+      // await forceSubmissions.mutateAsync({
+      //   hostId: host?.data[0]._id.toString(),
+      // });
       const gameRoomRes = await getSentenceSymphony(
         host.data[0]._id.toString(),
       );
@@ -158,6 +173,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           creatorId: info.creatorId.toString(),
           voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
         }));
+        console.log("SETTING VOTE OPTIONS");
         setResponses(voteOpts);
       }
     }
@@ -415,6 +431,81 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
   }, [allPlayers.length]);
 
+  useEffect(() => {
+    console.log("RESPONSES CHANGED", responsesData);
+    if (isHost) {
+      const hostChannel = pusherClient.subscribe(
+        `presence-ss-host-${params.username}`,
+      );
+      hostChannel.bind("submitSentence", (data: { response: Response }) => {
+        console.log("SUBMIT SENTENCE BINDING", data.response);
+
+        const newResponses = [...responsesData, data.response];
+        setResponsesData((prevSentences) => [...prevSentences, data.response]);
+
+        const updateResponsesFunc = async () => {
+          await axios.post("/api/pusher/symphony/updateResponses", {
+            responses: newResponses,
+            hostUsername: params.username,
+          });
+        };
+        updateResponsesFunc();
+
+        console.log(responsesData);
+      });
+
+      //each player triggers submit vote, the host controls the votte count
+      hostChannel.bind(
+        "submitVote",
+        (data: {
+          creatorId: string;
+          sentence: string;
+          voterId: string;
+          responsesData: Response[];
+        }) => {
+          console.log("VOTE SENTENCE BINDING", data, responsesData);
+
+          const voteOptions = responsesData;
+          const creatorIndex = voteOptions.findIndex(
+            (opt) => opt.creatorId === data.creatorId,
+          );
+
+          console.log("voteOptions", voteOptions, "creatorInd", creatorIndex);
+          const creatorOptData = voteOptions.at(creatorIndex)!;
+          voteOptions[creatorIndex] = {
+            creatorId: voteOptions[creatorIndex].creatorId,
+            sentence: creatorOptData.sentence,
+            voterIds: [...creatorOptData.voterIds, data.voterId],
+          };
+          console.log(creatorOptData);
+          setResponsesData(voteOptions);
+
+          const updateResponses = async () => {
+            axios.post("/api/pusher/symphony/updateResponses", {
+              responses: voteOptions,
+              hostUsername: params.username,
+            });
+          };
+          updateResponses();
+        },
+      );
+
+      hostChannel.bind("deleteResponses", () => {
+        console.log("DELETE SENTENCE BINDING");
+        const updateResponses = async () => {
+          await axios.post("/api/pusher/symphony/updateResponses", {
+            responses: [],
+          });
+        };
+        updateResponses();
+      });
+      return () => {
+        hostChannel.unbind_all();
+        hostChannel.unsubscribe;
+      };
+    }
+  }, [responsesData, roundType]);
+
   // timer events
   // dependencies: roundType, player?.data
   useEffect(() => {
@@ -444,73 +535,30 @@ export default function GamePage({ params }: { params: { username: string } }) {
       timer();
     }
 
-    // UPDATE DATA BINDING
+    gameChannel.bind("updateResponses", (data: { responses: Response[] }) => {
+      console.log("updating REsponses binding", data.responses);
+
+      setResponsesData(data.responses);
+    });
+
     gameChannel.bind(
-      "updateData",
-      async (data: { voted: boolean; scores: boolean }) => {
-        if (!host?.data) return;
-        console.log("update data", roundType);
-
-        const gameRoomRes = await getSentenceSymphony(
-          host.data[0]._id.toString(),
-        );
-        const gameRoomData = gameRoomRes.data;
-        if (gameRoomData) {
-          const voteOpts = gameRoomData.voteOptions.map((info) => ({
-            ...info,
-            creatorId: info.creatorId.toString(),
-            voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
-          }));
-          setResponses(voteOpts);
-
-          // TODO CHECK THIS <-----
-          if (roundType === "voted" && gameRoomData.sentences.length > 0) {
-            const winner =
-              gameRoomData.sentences[
-                gameRoomData.sentences.length - 1
-              ].creatorId.toString();
-            const winnerName = allPlayers.find(
-              ({ playerId }) => playerId === winner,
-            )?.gameName!;
-            // const winnerName = allPlayers.find(
-            //   (player: { playerId: string }) => player.playerId === winner,
-            // ).gameName;
-            setMostVoted(
-              gameRoomData.sentences[gameRoomData.sentences.length - 1]
-                .sentence,
-            );
-            setVotedWinner(winnerName);
-
-            const newContributions = contributions.map((player) => {
-              if (player.playerName === winnerName) {
-                return { ...player, value: player.value + 1 };
-              }
-
-              return { ...player };
-            });
-
-            setContributions(newContributions);
-            console.log(
-              gameRoomData.sentences[gameRoomData.sentences.length - 1],
-              "sentencesss",
-            );
-
-            if (data.scores) {
-              setCurrentStory(
-                currentStory +
-                  " " +
-                  gameRoomData.sentences[
-                    gameRoomData.sentences.length - 1
-                  ].sentence.toString(),
-              );
-            }
-          }
-        }
-
-        if (roundType === "voting" && !data.voted) {
-        }
+      "updateContributions",
+      (data: {
+        contributions: Contribution[];
+        tie: boolean;
+        winnerId: string[];
+      }) => {
+        console.log("contributinos binding", data.contributions);
+        setContributions(data.contributions);
+        setVotedWinners(data.winnerId);
+        setTie(tie);
       },
     );
+
+    gameChannel.bind("updateStory", (data: { story: string }) => {
+      console.log("story", data.story);
+      setCurrentStory(data.story);
+    });
 
     // ALL PLAYERS the host makes a call to the server when the round should change. Then, all players listen for "roundChange" event to trigger. Then, every player updates their RoundType and RoundNumber
     // ROUND CHANGE BINDING
@@ -524,15 +572,13 @@ export default function GamePage({ params }: { params: { username: string } }) {
           await handleSubmit(onSubmit)();
           resetField("response");
           setButtonPressed(false);
-          await forceSubmit();
-
-          if (!host?.data) return;
-          await axios.post("/api/pusher/symphony/updateData", {
-            hostUsername: params.username,
-          });
+        }
+        if (data.newRound == "writing") {
+          setTie(false);
         }
 
         setSubmittedResponse(false);
+        setButtonPressed(false);
 
         setRoundType(data.newRound);
 
@@ -584,14 +630,80 @@ export default function GamePage({ params }: { params: { username: string } }) {
           if (isHost) {
             // TODO CHECK THIS <----- (async functions)
             const startNewRoundFunc = async () => {
-              if (!host?.data) return;
-              await startNewRound.mutateAsync({
-                hostId: host.data[0]._id.toString(),
-              });
-              await axios.post("/api/pusher/symphony/updateData", {
+              const voteOptions = responsesData;
+              console.log("voteoptions", voteOptions);
+              voteOptions.sort((a, b) => b.voterIds.length - a.voterIds.length);
+
+              const maxVoteOptions = _takeWhile(
+                voteOptions,
+                (v) => v.voterIds.length === voteOptions[0].voterIds.length,
+              );
+              const pickedOpt =
+                maxVoteOptions[_random(0, maxVoteOptions.length - 1)];
+
+              console.log(
+                "PICKED OPT",
+                pickedOpt,
+                "max vote options",
+                maxVoteOptions,
+              );
+              const newSentences = [
+                ...sentenceWinners,
+                {
+                  sentence: pickedOpt.sentence,
+                  creatorId: pickedOpt.creatorId,
+                },
+              ];
+
+              setSentenceWinners(newSentences);
+
+              const newStory = currentStory + " " + pickedOpt.sentence;
+              await axios.post("/api/pusher/symphony/updateStory", {
+                story: newStory,
                 hostUsername: params.username,
-                voted: true,
-                scores: true,
+              });
+
+              const winnerName = allPlayers.find(
+                ({ playerId }) => playerId === pickedOpt.creatorId,
+              )?.gameName!;
+              // const winnerName = allPlayers.find(
+              //   (player: { playerId: string }) => player.playerId === winner,
+              // ).gameName;
+              setMostVoted(pickedOpt.sentence);
+              setVotedWinner(winnerName);
+
+              const newContributions = contributions.map((player) => {
+                if (player.playerName === winnerName) {
+                  return { ...player, value: player.value + 1 };
+                }
+
+                return { ...player };
+              });
+
+              setContributions(newContributions);
+              console.log("deleting");
+
+              await axios.post("/api/pusher/symphony/updateContributions", {
+                contributions: contributions.map((player) => {
+                  console.log(maxVoteOptions);
+                  if (player.playerName === winnerName) {
+                    return { ...player, value: player.value + 1 };
+                  }
+
+                  return { ...player };
+                }),
+
+                // ERROR: maxVoteOptions undefined ?
+                hostUsername: params.username,
+                winnerId: ["test"],
+                // winnerId: maxVoteOptions.map((options) => {
+                //   options.creatorId;
+                // }),
+                tie: maxVoteOptions.length > 1,
+              });
+
+              await axios.post("/api/pusher/symphony/newRound", {
+                hostUsername: params.username,
               });
             };
             startNewRoundFunc();
@@ -611,7 +723,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [roundType, gameRoomExists]);
 
   //   submitting responses
-  const onSubmit: SubmitHandler<Input> = (data) => {
+  const onSubmit: SubmitHandler<Input> = async (data) => {
     // data contains response, send player's id and response to db
     // submit response to database
     // response: player,votes
@@ -621,19 +733,32 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     console.log("submitting", submittedResponse, data.response);
 
-    if (!submittedResponse && data.response.length > 0) {
-      const submitSentenceFunc = async () => {
-        if (!host?.data) return;
-        setSubmittedResponse(true);
-        await submitSentence.mutateAsync({
-          hostId: host.data[0]._id.toString(),
-          creatorId: session!.user.uid,
-          sentence: data.response,
-        });
-      };
-      submitSentenceFunc();
+    // if (!submittedResponse && data.response.length > 0) {
+    //   const submitSentenceFunc = async () => {
+    //     if (!host?.data) return;
+    //     setSubmittedResponse(true);
+    //     await submitSentence.mutateAsync({
+    //       hostId: host.data[0]._id.toString(),
+    //       creatorId: session!.user.uid,
+    //       sentence: data.response,
+    //     });
+    //   };
+    //   submitSentenceFunc();
 
-      setSubmissionLoading(false);
+    //   setSubmissionLoading(false);
+    // }
+
+    if (!submittedResponse) {
+      console.log("about to post response");
+      console.log();
+      await axios.post("/api/pusher/symphony/submitResponse", {
+        response: {
+          sentence: data.response,
+          creatorId: session!.user.uid,
+          voterIds: [],
+        },
+        hostUsername: params.username,
+      });
     }
 
     // clears text area
@@ -813,7 +938,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
           ) : roundType === "voted" ? (
             <div>
               <p className="m-1 rounded-2xl bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
-                Votes are in!
+                {tie
+                  ? "Votes are in! There was a tie! We picked our favorite :)"
+                  : "Votes are in!"}
               </p>
               <p className="text-3xl">{prompt}</p>
             </div>
@@ -925,10 +1052,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
               // });
               //disables submission after submitting once
               setSubmissionLoading(true);
-              setSubmittedResponse(false);
+              // setSubmittedResponse(false);
               console.log("SUBMITTING");
 
-              await handleSubmit(onSubmit)();
+              // await handleSubmit(onSubmit)();
             }}
           >
             {/* text area input box */}
@@ -972,7 +1099,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 {/* <div className="flex items-center justify-center flex-wrap z-10"> */}
                 {/* TO DO: get responses from database */}
 
-                {responses.map((response) => (
+                {responsesData.map((response) => (
                   <ResponseCard
                     // responses.sessionId
                     key={response.creatorId}
@@ -991,6 +1118,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     }
                     hostUsername={params.username}
                     round={roundNumber}
+                    responsesData={responsesData}
                   />
                 ))}
                 {/* </div> */}
@@ -1001,7 +1129,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           <div className="z-40 h-full w-full">
             {responses && (
               <div className="z-50 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
-                {responses.map((response) => (
+                {responsesData.map((response) => (
                   <VoteCount
                     key={response.creatorId}
                     creatorId={response.creatorId}
@@ -1013,8 +1141,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
                       )?.gameName ?? "AI-wahhh"
                     }
                     votes={
-                      response.voteIds != undefined
-                        ? response.voteIds.length
+                      response.voterIds != undefined
+                        ? response.voterIds.length
                         : 0
                     }
                     voterId={session!.user.uid}

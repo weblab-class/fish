@@ -1,19 +1,27 @@
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
-interface Username {
+interface Input {
 
     hostUsername:string
-    voted:boolean
+    contributions:boolean
+    winnerId:string[]
+    tie:boolean
 }
 
+interface Contribution {
+    playerName: string;
+    value: number;
+  }
 export async function POST(req: NextRequest) {
-    const {hostUsername } = (await req.json()) as Username;
+    const {hostUsername,contributions,winnerId,tie } = (await req.json()) as Input;
 
 
     await pusherServer.trigger(`presence-ss-${hostUsername}`, "updateContributions", {
 
-
+        contributions,
+        winnerId,
+        tie
     });
 
 

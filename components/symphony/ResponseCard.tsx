@@ -2,6 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/services/pusher";
 import { useUpdateVote } from "@/services/react-query/mutations/sentence-symphony";
 import axios from "axios";
+
+type Response = {
+  creatorId: string;
+  sentence: string;
+  voterIds: string[];
+};
 export default function ResponseCard(props: {
   round: number;
   response: string;
@@ -10,6 +16,7 @@ export default function ResponseCard(props: {
   voterId: string;
   hostId: string;
   hostUsername: string;
+  responsesData: Response[];
 }) {
   const [clicked, setClicked] = useState(false);
   const responseBoxRef = useRef<HTMLDivElement>(null);
@@ -31,6 +38,7 @@ export default function ResponseCard(props: {
         "countVotes responses comonent binding called",
         clicked,
         props.response,
+        props.responsesData,
       );
 
       if (clicked) {
@@ -38,15 +46,21 @@ export default function ResponseCard(props: {
         console.log("voted for: ", props.creatorId, props.response);
 
         const updateVoteFunc = async () => {
-          await updateVote.mutateAsync({
-            hostId: props.hostId,
+          console.log("voting");
+          await axios.put("/api/pusher/symphony/submitResponse", {
+            hostUsername: props.hostUsername,
             creatorId: props.creatorId,
             voterId: props.voterId,
           });
-          await axios.post("/api/pusher/symphony/updateData", {
-            hostUsername: props.hostUsername,
-            scores: false,
-          });
+          // await updateVote.mutateAsync({
+          //   hostId: props.hostId,
+          //   creatorId: props.creatorId,
+          //   voterId: props.voterId,
+          // });
+          // await axios.post("/api/pusher/symphony/updateData", {
+          //   hostUsername: props.hostUsername,
+          //   scores: false,
+          // });
         };
 
         updateVoteFunc();
