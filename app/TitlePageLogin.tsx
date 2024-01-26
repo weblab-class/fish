@@ -122,6 +122,7 @@ export default function TitlePageLogin() {
                       f.i.s.h. is an interactive social game that blends gaming,
                       studying and socializing through cute animal characters.
                       On f.i.s.h. you can hangout, play games, and study with
+                      your friends.
                     </p>
                   </div>
                 )}
