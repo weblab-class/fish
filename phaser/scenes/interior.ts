@@ -56,17 +56,17 @@ class interior extends Scene {
 
   async create() {
     // store host tag
-    // const hostTag = this.add.text(1100, 200, "username", {
-    //   font: "Rock Salt",
-    // });
-    // this.registry.set("hostTag", hostTag);
+    const hostTag = this.add.text(1100, 200, "username", {
+      font: "Rock Salt",
+    });
+    this.registry.set("hostTag", hostTag);
 
-    // // tv text
-    // this.hsv = Phaser.Display.Color.HSVColorWheel();
-    // this.tvText1 = this.add.text(345, 285, "Play Me", {
-    //   font: "35px Pixelify Sans",
-    // });
-    // this.tvText1.setDepth(11);
+    // tv text
+    this.hsv = Phaser.Display.Color.HSVColorWheel();
+    this.tvText1 = this.add.text(345, 285, "Play Me", {
+      font: "35px Pixelify Sans",
+    });
+    this.tvText1.setDepth(11);
 
     // create one-tile tilemap
     const maps = this.make.tilemap({
@@ -357,10 +357,10 @@ class interior extends Scene {
     console.log("player is on:", this.registry.get("player").scene.scene.key);
     // logic for moving the tag
 
-    // const top = this.hsv[this.i].color;
-    // const bottom = this.hsv[359 - this.i].color;
+    const top = this.hsv[this.i].color;
+    const bottom = this.hsv[359 - this.i].color;
 
-    // this.tvText1.setTint(top, top, bottom, bottom);
+    this.tvText1.setTint(top, top, bottom, bottom);
 
     this.i++;
 
