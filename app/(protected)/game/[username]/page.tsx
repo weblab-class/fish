@@ -141,6 +141,28 @@ export default function GamePage({ params }: { params: { username: string } }) {
     "A cow teaches math.",
   ];
 
+  const forceSubmit = async function () {
+    if (!host?.data) return;
+    if (isHost) {
+      console.log("forcing submissions", roundType);
+      await forceSubmissions.mutateAsync({
+        hostId: host?.data[0]._id.toString(),
+      });
+      const gameRoomRes = await getSentenceSymphony(
+        host.data[0]._id.toString(),
+      );
+      const gameRoomData = gameRoomRes.data;
+      if (gameRoomData) {
+        const voteOpts = gameRoomData.voteOptions.map((info) => ({
+          ...info,
+          creatorId: info.creatorId.toString(),
+          voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
+        }));
+        setResponses(voteOpts);
+      }
+    }
+  };
+
   interface Contribution {
     playerName: string;
     value: number;
@@ -486,27 +508,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
         }
 
         if (roundType === "voting" && !data.voted) {
-          console.log("forcing submissions", roundType);
-          await forceSubmissions.mutateAsync({
-            hostId: host?.data[0]._id.toString(),
-          });
-          const gameRoomRes = await getSentenceSymphony(
-            host.data[0]._id.toString(),
-          );
-          const gameRoomData = gameRoomRes.data;
-          if (gameRoomData) {
-            const voteOpts = gameRoomData.voteOptions.map((info) => ({
-              ...info,
-              creatorId: info.creatorId.toString(),
-              voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
-            }));
-            setResponses(voteOpts);
-            // if (gameRoomData.sentences.length > 0) {
-            //   setCurrentStory(
-            //     currentStory + gameRoomData.sentences.at(-1)!.sentence,
-            //   );
-            // }
-          }
         }
       },
     );
@@ -520,9 +521,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
         console.log("round change binding triggered", data.newRound);
         if (data.newRound === "voting") {
           // COMMENT THIS BACK IN GO BACK
-          // await handleSubmit(onSubmit)();
+          await handleSubmit(onSubmit)();
           resetField("response");
           setButtonPressed(false);
+          await forceSubmit();
+
+          if (!host?.data) return;
+          await axios.post("/api/pusher/symphony/updateData", {
+            hostUsername: params.username,
+          });
         }
 
         setSubmittedResponse(false);
@@ -617,6 +624,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     if (!submittedResponse && data.response.length > 0) {
       const submitSentenceFunc = async () => {
         if (!host?.data) return;
+        setSubmittedResponse(true);
         await submitSentence.mutateAsync({
           hostId: host.data[0]._id.toString(),
           creatorId: session!.user.uid,
@@ -624,18 +632,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       submitSentenceFunc();
+
+      setSubmissionLoading(false);
     }
-
-    setSubmittedResponse(true);
-    setSubmissionLoading(false);
-
-    const updateData = async () => {
-      await axios.post("/api/pusher/symphony/updateData", {
-        hostUsername: params.username,
-        voted: false,
-      });
-    };
-    updateData();
 
     // clears text area
   };
