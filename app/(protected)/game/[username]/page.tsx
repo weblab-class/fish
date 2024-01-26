@@ -141,6 +141,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [topContributor, setTopContributor] = useState<string>("");
   const [memberCount, setMemberCount] = useState<number>(0);
+  const [playerCount, setPlayerCount] = useState<number>(0);
+  const [deadPlayers, setDeadPlayers] = useState<GamePlayerInfo[]>([]);
 
   const randomTestPrompts = [
     "A fish goes to the grocery store.",
@@ -214,7 +216,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
       "pusher:member_added",
       (member: { id: any; info: any }) => {
         console.log("success member added,", member.info, member.id);
-        setMemberCount(memberCount + 1);
+        if (!gameRoomExists) {
+          setMemberCount(memberCount + 1);
+        }
       },
     );
 
@@ -223,6 +227,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
       "pusher:member_removed",
       (member: { id: any; info: any }) => {
         console.log("removed member", member);
+        setDeadPlayers([
+          ...deadPlayers,
+          { playerId: member.id, gameName: member.info.username },
+        ]);
+        console.log({ playerId: member.id, gameName: member.info.username });
         if (member.info.username === params.username) {
           router.push(`/home/${params.username}`);
         }
@@ -407,6 +416,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         console.log(gameRoomRes.data?.allPlayers, "players");
 
         setAllPlayers(gameRoomPlayers);
+        setPlayerCount(gameRoomPlayers.length);
         setAllSprites(gameRoomSprites);
         console.log(gameRoomSprites, "sprites");
 
@@ -614,7 +624,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       setTime(data.time);
 
-      if (data.time === 0 && roundNumber < 20) {
+      if (data.time === 0 && roundNumber < 25) {
         // only host controls stopTimer
         if (isHost) {
           const stopTimer = async () => {
@@ -770,12 +780,38 @@ export default function GamePage({ params }: { params: { username: string } }) {
     //   setSubmissionLoading(false);
     // }
 
+    //host submits for all the players that left
+    if (isHost) {
+      for (let i = 0; i < playerCount - gameChannel.members.count; i++) {
+        let responseSubmitted = "";
+
+        responseSubmitted =
+          "This player left. This will be replaced by AI later :)";
+
+        await axios.post("/api/pusher/symphony/submitResponse", {
+          response: {
+            sentence: responseSubmitted,
+            creatorId: deadPlayers[i].playerId,
+            voterIds: [],
+          },
+          hostUsername: params.username,
+        });
+      }
+    }
+
     if (!submittedResponse) {
+      let responseSubmitted = "";
+      if (data.response == "") {
+        responseSubmitted =
+          "This player submitted nothing. This will be replaced by AI later :)";
+      } else {
+        responseSubmitted = data.response;
+      }
       console.log("about to post response");
       console.log();
       await axios.post("/api/pusher/symphony/submitResponse", {
         response: {
-          sentence: data.response,
+          sentence: responseSubmitted,
           creatorId: session!.user.uid,
           voterIds: [],
         },
@@ -841,7 +877,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       roundChange();
-    } else if (roundNumber === 8) {
+    } else if (roundNumber === 12) {
       setTime(10);
       console.log("almost ending game");
       const roundChange = async () => {
