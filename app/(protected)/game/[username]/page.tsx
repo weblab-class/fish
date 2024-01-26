@@ -321,6 +321,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [isBothFinishedLoading, memberCount, isSubscribed]);
 
   // ONLY HOST changes current story, after voting is done
+  // WHEN ONE PERSON DOESNT LOAD IN, THE ROUND BREAKS
   useEffect(() => {
     // host listens for when voting count is done then changes the round
 
@@ -519,7 +520,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         console.log("round change binding triggered", data.newRound);
         if (data.newRound === "voting") {
           // COMMENT THIS BACK IN GO BACK
-          await handleSubmit(onSubmit)();
+          // await handleSubmit(onSubmit)();
           resetField("response");
           setButtonPressed(false);
         }
