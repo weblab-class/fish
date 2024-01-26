@@ -15,8 +15,8 @@ export default function VoteCount(props: {
           "animate__animated animate__tada outline outline-yellow-300 "
         } justify-center" z-50 flex h-full w-full flex-col items-center break-words rounded-lg text-center text-2xl text-gray-700 outline-4`}
       >
-        <p className="w-full break-words rounded-2xl bg-[url[/backgrounds/brownBg.png]] p-1 text-center text-amber-950">
-          Written by {props.creatorUsername}
+        <p className="w-full break-words rounded-2xl bg-[url[/backgrounds/brownBg.png]] p-1 pl-15% text-center text-amber-950">
+          ~Written by {props.creatorUsername}~
         </p>
 
         <p className="w-full overflow-y-scroll break-words p-1 text-center">

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     console.log("submitting responses new", response)
 
     // response card component will send the response to db is they are clicked
-    await pusherServer.trigger(`presence-ss-host-${hostUsername}`,'submitSentence',{response})
+    await pusherServer.trigger(`presence-ss-${hostUsername}`,'submitSentence',{response})
 
 
 

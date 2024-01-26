@@ -433,26 +433,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   useEffect(() => {
     console.log("RESPONSES CHANGED", responsesData);
+
     if (isHost) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
       );
-      hostChannel.bind("submitSentence", (data: { response: Response }) => {
-        console.log("SUBMIT SENTENCE BINDING", data.response);
-
-        const newResponses = [...responsesData, data.response];
-        setResponsesData((prevSentences) => [...prevSentences, data.response]);
-
-        const updateResponsesFunc = async () => {
-          await axios.post("/api/pusher/symphony/updateResponses", {
-            responses: newResponses,
-            hostUsername: params.username,
-          });
-        };
-        updateResponsesFunc();
-
-        console.log(responsesData);
-      });
 
       //each player triggers submit vote, the host controls the votte count
       hostChannel.bind(
@@ -506,6 +491,43 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
   }, [responsesData, roundType]);
 
+  useEffect(() => {
+    if (true) {
+      if (true) {
+        gameChannel.bind("submitSentence", (data: { response: Response }) => {
+          console.log("SUBMIT SENTENCE BINDING", data.response);
+
+          const newResponses = [...responsesData, data.response];
+          setResponsesData((prevSentences) => [
+            ...prevSentences,
+            data.response,
+          ]);
+          console.log(responsesData);
+
+          // if (
+          //   responses.length === (gameChannel as PresenceChannel).members.count
+          // ) {
+          //   const updateResponsesFunc = async () => {
+          //     await axios.post("/api/pusher/symphony/updateResponses", {
+          //       responses: newResponses,
+          //       hostUsername: params.username,
+          //     });
+          //   };
+          //   updateResponsesFunc();
+
+          //   console.log(responsesData);
+          // }
+        });
+        return () => {
+          gameChannel.unbind("submitSentence");
+        };
+      }
+      return () => {
+        gameChannel.unbind("submitSentence");
+      };
+    }
+  });
+
   // timer events
   // dependencies: roundType, player?.data
   useEffect(() => {
@@ -537,8 +559,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     gameChannel.bind("updateResponses", (data: { responses: Response[] }) => {
       console.log("updating REsponses binding", data.responses);
-
-      setResponsesData(data.responses);
+      setResponsesData((prevSentences) => data.responses);
     });
 
     gameChannel.bind(
@@ -702,8 +723,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 tie: maxVoteOptions.length > 1,
               });
 
-              await axios.post("/api/pusher/symphony/newRound", {
+              await axios.post("/api/pusher/symphony/updateResponses", {
                 hostUsername: params.username,
+                responses: [],
               });
             };
             startNewRoundFunc();
@@ -760,6 +782,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
         hostUsername: params.username,
       });
     }
+
+    setSubmissionLoading(false);
+    setButtonPressed(false);
 
     // clears text area
   };
