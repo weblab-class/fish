@@ -124,8 +124,8 @@ export default function ChatLogPhaser(props: {
                         message.message == ""
                           ? "text-white "
                           : message.username === props.username
-                            ? "text-green-200 "
-                            : "text-pink-200"
+                            ? "text-green-300 "
+                            : "text-sky-300"
                       }`}
                     >
                       {message.username}:{" "}
@@ -138,7 +138,7 @@ export default function ChatLogPhaser(props: {
               </div>
             ) : (
               <div
-                className="z-40 h-1/3 w-full overflow-hidden overflow-x-hidden rounded-t-3xl border-4 border-b-0 bg-amber-950 bg-opacity-10 p-2 text-black"
+                className="z-40 h-1/3 w-full overflow-x-hidden overflow-y-scroll rounded-t-3xl border-4 border-b-0 bg-amber-950 bg-opacity-10 p-2 text-black"
                 ref={chatLogRef}
                 onClick={() => {
                   setShowChat(true);
@@ -151,8 +151,8 @@ export default function ChatLogPhaser(props: {
                         message.message == ""
                           ? "text-white "
                           : message.username == props.username
-                            ? "text-green-200 "
-                            : "text-pink-200"
+                            ? "text-green-300 "
+                            : "text-sky-300"
                       }`}
                     >
                       {message.username}:{" "}

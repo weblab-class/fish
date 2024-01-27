@@ -552,10 +552,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
       `presence-ss-${params.username}`,
     ) as PresenceChannel;
 
-    let timerDuration = 6;
+    let timerDuration = 15;
 
     if (roundType != "selecting") {
-      timerDuration = 8;
+      timerDuration = 20;
     }
 
     // start timer after new round
@@ -638,7 +638,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         setTimesUp(true);
         setTimeout(() => {
           setTimesUp(false);
-          setTime(10);
+          setTime(20);
         }, 1000);
 
         if (roundType === "story") {
@@ -858,7 +858,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // change from writing to voting
     if (roundTypeParam === "writing") {
-      setTime(10);
+      setTime(20);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "voting",
@@ -880,7 +880,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       };
       roundChange();
     } else if (roundNumber === 12) {
-      setTime(10);
+      setTime(20);
       console.log("almost ending game");
       const roundChange = async () => {
         const topContribution = contributions.reduce(
@@ -903,7 +903,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from voted screen to pie chart scores
     } else if (roundTypeParam === "voted") {
-      setTime(10);
+      setTime(20);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "scores",
@@ -915,7 +915,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from pie chart to writing
     } else if (roundTypeParam === "scores") {
-      setTime(10);
+      setTime(20);
 
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -928,7 +928,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from voting to vote count screen
     } else if (roundTypeParam === "voting") {
-      setTime(10);
+      setTime(20);
       // triggers counting of votes
 
       const countVotes = async () => {
@@ -947,7 +947,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from selecting a prompt to writing the first sentence
     } else if (roundTypeParam === "selecting") {
-      setTime(10);
+      setTime(20);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "writing",
@@ -1060,7 +1060,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       {isBothFinishedLoading && (
         <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
-          <ChatLogPhaser
+          <ChatLog
             username={player?.data ? player?.data?.username : "anonymous"}
             hostUsername={params.username}
           />
