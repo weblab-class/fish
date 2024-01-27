@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function Mail(props: { sender: string; message: string }) {
   const [showLetter, setShowLetter] = useState(false);
+  const letterRef = useRef<HTMLDivElement>(null);
 
   // closes letter
   useEffect(() => {
     const handleEscapePress = (event: KeyboardEvent) => {
+      event.stopPropagation();
+      event.preventDefault();
       setShowLetter(false);
     };
 
@@ -15,8 +18,9 @@ export default function Mail(props: { sender: string; message: string }) {
       document.removeEventListener("keydown", handleEscapePress);
     };
   });
+
   return (
-    <div className="h-fit w-fit">
+    <div className="h-fit w-fit" ref={letterRef}>
       {showLetter ? (
         // <div className="h-full flex items-center justify-center">
         //   <div className="flex absolute rounded-t-full shadow-xl shadow-stone-600 h-full w-full bg-gray-400 bg-[url(/backgrounds//brownBg.png)] bg-cover items-center justify-center outline-8 outline-amber-900 z-30">
@@ -37,7 +41,7 @@ export default function Mail(props: { sender: string; message: string }) {
               </div>
               <div
                 className="absolute inset-y-0 flex h-fit w-3/12 cursor-pointer items-center justify-center bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl"
-                onClick={() => {
+                onClick={(e) => {
                   setShowLetter(false);
                 }}
               >
