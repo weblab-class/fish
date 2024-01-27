@@ -16,7 +16,7 @@ export default function ReadMailPopup() {
   const { data: receiver } = useGetPlayer(session!.user.uid);
 
   const [letters, setLetters] = useState<any>([]);
-  // FIX STATE LATER
+  // FIX TYPE
 
   useEffect(() => {
     if (!receiver?.data) return;

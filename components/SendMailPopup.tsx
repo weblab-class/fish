@@ -39,6 +39,7 @@ export default function SendMailPopup() {
         content: data.message,
       });
       resetField("message");
+      setSuccess(true);
       resetField("recipient");
     }
   };

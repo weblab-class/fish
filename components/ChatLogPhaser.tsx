@@ -123,7 +123,7 @@ export default function ChatLogPhaser(props: {
         </div>
       ) : (
         <div
-          className="z-40 h-1/3 w-full overflow-hidden overflow-x-hidden rounded-t-3xl border-4 border-b-0 bg-white bg-opacity-20 p-2 text-black"
+          className="z-40 h-1/3 w-full overflow-hidden overflow-x-hidden rounded-t-3xl border-4 border-b-0 bg-amber-950 bg-opacity-20 p-2 text-black"
           ref={chatLogRef}
           onClick={() => {
             setShowChat(true);

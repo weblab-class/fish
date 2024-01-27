@@ -31,13 +31,15 @@ export default function Mail(props: { sender: string; message: string }) {
               </div>
             </div>
             {/* Message Field */}
-            <div className="h-5/6 bg-[url(/backgrounds/whiteBg.png)] outline outline-gray-200">
+            <div className="flex h-5/6 justify-center bg-[url(/backgrounds/whiteBg.png)] outline outline-gray-200">
               <div className="mt-5 h-full w-full overflow-x-hidden overflow-y-scroll break-words rounded-2xl p-2 text-3xl text-zinc-700">
                 {props.message}
               </div>
               <div
-                className="absolute inset-y-0 right-0 flex h-fit w-3/12 cursor-pointer items-center justify-center bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl"
-                onClick={() => {}}
+                className="absolute inset-y-0 flex h-fit w-3/12 cursor-pointer items-center justify-center bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl"
+                onClick={() => {
+                  setShowLetter(false);
+                }}
               >
                 Reseal
               </div>
@@ -45,7 +47,6 @@ export default function Mail(props: { sender: string; message: string }) {
           </div>
         </div>
       ) : (
-        // </div>
         // open letter
         <div className="ml-1 mr-1 flex h-fit w-fit items-end shadow-md shadow-gray-800 hover:z-10">
           <div

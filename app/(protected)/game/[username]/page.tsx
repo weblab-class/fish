@@ -37,6 +37,7 @@ import {
 import { PlayerInfo } from "@/phaser/types";
 import { AiFillSkype } from "react-icons/ai";
 import { GamePlayerInfo } from "@/services/mongo/models";
+import ChatLogPhaser from "@/components/ChatLogPhaser";
 
 const PieChartWithoutSSR = dynamic(
   () => import("@/components/symphony/PieScore"),
@@ -1059,7 +1060,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       {isBothFinishedLoading && (
         <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
-          <ChatLog
+          <ChatLogPhaser
             username={player?.data ? player?.data?.username : "anonymous"}
             hostUsername={params.username}
           />

@@ -35,6 +35,7 @@ export default class exterior extends Scene {
     // collision objects
     this.load.image("house", "/objects/house.png");
     this.load.image("swan", "/objects/swan.png");
+    this.load.image("mailbox","/objects/mailbox.png")
     this.load.image("transparent", "/backgrounds/transparent.png");
 
     loadSprites(this);
@@ -91,6 +92,13 @@ export default class exterior extends Scene {
     swan.setSize(120, 60);
     swan.setOffset(15, 0);
 
+    const mailbox=this.physics.add.image(500,510,"mailbox")
+    mailbox.setDepth(0);
+    mailbox.setImmovable(true);
+    mailbox.setOrigin(0.5, 0.5);
+    mailbox.setSize(60, 60);
+    mailbox.setOffset(0, 0);
+
     const lowerPond = this.physics.add.image(2240, 1200, "transparent");
     lowerPond.setImmovable(true);
     lowerPond.setOrigin(0.5, 0.5);
@@ -124,6 +132,7 @@ export default class exterior extends Scene {
 
     // camera follows player
     this.cameras.main.startFollow(player);
+
     this.cameras.main.setZoom(1.2, 1.2);
 
     // set bounds on player movement
@@ -147,6 +156,7 @@ export default class exterior extends Scene {
     this.registry.set("player", player);
     this.registry.set("door", door);
     this.registry.set("swan", swan);
+    this.registry.set("mailbox", mailbox);
 
     // store other players
     const otherPlayers = this.physics.add.group({
@@ -181,6 +191,7 @@ export default class exterior extends Scene {
     const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
     const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
+    const mailbox = self.registry.get("mailbox") as Phaser.GameObjects.Sprite;
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
@@ -224,6 +235,12 @@ export default class exterior extends Scene {
 
     this.frameCounter++;
 
+    self.physics.add.overlap(player, mailbox, () => {
+      const keyObj = self.input.keyboard!.addKey("Enter");
+      const isDown = keyObj.isDown;
+    });
+
+
     // detect overlap between player and door
     self.physics.add.overlap(player, door, () => {
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
@@ -233,6 +250,7 @@ export default class exterior extends Scene {
     // checks if player is overlapping with door
     const isOverlappingDoor = self.physics.world.overlap(player, door);
     const isOverlappingSwan = self.physics.world.overlap(player, swan);
+    const isOverlappingMail=self.physics.world.overlap(player,mailbox)
 
     // displays enter house text when overlapping
     if (isOverlappingDoor) {
@@ -254,7 +272,15 @@ export default class exterior extends Scene {
       if (isDown) {
         useHomeStore.getState().showPopup("invite");
       }
-    } else {
+    } else if (isOverlappingMail && !updatedShowInvite && !updatedShowMail){
+      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
+      const isDown = keyObj.isDown;
+      useHomeStore.setState({ text: "Press [Enter] to open mailbox" });
+      if (isDown) {
+        useHomeStore.getState().showPopup("mail");
+      }
+    }
+    else {
       useHomeStore.setState({ text: "" });
     }
 

@@ -27,6 +27,7 @@ export default function Game({
 }: IGameProps) {
   const parentEl = useRef<HTMLDivElement>(null);
   const [text, setData] = useHomeStore((state) => [state.text, state.setData]);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (!parentEl.current) return;
@@ -46,7 +47,7 @@ export default function Game({
         default: "arcade",
         arcade: {
           gravity: { y: 0 },
-          debug: false,
+          debug: true,
         },
       },
       scene: [

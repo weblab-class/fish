@@ -16,7 +16,6 @@ const MailPopup = () => {
       if (event.key === "Escape") {
         if (mailSelection === "") {
           setDefault();
-          console.log("clicked out");
         } else {
           setMailSelection("");
         }
@@ -51,6 +50,7 @@ const MailPopup = () => {
               >
                 <p className="text-4xl">Send Mail</p>
               </div>
+
               <div className="items-bottom shad inset-y-0 m-2 flex h-fit w-4/12 justify-center rounded-t-full bg-[url('/backgrounds/brownBg.png')] text-3xl">
                 <div
                   className="items-bottom inset-y-0 m-2 flex h-full w-full justify-center rounded-t-full bg-[url('/backgrounds/blackBg.png')] p-2 text-3xl text-white shadow-xl shadow-stone-800 hover:cursor-pointer hover:bg-zinc-950"
