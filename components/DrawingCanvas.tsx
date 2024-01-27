@@ -1,3 +1,6 @@
+// SOURCE: react-sketch canvas
+// LINK: https://www.npmjs.com/package/react-sketch-canvas
+
 import * as React from "react";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
@@ -16,14 +19,14 @@ export default class Canvas extends React.Component {
 
   render() {
     return (
-      <div className="flex h-3/4 w-60% justify-center">
+      <div className="flex h-full w-full justify-center">
         <ReactSketchCanvas
           ref={React.createRef() as React.Ref<ReactSketchCanvasRef>}
           strokeWidth={5}
           strokeColor="black"
           backgroundImage="/backgrounds/whiteGrayBg.png"
         />
-        <button
+        {/* <button
           onClick={() => {
             if (!this.canvas.current) return;
             this.canvas.current.undo();
@@ -46,7 +49,7 @@ export default class Canvas extends React.Component {
           }}
         >
           Clear All
-        </button>
+        </button> */}
       </div>
     );
   }

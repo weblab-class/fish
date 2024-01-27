@@ -25,7 +25,7 @@ import { ISendDataParams, IRedirectParams } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
-import DrawingCanvas from "@/components/DrawingCanvas";
+import EaselPopup from "@/components/EaselPopup";
 
 // TODO sizing issue
 
@@ -73,14 +73,19 @@ export default function Home({ params }: { params: { username: string } }) {
   >("waiting");
 
   // control display of game from client-side
-  const [showInvitePopup, showMailPopup, showPopup, setDefault] = useHomeStore(
-    (state) => [
-      state.showInvitePopup,
-      state.showMailPopup,
-      state.showPopup,
-      state.setDefault,
-    ],
-  );
+  const [
+    showInvitePopup,
+    showMailPopup,
+    showEaselPopup,
+    showPopup,
+    setDefault,
+  ] = useHomeStore((state) => [
+    state.showInvitePopup,
+    state.showMailPopup,
+    state.showEaselPopup,
+    state.showPopup,
+    state.setDefault,
+  ]);
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
   const [logoutClicked, setLogoutClicked] = useState(false);
@@ -256,7 +261,7 @@ export default function Home({ params }: { params: { username: string } }) {
     <main>
       {authorized === "authorized" ? (
         <div>
-          <div className="absolute z-0 m-0 h-full w-full p-0">
+          <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
             {player && player.data && (
               <DynamicGame
                 hostUsername={params.username}
@@ -342,6 +347,16 @@ export default function Home({ params }: { params: { username: string } }) {
                 ref={mailRef}
               >
                 <MailPopup />
+              </div>
+            </div>
+          )}
+          {showEaselPopup && (
+            <div className="flex h-screen w-screen items-center justify-center">
+              <div
+                className="flex items-center justify-center bg-slate-200"
+                ref={mailRef}
+              >
+                <EaselPopup />
               </div>
             </div>
           )}
