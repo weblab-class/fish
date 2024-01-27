@@ -4,12 +4,10 @@ import ReadMailPopup from "./ReadMailPopup";
 import SendMailPopup from "./SendMailPopup";
 
 const MailPopup = () => {
-  const [showPopup, setDefault] = useHomeStore(
-    (state) => [
-      state.showPopup,
-      state.setDefault,
-    ],
-  );
+  const [showPopup, setDefault] = useHomeStore((state) => [
+    state.showPopup,
+    state.setDefault,
+  ]);
   const [mailSelection, setMailSelection] = useState<string>("");
 
   // closes newest popus
@@ -18,6 +16,7 @@ const MailPopup = () => {
       if (event.key === "Escape") {
         if (mailSelection === "") {
           setDefault();
+          console.log("clicked out");
         } else {
           setMailSelection("");
         }

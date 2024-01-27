@@ -24,6 +24,7 @@ import axios from "axios";
 import { ISendDataParams, IRedirectParams } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
+import ChatLogPhaser from "@/components/ChatLogPhaser";
 
 // TODO sizing issue
 
@@ -284,12 +285,12 @@ export default function Home({ params }: { params: { username: string } }) {
             </button>
           </div>
           {/* TODO CHAT LOG FOR MULTIPLAYER PHASER */}
-          {/* <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
-            <ChatLog
+          <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
+            <ChatLogPhaser
               username={player?.data ? player?.data?.username : "anonymous"}
               hostUsername={params.username}
             />
-          </div> */}
+          </div>
           {/* nav bar */}
           <div></div>
           <div

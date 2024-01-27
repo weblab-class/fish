@@ -16,7 +16,7 @@ export default function Mail(props: { sender: string; message: string }) {
     };
   });
   return (
-    <div className="h-full w-fit">
+    <div className="h-fit w-fit">
       {showLetter ? (
         // <div className="h-full flex items-center justify-center">
         //   <div className="flex absolute rounded-t-full shadow-xl shadow-stone-600 h-full w-full bg-gray-400 bg-[url(/backgrounds//brownBg.png)] bg-cover items-center justify-center outline-8 outline-amber-900 z-30">
@@ -27,7 +27,7 @@ export default function Mail(props: { sender: string; message: string }) {
             {/* Sender Field */}
             <div className="mt-5 flex bg-[url(/backgrounds/whiteBg.png)] outline outline-gray-200">
               <div className="ml-5 h-fit rounded-2xl p-2 text-3xl text-zinc-700">
-                From: {props.message}
+                From: {props.sender}
               </div>
             </div>
             {/* Message Field */}
@@ -37,9 +37,7 @@ export default function Mail(props: { sender: string; message: string }) {
               </div>
               <div
                 className="absolute inset-y-0 right-0 flex h-fit w-3/12 cursor-pointer items-center justify-center bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl"
-                onClick={() => {
-                  setShowLetter(false);
-                }}
+                onClick={() => {}}
               >
                 Reseal
               </div>

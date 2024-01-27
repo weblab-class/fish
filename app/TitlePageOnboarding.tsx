@@ -9,7 +9,7 @@ import { AnimalSprite } from "@/types";
 
 // TODO work on eliminating duplicate errors
 /**
- * MongoServerError: E11000 duplicate key error collection: main.players index: 
+ * MongoServerError: E11000 duplicate key error collection: main.players index:
  * username_1 dup key: { username: "sdjfs" }
  */
 
@@ -27,7 +27,7 @@ export default function TitlePageOnboarding() {
   if (!session) router.refresh();
 
   // we need to make sure that the user session is up to date (b/c server-side page is cached)
-  // BUG FIXED: user that logs out after creating account for first time goes to onboarding 
+  // BUG FIXED: user that logs out after creating account for first time goes to onboarding
   useEffect(() => {
     if (session) router.refresh();
   }, []);
@@ -84,7 +84,7 @@ export default function TitlePageOnboarding() {
                 placeholder="Enter a Username"
                 minLength={3}
                 required
-                maxLength={25}
+                maxLength={12}
                 pattern="^[a-zA-Z0-9]*$"
                 title="Only letters and numbers are allowed."
                 autoComplete="off"

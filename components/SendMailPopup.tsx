@@ -1,4 +1,11 @@
+import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
+import { useSendInvite } from "@/services/react-query/mutations/player-room";
+import { useSendMail } from "@/services/react-query/mutations/player/sendMail";
+import { getPlayerByUsername } from "@/services/react-query/queries/player";
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import Mail from "@/components/Mail";
+import { errors } from "@typegoose/typegoose";
 
 interface FormData {
   recipient: string;
@@ -9,15 +16,32 @@ export default function SendMailPopup() {
   const [recipient, setRecipient] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
-  function handleSubmit(e: FormEvent<HTMLFormElement>): void {
-    e.preventDefault();
-    try {
-      console.log("send data to database", recipient, message);
-      setSuccess(true);
-    } catch (error) {
-      alert("Submission is invalid");
+  const sendMail = useSendMail();
+  const { session } = useLuciaSession();
+  const [notFound, setNotFound] = useState<boolean>();
+
+  const { register, handleSubmit, resetField, setError } = useForm<FormData>();
+
+  // sends the mail
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const username = data.recipient;
+    const { data: receiver } = await getPlayerByUsername(username);
+    if (!receiver) throw new Error("Invalid user!"); // TODO add error message to form
+    console.log(receiver[0]);
+
+    if (!receiver[0]) {
+      setNotFound(true);
+      setTimeout(() => setNotFound(false), 1000);
+    } else {
+      await sendMail.mutateAsync({
+        senderId: session!.user.uid,
+        receiverId: receiver[0]._id.toString(),
+        content: data.message,
+      });
+      resetField("message");
+      resetField("recipient");
     }
-  }
+  };
 
   return (
     <div className="absolute z-30 flex h-full w-full items-center justify-center rounded-t-full bg-gray-400 bg-[url('/backgrounds/brownBg.png')] bg-cover shadow-xl shadow-stone-600 outline-8 outline-amber-900">
@@ -33,32 +57,40 @@ export default function SendMailPopup() {
           <div className="absolute z-40 mt-5 h-full w-7/12 bg-[url('/backgrounds/whiteGrayBg.png')]"></div>
           <form
             className="absolute z-40 mt-5 h-full w-7/12 flex-col justify-center bg-[url('/backgrounds/whiteGrayBg.png')] p-4 shadow-2xl shadow-zinc-800"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
           >
             {/* Recipient Input Field */}
             <div className="mt-5 flex justify-center">
-              <p className="text-3xl text-zinc-700">Send to:</p>
+              <p className="text-3xl text-zinc-700"> To:</p>
               <input
                 className="ml-5 h-fit rounded-2xl p-2 text-2xl text-zinc-700"
                 placeholder="Username of recepient"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setRecipient(e.target.value);
-                }}
+                required
+                minLength={3}
+                maxLength={12}
+                {...register("recipient")}
               ></input>
             </div>
+            {notFound && (
+              <p className="absolute w-full text-center text-xl text-red-500">
+                User does not exist
+              </p>
+            )}
+
             {/* Message Input Field */}
             <div className="flex h-4/6 justify-center">
               <textarea
                 className="text wrap mt-8 w-11/12 rounded-2xl p-2 text-3xl text-zinc-700"
-                placeholder="Message"
-                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                  setMessage(e.target.value);
-                }}
+                placeholder="Write a Message"
+                required
+                minLength={1}
+                maxLength={125}
+                {...register("message")}
               ></textarea>
             </div>
             {/* Send Mail Button */}
             <div className="flex items-center justify-center">
-              <button className="bottom-0 z-50 m-6 h-fit w-fit rounded-xl bg-[url('/backgrounds/redBg.png')] p-3 text-3xl hover:cursor-pointer">
+              <button className="bottom-0 z-50 m-6 h-fit w-fit rounded-xl bg-[url('/backgrounds/redBg.png')] p-3 text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline">
                 Send
               </button>
             </div>
