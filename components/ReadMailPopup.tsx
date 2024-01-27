@@ -46,9 +46,18 @@ export default function ReadMailPopup() {
 
       <div className="z-20 flex h-5/6 w-11/12 items-end justify-center rounded-t-full bg-[url(/backgrounds/blackBg.png)] bg-cover outline-8 outline-amber-900">
         <div className="h-1/12 max-full bottom-0 flex w-fit flex-wrap justify-center">
-          {letters.map((letter: { sender: string; content: string }) => (
-            <Mail sender={letter.sender} message={letter.content} />
-          ))}
+          {letters.map(
+            (
+              letter: { sender: string; content: string },
+              index: React.Key | null | undefined,
+            ) => (
+              <Mail
+                key={index}
+                sender={letter.sender}
+                message={letter.content}
+              />
+            ),
+          )}
         </div>
       </div>
     </div>

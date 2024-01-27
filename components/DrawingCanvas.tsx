@@ -23,7 +23,7 @@ export default class Canvas extends React.Component {
         <ReactSketchCanvas
           ref={React.createRef() as React.Ref<ReactSketchCanvasRef>}
           strokeWidth={5}
-          strokeColor="black"
+          strokeColor="pink"
           backgroundImage="/backgrounds/whiteGrayBg.png"
         />
         {/* <button

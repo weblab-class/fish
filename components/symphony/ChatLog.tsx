@@ -135,7 +135,7 @@ export default function ChatLog(props: {
                 className={`${
                   message.message == ""
                     ? "text-white "
-                    : message.username == "user"
+                    : message.username === props.username
                       ? "text-green-200 "
                       : "text-pink-200"
                 }`}

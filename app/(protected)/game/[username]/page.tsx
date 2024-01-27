@@ -554,8 +554,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     let timerDuration = 15;
 
-    if (roundType != "selecting") {
+    if (roundType == "selecting" || roundType == "voting") {
+      timerDuration = 15;
+    } else if (roundType == "writing") {
       timerDuration = 20;
+    } else if (roundType == "voted" || roundType == "scores") {
+      timerDuration = 10;
     }
 
     // start timer after new round
@@ -880,7 +884,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       };
       roundChange();
     } else if (roundNumber === 12) {
-      setTime(20);
+      setTime(15);
       console.log("almost ending game");
       const roundChange = async () => {
         const topContribution = contributions.reduce(
@@ -903,7 +907,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from voted screen to pie chart scores
     } else if (roundTypeParam === "voted") {
-      setTime(20);
+      setTime(10);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "scores",
@@ -915,7 +919,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from pie chart to writing
     } else if (roundTypeParam === "scores") {
-      setTime(20);
+      setTime(10);
 
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -928,7 +932,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from voting to vote count screen
     } else if (roundTypeParam === "voting") {
-      setTime(20);
+      setTime(15);
       // triggers counting of votes
 
       const countVotes = async () => {
@@ -947,7 +951,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from selecting a prompt to writing the first sentence
     } else if (roundTypeParam === "selecting") {
-      setTime(20);
+      setTime(15);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "writing",

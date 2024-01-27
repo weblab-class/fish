@@ -1,8 +1,23 @@
 import { useHomeStore } from "@/phaser/stores";
-import React from "react";
+import React, { useEffect } from "react";
 import DrawingCanvas from "./DrawingCanvas";
 
 export default function EaselPopup() {
+  const [setDefault] = useHomeStore((state) => [state.setDefault]);
+  useEffect(() => {
+    const handleEscapePress = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setDefault();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapePress);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapePress);
+    };
+  });
+
   return (
     <div className="absolute z-50 mb-2 flex h-full w-3/6 items-end justify-center">
       <div className="botton-0 absolute z-20 mb-2 flex h-90% w-full gap-10 rounded-3xl bg-[url(/backgrounds/brownBg.png)] bg-cover pt-1 shadow-xl shadow-stone-600 outline-8 outline-amber-900">
