@@ -25,6 +25,7 @@ import { ISendDataParams, IRedirectParams } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
+import DrawingCanvas from "@/components/DrawingCanvas";
 
 // TODO sizing issue
 
@@ -255,7 +256,7 @@ export default function Home({ params }: { params: { username: string } }) {
     <main>
       {authorized === "authorized" ? (
         <div>
-          <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
+          <div className="absolute z-0 m-0 h-full w-full p-0">
             {player && player.data && (
               <DynamicGame
                 hostUsername={params.username}
