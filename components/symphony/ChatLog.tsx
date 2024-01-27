@@ -94,7 +94,7 @@ export default function ChatLog(props: {
     >
       {showChat ? (
         <div
-          className="scrollbar-thumb-pink-300 scrollbar-track-rounded-3xl  scrollbar-thin scrollbar-track-gray-100 scrollbar-corner-red-300 z-50 h-full w-full overflow-x-hidden overflow-y-scroll rounded-t-2xl border-4 border-b-0 bg-white bg-opacity-20 p-1 pr-3 text-black"
+          className="z-50 h-full  w-full overflow-x-hidden overflow-y-scroll rounded-t-2xl border-4 border-b-0 bg-white bg-opacity-20 p-1 pr-3 text-black scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-pink-300 scrollbar-corner-red-300 scrollbar-track-rounded-3xl"
           ref={chatLogRef}
           onClick={() => {
             setShowChat(false);
@@ -110,7 +110,7 @@ export default function ChatLog(props: {
                 className={`${
                   message.message == ""
                     ? "text-white "
-                    : message.username == props.username
+                    : message.username === props.username
                       ? "text-green-200 "
                       : "text-pink-200"
                 }`}
