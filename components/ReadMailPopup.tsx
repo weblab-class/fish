@@ -16,7 +16,26 @@ export default function ReadMailPopup() {
   const { data: receiver } = useGetPlayer(session!.user.uid);
 
   const [letters, setLetters] = useState<any>([]);
-  // FIX TYPE
+
+  const handleDelete = async () => {
+    if (!receiver?.data) return;
+    const player = await getPlayer(session!.user.uid);
+    console.log("delete funcition called");
+    const updateMail = async () => {
+      const mail = await Promise.all(
+        (player?.data?.inbox || []).map(async (letter) => {
+          const { data: sender } = await getPlayer(letter.senderId.toString());
+
+          return {
+            content: letter.content,
+            sender: sender?.username,
+          };
+        }),
+      );
+      setLetters(mail);
+    };
+    updateMail();
+  };
 
   useEffect(() => {
     if (!receiver?.data) return;
@@ -55,6 +74,7 @@ export default function ReadMailPopup() {
                 key={index}
                 sender={letter.sender}
                 message={letter.content}
+                handleDelete={handleDelete}
               />
             ),
           )}

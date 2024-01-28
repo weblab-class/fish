@@ -951,7 +951,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from selecting a prompt to writing the first sentence
     } else if (roundTypeParam === "selecting") {
-      setTime(15);
+      setTime(20);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "writing",

@@ -1,8 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSendMail } from "@/services/react-query/mutations/player/sendMail";
+import {
+  getPlayer,
+  getPlayerByUsername,
+} from "@/services/react-query/queries/player";
+import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
+import {
+  deleteMail,
+  useDeleteMail,
+} from "@/services/react-query/mutations/player/deleteMail";
 
-export default function Mail(props: { sender: string; message: string }) {
+export default function Mail(props: {
+  sender: string;
+  message: string;
+  handleDelete: () => void;
+}) {
   const [showLetter, setShowLetter] = useState(false);
   const letterRef = useRef<HTMLDivElement>(null);
+  const { session } = useLuciaSession();
+  const deleteMail = useDeleteMail();
 
   // closes letter
   useEffect(() => {
@@ -39,14 +55,38 @@ export default function Mail(props: { sender: string; message: string }) {
               <div className="mt-5 h-full w-full overflow-x-hidden overflow-y-scroll break-words rounded-2xl p-2 text-3xl text-zinc-700">
                 {props.message}
               </div>
-              <div
+              <button
                 className="absolute inset-y-0 flex h-fit w-3/12 cursor-pointer items-center justify-center bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl"
-                onClick={(e) => {
+                onClick={async (e) => {
+                  console.log("hiding");
+                  const { data: sender } = await getPlayerByUsername(
+                    props.sender,
+                  );
                   setShowLetter(false);
                 }}
               >
                 Reseal
-              </div>
+              </button>
+              <button
+                className="absolute inset-y-0 right-0 flex h-fit w-fit cursor-pointer bg-[url(/backgrounds/brightRedBg.png)] p-2 text-3xl"
+                onClick={async (e) => {
+                  const { data: sender } = await getPlayerByUsername(
+                    props.sender,
+                  );
+                  if (!sender) throw new Error("Invalid user!");
+
+                  await deleteMail.mutateAsync({
+                    senderId: sender[0]._id.toString(),
+                    content: props.message,
+                    receiverId: session!.user.uid,
+                  });
+
+                  setShowLetter(false);
+                  await props.handleDelete();
+                }}
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
