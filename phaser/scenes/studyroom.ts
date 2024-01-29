@@ -26,7 +26,7 @@ class studyroom extends Scene {
 
     constructor() {
       super("studyroom");
-      // this.sprites = [];
+      this.sprites = [];
     }
 
     preload() {
@@ -56,25 +56,25 @@ class studyroom extends Scene {
         desk.src = "/objects/Desk.png";
         sprite.appendChild(desk);
         Phaser.DOM.AddToDOM(sprite, "studyroom_load_sprites");
-        // this.sprites.push(sprite);
+        this.sprites.push(sprite);
       }
     }
     update(){
       console.log(this.registry.get("player").scene.scene.key)
     }
-    // cleanup() {
-    //   console.log("REMOVING")
-    //   this.sprites.forEach((sprite) => {
-    //     if (sprite && sprite.parentNode) {
-    //       sprite.parentNode.removeChild(sprite);
-    //     }
+    cleanup() {
+      console.log("REMOVING")
+      this.sprites.forEach((sprite) => {
+        if (sprite && sprite.parentNode) {
+          sprite.parentNode.removeChild(sprite);
+        }
 
-    //   });
+      });
 
-    //   this.sprites = [];
+      this.sprites = [];
 
 
-    // }
+    }
 
   }
 

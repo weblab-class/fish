@@ -323,27 +323,27 @@ export default function Home({ params }: { params: { username: string } }) {
                     "player",
                   )) as Phaser.GameObjects.Sprite;
                   const currSceneKey = player.scene.scene.key;
-                  game.scene.switch(currSceneKey, "exterior");
 
-                  // game.scene.getScene("studyroom").cleanup();
+                  game.scene.getScene("studyroom").cleanup();
+                  game.scene.switch(currSceneKey, "exterior");
 
                   setCurrScene("exterior");
 
                   // KEEP THE CODE BELOW: for some reason, the scene does not switch properly unless the button is pressed two times
-                  // const player2 = (await game.registry.get(
-                  //   "player",
-                  // )) as Phaser.GameObjects.Sprite;
-                  // const currSceneKey2 = player2.scene.scene.key;
+                  const player2 = (await game.registry.get(
+                    "player",
+                  )) as Phaser.GameObjects.Sprite;
+                  const currSceneKey2 = player2.scene.scene.key;
 
-                  // game.scene.switch(currSceneKey2, "exterior");
+                  game.scene.switch(currSceneKey2, "exterior");
 
-                  // setCurrScene("exterior");
+                  setCurrScene("exterior");
                 }}
               />
               <div className="flex h-full w-full select-none items-center justify-center">
                 <div
                   id="studyroom_load_sprites"
-                  className="studyroom_load_sprites absolute bottom-0 z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly bg-red-500"
+                  className="absolute bottom-0 z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly"
                 ></div>
               </div>
               <div className="w-70 z-30 m-9 flex h-52 items-center justify-center">
@@ -418,14 +418,14 @@ export default function Home({ params }: { params: { username: string } }) {
 
                   setCurrScene("studyroom");
 
-                  // // KEEP THE CODE BELOW
-                  // const player2 = game.registry.get(
-                  //   "player",
-                  // ) as Phaser.GameObjects.Sprite;
-                  // const currSceneKey2 = player2.scene.scene.key;
-                  // game.scene.switch(currSceneKey2, "studyroom");
+                  // KEEP THE CODE BELOW
+                  const player2 = game.registry.get(
+                    "player",
+                  ) as Phaser.GameObjects.Sprite;
+                  const currSceneKey2 = player2.scene.scene.key;
+                  game.scene.switch(currSceneKey2, "studyroom");
 
-                  // setCurrScene("studyroom");
+                  setCurrScene("studyroom");
                 }}
               />
               <div
