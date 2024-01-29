@@ -79,12 +79,14 @@ export default function Home({ params }: { params: { username: string } }) {
 
   // control display of game from client-side
   const [
+    game,
     showInvitePopup,
     showMailPopup,
     showEaselPopup,
     showPopup,
     setDefault,
   ] = useHomeStore((state) => [
+    state.game,
     state.showInvitePopup,
     state.showMailPopup,
     state.showEaselPopup,
@@ -315,7 +317,14 @@ export default function Home({ params }: { params: { username: string } }) {
           />
           <div
             className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
-            onClick={() => console.log("go to study room")}
+            onClick={() => {
+              if (!game) return;
+
+              const player = game.registry.get("player") as Phaser.GameObjects.Sprite;
+              const currSceneKey = player.scene.scene.key;
+
+              game.scene.switch(currSceneKey, "studyroom");
+            }}
           />
           <div
             className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
@@ -332,7 +341,14 @@ export default function Home({ params }: { params: { username: string } }) {
           <div className="absolute flex w-full justify-center">
             <div
               className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
-              onClick={() => console.log("enter house")}
+              onClick={() => {
+                if (!game) return;
+
+                const player = game.registry.get("player") as Phaser.GameObjects.Sprite;
+                const currSceneKey = player.scene.scene.key;
+  
+                game.scene.switch(currSceneKey, "interior");
+              }}
             />
           </div>
           {showInvitePopup && (
