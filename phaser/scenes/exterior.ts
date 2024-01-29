@@ -122,8 +122,6 @@ export default class exterior extends Scene {
     easelTwo.setOffset(0, 30);
 
 
-
-
     const lowerPond = this.physics.add.image(2240, 1200, "transparent");
     lowerPond.setImmovable(true);
     lowerPond.setOrigin(0.5, 0.5);
@@ -226,6 +224,7 @@ export default class exterior extends Scene {
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const updatedShowEasel = useHomeStore.getState().showEaselPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
+    console.log("EXTEIRUR")
 
 
     if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {

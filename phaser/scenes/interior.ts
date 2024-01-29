@@ -93,7 +93,7 @@ class interior extends Scene {
     drawer.setImmovable(true);
     drawer.setDepth(10);
     drawer.setScale(0.5, 0.5);
-    const drawer_collider = this.physics.add.image(1240, 740, "transparent");
+    const drawer_collider = this.physics.add.image(1240, 800, "transparent");
     drawer_collider.setImmovable(true);
     drawer_collider.setDepth(10);
     drawer_collider.setScale(0.05, 0.32);
@@ -112,7 +112,7 @@ class interior extends Scene {
     welcomeMat.setImmovable(true);
     welcomeMat.setDepth(11);
     welcomeMat.setScale(0.09, 0.1);
-    const studyMat = this.physics.add.image(1020, 410, "transparent");
+    const studyMat = this.physics.add.image(1020, 360, "transparent");
     studyMat.setImmovable(true);
     studyMat.setDepth(11);
     studyMat.setScale(0.09, 0.1);
@@ -159,13 +159,29 @@ class interior extends Scene {
 
     const tv = this.physics.add.image(400, 310, "tv");
     tv.setImmovable(true);
-    tv.setDepth(10);
+    tv.setDepth(0);
     tv.setScale(0.5, 0.5);
+
+    const tv_collider = this.physics.add.image(400, 280, "transparent");
+    tv_collider.setImmovable(true);
+    tv_collider.setDepth(10);
+    tv_collider.setScale(0.1, 0.1);
+    tv_collider.setOffset(0,-120)
+
 
     const stairs = this.physics.add.image(1210, 300, "stairs");
     stairs.setImmovable(true);
-    stairs.setDepth(10);
+    stairs.setDepth(0);
     stairs.setScale(0.7, 0.7);
+
+    const stairs_collider = this.physics.add.image(1210, 200, "transparent");
+    stairs_collider.setImmovable(true);
+    stairs_collider.setDepth(10);
+    stairs_collider.setScale(0.1, 0.1);
+    const stairs_collider_two = this.physics.add.image(1130, 100, "transparent");
+    stairs_collider_two.setImmovable(true);
+    stairs_collider_two.setDepth(10);
+    stairs_collider_two.setScale(0.01, 0.8);
 
     // pusher values
     // const presenceChannel = pusherClient.subscribe("presence-channel");
@@ -184,8 +200,9 @@ class interior extends Scene {
     this.physics.add.collider(player, table_collider);
     this.physics.add.collider(player, lamp_collider);
     this.physics.add.collider(player, drawer_collider);
-    this.physics.add.collider(player, tv);
-    this.physics.add.collider(player, stairs);
+    this.physics.add.collider(player, tv_collider);
+    this.physics.add.collider(player, stairs_collider);
+    this.physics.add.collider(player, stairs_collider_two);
 
     // camera follows player
     this.cameras.main.startFollow(player);

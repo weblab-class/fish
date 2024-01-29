@@ -1,24 +1,81 @@
 import { Scene } from "phaser";
+import { Game as PhaserGame } from "phaser";
+import { useEffect, useRef, useState } from "react";
+import {
+  // PlayerRoomUserInfo,
+  // PusherError,
+  pusherClient,
+} from "../services/pusher";
+// import { PlayerInfo } from "./types";
+import axios from "axios";
+import { Session } from "lucia";
+import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
+import { redirect } from "next/navigation";
+import { create } from "zustand";
+import { useRouter } from "next/navigation";
+import { PresenceChannel } from "pusher-js";
+import { NextResponse } from "next/server";
+import { PresenceChannelData } from "pusher";
+import { useHomeStore } from "../stores";
+import interior from "./interior";
 
-import loadSprites from "../functions";
 
-/**
- * The study room in scene `/home`.
- */
-export default class studyroom extends Scene {
-  constructor() {
-    super("studyroom");
+class studyroom extends Scene {
+    sprites: HTMLDivElement[];
+
+
+    constructor() {
+      super("studyroom");
+      // this.sprites = [];
+    }
+
+    preload() {
+
+      this.load.image("studyroom", "/backgrounds/studyroom.png");
+
+
+    }
+
+    create() {
+
+      const player = this.physics.add.sprite(725, 830, "transparent");
+
+      const studyroom = this.add.image(750, 425, "studyroom");
+      player.setDataEnabled();
+      this.registry.set("player", player);
+      studyroom.setDepth(1)
+
+      useHomeStore.setState({text: ""});
+
+      for (let i = 0; i < 6; i++) {
+        const sprite = document.createElement("div")
+
+        sprite.className = "bg-[url('/players/bunnyOne.png')] z-50 bg-no-repeat -mb-10 m-1 bg-contain h-45% bg-center w-3/12 flex items-end justify-center";
+        const desk = document.createElement("img");
+        desk.className = "bottom-0 h-20 w-70 desk";
+        desk.src = "/objects/Desk.png";
+        sprite.appendChild(desk);
+        Phaser.DOM.AddToDOM(sprite, "studyroom_load_sprites");
+        // this.sprites.push(sprite);
+      }
+    }
+    update(){
+      console.log(this.registry.get("player").scene.scene.key)
+    }
+    // cleanup() {
+    //   console.log("REMOVING")
+    //   this.sprites.forEach((sprite) => {
+    //     if (sprite && sprite.parentNode) {
+    //       sprite.parentNode.removeChild(sprite);
+    //     }
+
+    //   });
+
+    //   this.sprites = [];
+
+
+    // }
+
   }
 
-  preload() {
-    // load backgrounds
-    this.load.image("blackBg", "/backgrounds/blackBg.jpeg");
-    this.load.image("studyroom", "/backgrounds/studyroom.png");
-  }
-
-  create() {
-    // set backgrounds
-    this.add.image(0, 0, "blackBg").setOrigin(0);
-    this.add.image(750, 440, "studyroom");
-  }
-}
+export default studyroom;

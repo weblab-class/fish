@@ -26,6 +26,8 @@ import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
 import EaselPopup from "@/components/EaselPopup";
+import Timer from "@/components/timer";
+import Stopwatch from "@/components/stopwatch";
 
 // TODO sizing issue
 
@@ -48,6 +50,7 @@ interface IErrorRedirectStoreState {
   errorRedirect: boolean;
   errorCode: CustomErrorCode | null;
 }
+
 const useErrorRedirectStore = create<IErrorRedirectStoreState>((set) => ({
   errorRedirect: false,
   errorCode: null,
@@ -73,6 +76,8 @@ export default function Home({ params }: { params: { username: string } }) {
   const { session } = useLuciaSession();
   const signOutMutation = useSignOut();
   const { data: player } = useGetPlayer(session!.user.uid);
+  const [isHost, setIsHost] = useState(false);
+
   const [authorized, setAuthorized] = useState<
     "waiting" | "authorized" | "unauthorized"
   >("waiting");
@@ -93,18 +98,43 @@ export default function Home({ params }: { params: { username: string } }) {
     state.showPopup,
     state.setDefault,
   ]);
+
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
   const [logoutClicked, setLogoutClicked] = useState(false);
+  const [currScene, setCurrScene] = useState<string>("exterior");
+  const time = new Date();
+  let total =
+    document.getElementById("h")?.value * 60 * 60 +
+    document.getElementById("m")?.value * 60 +
+    document.getElementById("s")?.value;
+  time.setSeconds(time.getSeconds() + total);
 
   const [redirect, errorCode] = useErrorRedirectStore((state) => [
     state.errorRedirect,
     state.errorCode,
   ]);
+
   // #endregion
 
   // #region useEffect
   // handle clicks outside of popups
+
+  useEffect(() => {
+    if (!game) return;
+
+    const player = game.registry.get("player") as Phaser.GameObjects.Sprite;
+
+    if (!player) return;
+    if (!player.scene) return;
+    const currSceneKey = player.scene.scene.key;
+    console.log(currScene, currSceneKey);
+    if (currScene != currSceneKey) {
+      setCurrScene(currSceneKey);
+      console.log(currSceneKey);
+    }
+  });
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -264,6 +294,9 @@ export default function Home({ params }: { params: { username: string } }) {
   }, []);
   // #endregion
 
+  useEffect(() => {
+    console.log(currScene, "STUFY ROOM");
+  }, [currScene]);
   return (
     <main>
       {authorized === "authorized" ? (
@@ -278,13 +311,68 @@ export default function Home({ params }: { params: { username: string } }) {
               />
             )}
           </div>
+
+          {/* studyroom */}
+          {currScene == "studyroom" && (
+            <div>
+              <span
+                className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
+                onClick={async () => {
+                  if (!game) return;
+                  const player = (await game.registry.get(
+                    "player",
+                  )) as Phaser.GameObjects.Sprite;
+                  const currSceneKey = player.scene.scene.key;
+                  game.scene.switch(currSceneKey, "exterior");
+
+                  // game.scene.getScene("studyroom").cleanup();
+
+                  setCurrScene("exterior");
+
+                  // KEEP THE CODE BELOW: for some reason, the scene does not switch properly unless the button is pressed two times
+                  // const player2 = (await game.registry.get(
+                  //   "player",
+                  // )) as Phaser.GameObjects.Sprite;
+                  // const currSceneKey2 = player2.scene.scene.key;
+
+                  // game.scene.switch(currSceneKey2, "exterior");
+
+                  // setCurrScene("exterior");
+                }}
+              />
+              <div className="flex h-full w-full select-none items-center justify-center">
+                <div
+                  id="studyroom_load_sprites"
+                  className="studyroom_load_sprites absolute bottom-0 z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly bg-red-500"
+                ></div>
+              </div>
+              <div className="w-70 z-30 m-9 flex h-52 items-center justify-center">
+                {/* <span className = "absolute flex flex-wrap top-0 z-30 h-1/5 w-1/5 m-16 justify-center top-0">
+              <form id='duration' className = "z-40 right-0 select-none">
+                <input id='h' name='h' type='number' min='0' max='23' className = "cursor-text opacity-50"/>
+                <label htmlFor='h' className = "p-1">h</label>
+                <input id='m' name='m' type='number' min='0' max='59' className = "cursor-text opacity-50"/>
+                <label htmlFor='m' className = "p-1">m</label>
+                <input id='s' name='s' type='number' min='0' max='59' className = "cursor-text opacity-50"/>
+                <label htmlFor='s' className = "p-1">s</label>
+              </form>
+            </span> */}
+                {false ? (
+                  <span className="w-70 z-30">
+                    <Timer expiryTimestamp={time} />
+                  </span>
+                ) : (
+                  <span className="w-70 z-30">
+                    <Stopwatch />
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
           <div className="absolute bottom-3 left-3 z-10">
             <button
               className="rounded-xl bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl text-white outline"
               onClick={async () => {
-                // TODO put this somewhere better
-                // TODO prevent someone from spam clicking this
-
                 await axios.post(
                   `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
                   {
@@ -305,52 +393,73 @@ export default function Home({ params }: { params: { username: string } }) {
             />
           </div>
           {/* nav bar */}
-          <div></div>
-          <div
-            className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
-            onClick={async () => {
-              setLogoutClicked(true);
-              await signOutMutation.mutateAsync();
-              router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
-              setLogoutClicked(false);
-            }}
-          />
-          <div
-            className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
-            onClick={() => {
-              if (!game) return;
+          {currScene == "exterior" && (
+            <div>
+              <div
+                className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
+                onClick={async () => {
+                  setLogoutClicked(true);
+                  await signOutMutation.mutateAsync();
+                  router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
+                  setLogoutClicked(false);
+                }}
+              />
+              <div
+                className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
+                onClick={() => {
+                  if (!game) return;
 
-              const player = game.registry.get("player") as Phaser.GameObjects.Sprite;
-              const currSceneKey = player.scene.scene.key;
+                  const player = game.registry.get(
+                    "player",
+                  ) as Phaser.GameObjects.Sprite;
+                  const currSceneKey = player.scene.scene.key;
 
-              game.scene.switch(currSceneKey, "studyroom");
-            }}
-          />
-          <div
-            className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
-            onClick={() => {
-              showPopup("invite");
-            }}
-          />
-          <div
-            className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
-            onClick={() => {
-              showPopup("mail");
-            }}
-          />
-          <div className="absolute flex w-full justify-center">
-            <div
-              className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
-              onClick={() => {
-                if (!game) return;
+                  game.scene.switch(currSceneKey, "studyroom");
 
-                const player = game.registry.get("player") as Phaser.GameObjects.Sprite;
-                const currSceneKey = player.scene.scene.key;
-  
-                game.scene.switch(currSceneKey, "interior");
-              }}
-            />
-          </div>
+                  setCurrScene("studyroom");
+
+                  // // KEEP THE CODE BELOW
+                  // const player2 = game.registry.get(
+                  //   "player",
+                  // ) as Phaser.GameObjects.Sprite;
+                  // const currSceneKey2 = player2.scene.scene.key;
+                  // game.scene.switch(currSceneKey2, "studyroom");
+
+                  // setCurrScene("studyroom");
+                }}
+              />
+              <div
+                className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
+                onClick={() => {
+                  showPopup("invite");
+                }}
+              />
+              <div
+                className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
+                onClick={() => {
+                  showPopup("mail");
+                }}
+              />
+              <div className="absolute flex w-full justify-center">
+                <div
+                  className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
+                  onClick={() => {
+                    if (!game) return;
+
+                    const player = game.registry.get(
+                      "player",
+                    ) as Phaser.GameObjects.Sprite;
+
+                    const currSceneKey = player.scene.scene.key;
+
+                    game.scene.switch(currSceneKey, "interior");
+
+                    setCurrScene("interior");
+                  }}
+                />
+              </div>
+            </div>
+          )}
           {showInvitePopup && (
             <div className="flex h-screen w-screen items-center justify-center">
               <div
@@ -383,7 +492,6 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
         </div>
       ) : (
-        // TODO Make this much more interesting
         <div>
           <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/greenBg.png)] bg-cover bg-no-repeat">
             <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/pinkBigBg.png)] outline-dashed outline-4 outline-white">

@@ -14,12 +14,13 @@ export default function TitlePageLogin() {
     "friendly invitations, social habitat",
     "flourish in social havens",
     "fellow creatures in social harmony",
-    "fun inhabitants Sharing harmony",
-    "friendly interspecies Social hangouts",
+    "fun inhabitants sharing harmony",
+    "friendly interspecies social hangouts",
     "friendly invites for social happiness",
     "furry invitations to social hangouts",
     "friendly interactions and social harmony",
     "friendly individuals' social habitat",
+    "find incredibly special hangouts",
   ];
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [index, setIndex] = useState(0);
