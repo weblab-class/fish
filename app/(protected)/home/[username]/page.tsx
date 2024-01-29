@@ -28,6 +28,7 @@ import ChatLogPhaser from "@/components/ChatLogPhaser";
 import EaselPopup from "@/components/EaselPopup";
 import Timer from "@/components/timer";
 import Stopwatch from "@/components/stopwatch";
+import { Data } from "phaser";
 
 // TODO sizing issue
 
@@ -99,6 +100,7 @@ export default function Home({ params }: { params: { username: string } }) {
   const mailRef = useRef<HTMLDivElement>(null);
   const [logoutClicked, setLogoutClicked] = useState(false);
   const [currScene, setCurrScene] = useState("exterior");
+  const [gameLoaded, setGameLoaded] = useState(false);
   const time = new Date();
   let total =
     document.getElementById("h")?.value * 60 * 60 +
@@ -116,16 +118,18 @@ export default function Home({ params }: { params: { username: string } }) {
 
   useEffect(() => {
     if (!game) return;
+    if (game && !gameLoaded) {
+      setGameLoaded(true);
+    }
 
     const player = game.registry.get("player") as Phaser.GameObjects.Sprite;
 
     if (!player) return;
     if (!player.scene) return;
     const currSceneKey = player.scene.scene.key;
-    console.log(currScene, currSceneKey);
+
     if (currScene != currSceneKey) {
       setCurrScene(currSceneKey);
-      console.log(currSceneKey);
     }
   });
 
@@ -170,6 +174,7 @@ export default function Home({ params }: { params: { username: string } }) {
     // bindings
     homeChannel.bind("pusher:subscription_succeeded", async (_: Members) => {
       useErrorRedirectStore.setState({ errorRedirect: false, errorCode: null });
+      console.log("subscription succeeded");
 
       // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
@@ -289,6 +294,45 @@ export default function Home({ params }: { params: { username: string } }) {
   }, []);
   // #endregion
 
+  useEffect(() => {
+    if (!game) return;
+
+    const homeChannel = pusherClient.subscribe(
+      `presence-home-${params.username}`,
+    );
+    homeChannel.bind(
+      "sceneChange",
+      async (data: { newScene: string; oldScene: string }) => {
+        console.log("SCENE CHANGE");
+        if (!game) return;
+        const player = (await game.registry.get(
+          "player",
+        )) as Phaser.GameObjects.Sprite;
+        const currSceneKey = player.scene.scene.key;
+
+        if (data.oldScene == "studyroom") {
+          game.scene.getScene("studyroom").cleanup();
+        }
+
+        game.scene.switch(currSceneKey, data.newScene);
+
+        setCurrScene(data.newScene);
+
+        const currSceneKey2 = player.scene.scene.key;
+
+        if (data.oldScene == "studyroom") {
+          game.scene.getScene("studyroom").cleanup();
+        }
+
+        game.scene.switch(currSceneKey2, data.newScene);
+
+        setCurrScene(data.newScene);
+      },
+    );
+    return () => {
+      homeChannel.unbind("sceneChange");
+    };
+  }, [gameLoaded]);
   return (
     <main>
       {authorized === "authorized" ? (
@@ -316,26 +360,41 @@ export default function Home({ params }: { params: { username: string } }) {
               <span
                 className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
                 onClick={async () => {
+                  // IF HOST:
                   if (!game) return;
-                  const player = (await game.registry.get(
+                  const player = game.registry.get(
                     "player",
-                  )) as Phaser.GameObjects.Sprite;
+                  ) as Phaser.GameObjects.Sprite;
                   const currSceneKey = player.scene.scene.key;
 
-                  game.scene.getScene("studyroom").cleanup();
-                  game.scene.switch(currSceneKey, "exterior");
+                  await axios.post("/api/pusher/home/changeScene", {
+                    hostUsername: params.username,
+                    newScene: "interior",
+                    oldScene: currSceneKey,
+                  });
 
-                  setCurrScene("exterior");
+                  // IF VISITOR: LEAVE TO HOME
 
-                  // KEEP THE CODE BELOW: for some reason, the scene does not switch properly unless the button is pressed two times
-                  const player2 = (await game.registry.get(
-                    "player",
-                  )) as Phaser.GameObjects.Sprite;
-                  const currSceneKey2 = player2.scene.scene.key;
+                  // if (!game) return;
+                  // const player = (await game.registry.get(
+                  //   "player",
+                  // )) as Phaser.GameObjects.Sprite;
+                  // const currSceneKey = player.scene.scene.key;
 
-                  game.scene.switch(currSceneKey2, "exterior");
+                  // game.scene.getScene("studyroom").cleanup();
+                  // game.scene.switch(currSceneKey, "exterior");
 
-                  setCurrScene("exterior");
+                  // setCurrScene("exterior");
+
+                  // // KEEP THE CODE BELOW: for some reason, the scene does not switch properly unless the button is pressed two times
+                  // const player2 = (await game.registry.get(
+                  //   "player",
+                  // )) as Phaser.GameObjects.Sprite;
+                  // const currSceneKey2 = player2.scene.scene.key;
+
+                  // game.scene.switch(currSceneKey2, "exterior");
+
+                  // setCurrScene("exterior");
                 }}
               />
 
@@ -402,26 +461,18 @@ export default function Home({ params }: { params: { username: string } }) {
               />
               <div
                 className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
-                onClick={() => {
+                onClick={async () => {
                   if (!game) return;
-
                   const player = game.registry.get(
                     "player",
                   ) as Phaser.GameObjects.Sprite;
                   const currSceneKey = player.scene.scene.key;
 
-                  game.scene.switch(currSceneKey, "studyroom");
-
-                  setCurrScene("studyroom");
-
-                  // KEEP THE CODE BELOW
-                  const player2 = game.registry.get(
-                    "player",
-                  ) as Phaser.GameObjects.Sprite;
-                  const currSceneKey2 = player2.scene.scene.key;
-                  game.scene.switch(currSceneKey2, "studyroom");
-
-                  setCurrScene("studyroom");
+                  await axios.post("/api/pusher/home/changeScene", {
+                    hostUsername: params.username,
+                    newScene: "studyroom",
+                    oldScene: currSceneKey,
+                  });
                 }}
               />
               <div
@@ -439,18 +490,18 @@ export default function Home({ params }: { params: { username: string } }) {
               <div className="absolute flex w-full justify-center">
                 <div
                   className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
-                  onClick={() => {
+                  onClick={async () => {
                     if (!game) return;
-
                     const player = game.registry.get(
                       "player",
                     ) as Phaser.GameObjects.Sprite;
-
                     const currSceneKey = player.scene.scene.key;
 
-                    game.scene.switch(currSceneKey, "interior");
-
-                    setCurrScene("interior");
+                    await axios.post("/api/pusher/home/changeScene", {
+                      hostUsername: params.username,
+                      newScene: "interior",
+                      oldScene: currSceneKey,
+                    });
                   }}
                 />
               </div>
