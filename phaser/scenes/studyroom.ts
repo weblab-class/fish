@@ -39,6 +39,7 @@ class studyroom extends Scene {
     create() {
 
       const player = this.physics.add.sprite(725, 830, "transparent");
+      this.sprites = [];
 
       const studyroom = this.add.image(750, 425, "studyroom");
       player.setDataEnabled();
@@ -55,13 +56,11 @@ class studyroom extends Scene {
         desk.className = "bottom-0 h-20 w-70 desk";
         desk.src = "/objects/Desk.png";
         sprite.appendChild(desk);
-        Phaser.DOM.AddToDOM(sprite, "studyroom_load_sprites");
         this.sprites.push(sprite);
+        Phaser.DOM.AddToDOM(sprite, "studyroom_load_sprites");
       }
     }
-    update(){
-      console.log(this.registry.get("player").scene.scene.key)
-    }
+
     cleanup() {
       console.log("REMOVING")
       this.sprites.forEach((sprite) => {

@@ -50,7 +50,6 @@ interface IErrorRedirectStoreState {
   errorRedirect: boolean;
   errorCode: CustomErrorCode | null;
 }
-
 const useErrorRedirectStore = create<IErrorRedirectStoreState>((set) => ({
   errorRedirect: false,
   errorCode: null,
@@ -76,8 +75,6 @@ export default function Home({ params }: { params: { username: string } }) {
   const { session } = useLuciaSession();
   const signOutMutation = useSignOut();
   const { data: player } = useGetPlayer(session!.user.uid);
-  const [isHost, setIsHost] = useState(false);
-
   const [authorized, setAuthorized] = useState<
     "waiting" | "authorized" | "unauthorized"
   >("waiting");
@@ -98,11 +95,10 @@ export default function Home({ params }: { params: { username: string } }) {
     state.showPopup,
     state.setDefault,
   ]);
-
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
   const [logoutClicked, setLogoutClicked] = useState(false);
-  const [currScene, setCurrScene] = useState<string>("exterior");
+  const [currScene, setCurrScene] = useState("exterior");
   const time = new Date();
   let total =
     document.getElementById("h")?.value * 60 * 60 +
@@ -114,11 +110,9 @@ export default function Home({ params }: { params: { username: string } }) {
     state.errorRedirect,
     state.errorCode,
   ]);
-
   // #endregion
 
   // #region useEffect
-  // handle clicks outside of popups
 
   useEffect(() => {
     if (!game) return;
@@ -135,6 +129,7 @@ export default function Home({ params }: { params: { username: string } }) {
     }
   });
 
+  // handle clicks outside of popups
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -294,9 +289,6 @@ export default function Home({ params }: { params: { username: string } }) {
   }, []);
   // #endregion
 
-  useEffect(() => {
-    console.log(currScene, "STUFY ROOM");
-  }, [currScene]);
   return (
     <main>
       {authorized === "authorized" ? (
@@ -311,8 +303,14 @@ export default function Home({ params }: { params: { username: string } }) {
               />
             )}
           </div>
-
+          {/* study room */}
           {/* studyroom */}
+          <div className="absolute flex h-full w-full select-none items-center justify-center">
+            <div
+              id="studyroom_load_sprites"
+              className="absolute bottom-0 z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly"
+            ></div>
+          </div>
           {currScene == "studyroom" && (
             <div>
               <span
@@ -340,12 +338,7 @@ export default function Home({ params }: { params: { username: string } }) {
                   setCurrScene("exterior");
                 }}
               />
-              <div className="flex h-full w-full select-none items-center justify-center">
-                <div
-                  id="studyroom_load_sprites"
-                  className="absolute bottom-0 z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly"
-                ></div>
-              </div>
+
               <div className="w-70 z-30 m-9 flex h-52 items-center justify-center">
                 {/* <span className = "absolute flex flex-wrap top-0 z-30 h-1/5 w-1/5 m-16 justify-center top-0">
               <form id='duration' className = "z-40 right-0 select-none">
@@ -373,6 +366,9 @@ export default function Home({ params }: { params: { username: string } }) {
             <button
               className="rounded-xl bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl text-white outline"
               onClick={async () => {
+                // TODO put this somewhere better
+                // TODO prevent someone from spam clicking this
+
                 await axios.post(
                   `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
                   {
@@ -492,6 +488,7 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
         </div>
       ) : (
+        // TODO Make this much more interesting
         <div>
           <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/greenBg.png)] bg-cover bg-no-repeat">
             <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/pinkBigBg.png)] outline-dashed outline-4 outline-white">
