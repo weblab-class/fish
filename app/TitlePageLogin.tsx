@@ -206,7 +206,7 @@ export default function TitlePageLogin() {
                         a story given a prompt or theme.
                       </p>
                       <p className="m-3 flex items-center text-3xl">
-                        2. During each round, everyone will be given 20 seconds
+                        2. During each round, everyone will be given 30 seconds
                         to write a sentence to add to the story.
                       </p>
                       <p className="m-3 flex items-center text-3xl">

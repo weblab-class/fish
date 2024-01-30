@@ -29,7 +29,7 @@ function Stopwatch() {
 
   return (
     <div className="bottom-0 left-0 flex">
-      <div className="left-0 p-5 font-sans text-3xl text-red-600">
+      <div className="left-0 p-5 font-sans text-3xl text-black">
         <span>{hours}</span>:<span>{minutes}</span>:<span>{seconds}</span>
       </div>
       <div className="relative -top-3 right-0 p-5">

@@ -10,7 +10,7 @@ import ResponseCard from "@/components/symphony/ResponseCard";
 import { PresenceChannel } from "pusher-js";
 import ChatLog from "@/components/symphony/ChatLog";
 import VoteCount from "@/components/symphony/VoteCount";
-import { useMultiplayerStore } from "@/phaser/stores";
+import { useHomeStore, useMultiplayerStore } from "@/phaser/stores";
 import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import dynamic from "next/dynamic";
 import { takeWhile as _takeWhile, random as _random } from "lodash";
@@ -38,6 +38,8 @@ import { PlayerInfo } from "@/phaser/types";
 import { AiFillSkype } from "react-icons/ai";
 import { GamePlayerInfo } from "@/services/mongo/models";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
+import { IoMdHelp } from "react-icons/io";
+import HelpPopup from "@/components/HelpPopup";
 
 const PieChartWithoutSSR = dynamic(
   () => import("@/components/symphony/PieScore"),
@@ -145,6 +147,24 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [playerCount, setPlayerCount] = useState<number>(0);
   const [deadPlayers, setDeadPlayers] = useState<GamePlayerInfo[]>([]);
 
+  const [
+    game,
+    showInvitePopup,
+    showMailPopup,
+    showEaselPopup,
+    showHelpPopup,
+    showPopup,
+    setDefault,
+  ] = useHomeStore((state) => [
+    state.game,
+    state.showInvitePopup,
+    state.showMailPopup,
+    state.showEaselPopup,
+    state.showHelpPopup,
+    state.showPopup,
+    state.setDefault,
+  ]);
+
   const randomTestPrompts = [
     "A fish goes to the grocery store.",
     "A cow is flying.",
@@ -162,10 +182,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const forceSubmit = async function () {
     if (!host?.data) return;
     if (isHost) {
-      // console.log("forcing submissions", roundType);
-      // await forceSubmissions.mutateAsync({
-      //   hostId: host?.data[0]._id.toString(),
-      // });
       const gameRoomRes = await getSentenceSymphony(
         host.data[0]._id.toString(),
       );
@@ -176,7 +192,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           creatorId: info.creatorId.toString(),
           voteIds: [...info.voteIds.map((voteId) => voteId.toString())],
         }));
-        console.log("SETTING VOTE OPTIONS");
+
         setResponses(voteOpts);
       }
     }
@@ -205,18 +221,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
     ) as PresenceChannel;
 
     gameChannel.bind("pusher:subscription_succeeded", () => {
-      console.log("success yay");
       setIsSubscribed(true);
     });
 
-    gameChannel.bind("pusher:subscription_error", (error: any) => {
-      console.log("error", error);
-    });
+    gameChannel.bind("pusher:subscription_error", (error: any) => {});
 
     gameChannel.bind(
       "pusher:member_added",
       (member: { id: any; info: any }) => {
-        console.log("success member added,", member.info, member.id);
         if (!gameRoomExists) {
           setMemberCount(memberCount + 1);
         }
@@ -227,12 +239,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
     gameChannel.bind(
       "pusher:member_removed",
       (member: { id: any; info: any }) => {
-        console.log("removed member", member);
         setDeadPlayers([
           ...deadPlayers,
           { playerId: member.id, gameName: member.info.username },
         ]);
-        console.log({ playerId: member.id, gameName: member.info.username });
+
         if (member.info.username === params.username) {
           router.push(`/home/${params.username}`);
         }
@@ -240,7 +251,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     );
 
     gameChannel.bind("gameRoomCreated", () => {
-      console.log("game room binding received");
       setGameRoomExists(true);
     });
 
@@ -252,7 +262,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     gameChannel.bind("topContributor", (data: { topContributor: string }) => {
       setTopContributor(data.topContributor);
-      console.log("setting top contributor");
     });
 
     return () => {
@@ -280,12 +289,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       setIsHost(false);
     }
 
-    console.log(
-      (gameChannel as PresenceChannel).members.count,
-      "presence",
-      otherPlayers.size,
-      "size",
-    );
     if ((gameChannel as PresenceChannel).members.count < otherPlayers.size + 1)
       return;
     if (isHost && !gameRoomExists) {
@@ -328,7 +331,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
         `presence-ss-host-${params.username}`,
       ) as PresenceChannel;
       hostChannel.bind("pusher:subscription_succeeded", () => {
-        console.log("host success yay");
         setIsSubscribed(true);
       });
       hostChannel.bind(
@@ -378,9 +380,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
       hostChannel.bind(
         "mostVoted",
         async (data: { mostVotedResponse: string }) => {
-          console.log(data.mostVotedResponse, "mostVoted");
           setCurrentStory(currentStory + data.mostVotedResponse);
-          console.log(currentStory);
+
           setMostVoted(data.mostVotedResponse);
 
           await axios.post("/api/pusher/symphony/roundChange", {
@@ -414,24 +415,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
           }),
         ];
 
-        console.log(gameRoomRes.data?.allPlayers, "players");
-
         setAllPlayers(gameRoomPlayers);
         setPlayerCount(gameRoomPlayers.length);
         setAllSprites(gameRoomSprites);
-        console.log(gameRoomSprites, "sprites");
 
         setWaiting(false);
       };
       gameRoomRecFunc();
     }
-
-    console.log("players", allPlayers);
-    console.log(waiting);
   }, [gameRoomExists, isSubscribed]);
 
   useEffect(() => {
-    console.log(allPlayers);
     if (allPlayers.length > 0) {
       setContributions([
         ...allPlayers.map(({ gameName }) => ({
@@ -443,8 +437,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [allPlayers.length]);
 
   useEffect(() => {
-    console.log("RESPONSES CHANGED", responsesData);
-
     if (isHost) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
@@ -459,21 +451,18 @@ export default function GamePage({ params }: { params: { username: string } }) {
           voterId: string;
           responsesData: Response[];
         }) => {
-          console.log("VOTE SENTENCE BINDING", data, responsesData);
-
           const voteOptions = responsesData;
           const creatorIndex = voteOptions.findIndex(
             (opt) => opt.creatorId === data.creatorId,
           );
 
-          console.log("voteOptions", voteOptions, "creatorInd", creatorIndex);
           const creatorOptData = voteOptions.at(creatorIndex)!;
           voteOptions[creatorIndex] = {
             creatorId: voteOptions[creatorIndex].creatorId,
             sentence: creatorOptData.sentence,
             voterIds: [...creatorOptData.voterIds, data.voterId],
           };
-          console.log(creatorOptData);
+
           setResponsesData(voteOptions);
 
           const updateResponses = async () => {
@@ -487,7 +476,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       );
 
       hostChannel.bind("deleteResponses", () => {
-        console.log("DELETE SENTENCE BINDING");
         const updateResponses = async () => {
           await axios.post("/api/pusher/symphony/updateResponses", {
             responses: [],
@@ -506,29 +494,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
     if (true) {
       if (true) {
         gameChannel.bind("submitSentence", (data: { response: Response }) => {
-          console.log("SUBMIT SENTENCE BINDING", data.response);
-
           const newResponses = [...responsesData, data.response];
           if (responsesData.includes(data.response)) return;
           setResponsesData((prevSentences) => [
             ...prevSentences,
             data.response,
           ]);
-          console.log(responsesData);
-
-          // if (
-          //   responses.length === (gameChannel as PresenceChannel).members.count
-          // ) {
-          //   const updateResponsesFunc = async () => {
-          //     await axios.post("/api/pusher/symphony/updateResponses", {
-          //       responses: newResponses,
-          //       hostUsername: params.username,
-          //     });
-          //   };
-          //   updateResponsesFunc();
-
-          //   console.log(responsesData);
-          // }
         });
         return () => {
           gameChannel.unbind("submitSentence");
@@ -557,7 +528,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     if (roundType == "selecting" || roundType == "voting") {
       timerDuration = 15;
     } else if (roundType == "writing") {
-      timerDuration = 20;
+      timerDuration = 30;
     } else if (roundType == "voted" || roundType == "scores") {
       timerDuration = 10;
     }
@@ -574,7 +545,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
 
     gameChannel.bind("updateResponses", (data: { responses: Response[] }) => {
-      console.log("updating REsponses binding", data.responses);
       setResponsesData((prevSentences) => data.responses);
     });
 
@@ -583,17 +553,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
       (data: {
         contributions: Contribution[];
         tie: boolean;
-        winnerId: string[];
+        winnerId: string;
       }) => {
-        console.log("contributinos binding", data.contributions);
         setContributions(data.contributions);
-        setVotedWinners(data.winnerId);
+
+        setVotedWinner(data.winnerId);
+        console.log(tie);
         setTie(tie);
       },
     );
 
     gameChannel.bind("updateStory", (data: { story: string }) => {
-      console.log("story", data.story);
       setCurrentStory(data.story);
     });
 
@@ -603,7 +573,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       "roundChange",
       async (data: { newRound: string; roundNumber: number }) => {
         //submit all responses when time runs out
-        console.log("round change binding triggered", data.newRound);
+
         if (data.newRound === "voting") {
           // COMMENT THIS BACK IN GO BACK
           await handleSubmit(onSubmit)();
@@ -620,17 +590,18 @@ export default function GamePage({ params }: { params: { username: string } }) {
         setRoundType(data.newRound);
 
         setRoundNumber(data.roundNumber);
+        if (data.roundNumber > 24) {
+          setRoundNumber(24);
+        }
       },
     );
 
     // gameChannel.bind("mostVoted",(data:{mostVotedPrompt:string,newPrompt}))
 
     gameChannel.bind("timer", (data: { time: number }) => {
-      console.log(data.time);
-
       setTime(data.time);
 
-      if (data.time === 0 && roundNumber < 25) {
+      if (data.time === 0 && roundNumber < 30) {
         // only host controls stopTimer
         if (isHost) {
           const stopTimer = async () => {
@@ -640,13 +611,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
         }
 
         setTimesUp(true);
+
         setTimeout(() => {
           setTimesUp(false);
-          setTime(20);
         }, 1000);
 
         if (roundType === "story") {
-          // TO DO CHANGE LINK
           if (!player?.data) return;
           const deleteGame = async () => {
             if (!host?.data) return;
@@ -656,19 +626,17 @@ export default function GamePage({ params }: { params: { username: string } }) {
           };
           deleteGame();
 
-          router.push(`/home/${player?.data?.username}`);
+          router.push(`/home/${params.username}`);
         }
 
         // only host controls roundChangeFunc
         if (roundType === "voted") {
-          console.log("starting the pie chart data", responses, roundType);
-
           // clears responses for new round and calculates the winning prompt
           if (isHost) {
             // TODO CHECK THIS <----- (async functions)
             const startNewRoundFunc = async () => {
               const voteOptions = responsesData;
-              console.log("voteoptions", voteOptions);
+
               voteOptions.sort((a, b) => b.voterIds.length - a.voterIds.length);
 
               const maxVoteOptions = _takeWhile(
@@ -678,12 +646,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
               const pickedOpt =
                 maxVoteOptions[_random(0, maxVoteOptions.length - 1)];
 
-              console.log(
-                "PICKED OPT",
-                pickedOpt,
-                "max vote options",
-                maxVoteOptions,
-              );
               const newSentences = [
                 ...sentenceWinners,
                 {
@@ -718,11 +680,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
               });
 
               setContributions(newContributions);
-              console.log("deleting");
+              console.log(
+                "deleting",
+                maxVoteOptions.length,
+                maxVoteOptions.length > 1,
+              );
 
               await axios.post("/api/pusher/symphony/updateContributions", {
                 contributions: contributions.map((player) => {
-                  console.log(maxVoteOptions);
                   if (player.playerName === winnerName) {
                     return { ...player, value: player.value + 1 };
                   }
@@ -732,7 +697,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
                 // ERROR: maxVoteOptions undefined ?
                 hostUsername: params.username,
-                winnerId: ["test"],
+                winnerId: winnerName,
                 // winnerId: maxVoteOptions.map((options) => {
                 //   options.creatorId;
                 // }),
@@ -769,8 +734,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // const responseData = { response: data.response, player: "player_id" };
 
-    console.log("submitting", submittedResponse, data.response);
-
     // if (!submittedResponse && data.response.length > 0) {
     //   const submitSentenceFunc = async () => {
     //     if (!host?.data) return;
@@ -787,23 +750,23 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // }
 
     //host submits for all the players that left
-    if (isHost) {
-      for (let i = 0; i < playerCount - gameChannel.members.count; i++) {
-        let responseSubmitted = "";
+    // if (isHost) {
+    //   for (let i = 0; i < playerCount - gameChannel.members.count; i++) {
+    //     let responseSubmitted = "";
 
-        responseSubmitted =
-          "This player left. This will be replaced by AI later :)";
+    //     responseSubmitted =
+    //       "This player left. This will be replaced by AI later :)";
 
-        await axios.post("/api/pusher/symphony/submitResponse", {
-          response: {
-            sentence: responseSubmitted,
-            creatorId: deadPlayers[i].playerId,
-            voterIds: [],
-          },
-          hostUsername: params.username,
-        });
-      }
-    }
+    //     await axios.post("/api/pusher/symphony/submitResponse", {
+    //       response: {
+    //         sentence: responseSubmitted,
+    //         creatorId: deadPlayers[i].playerId,
+    //         voterIds: [],
+    //       },
+    //       hostUsername: params.username,
+    //     });
+    //   }
+    // }
 
     if (!submittedResponse) {
       let responseSubmitted = "";
@@ -811,18 +774,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
         responseSubmitted =
           "This player submitted nothing. This will be replaced by AI later :)";
       } else {
-        responseSubmitted = data.response;
+        await axios.post("/api/pusher/symphony/submitResponse", {
+          response: {
+            sentence: data.response,
+            creatorId: session!.user.uid,
+            voterIds: [],
+          },
+          hostUsername: params.username,
+        });
       }
-      console.log("about to post response");
-      console.log();
-      await axios.post("/api/pusher/symphony/submitResponse", {
-        response: {
-          sentence: responseSubmitted,
-          creatorId: session!.user.uid,
-          voterIds: [],
-        },
-        hostUsername: params.username,
-      });
     }
 
     setSubmissionLoading(false);
@@ -862,7 +822,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // change from writing to voting
     if (roundTypeParam === "writing") {
-      setTime(20);
+      setTime(30);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "voting",
@@ -883,9 +843,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
         });
       };
       roundChange();
-    } else if (roundNumber === 12) {
+    } else if (roundNumber === 24) {
       setTime(15);
-      console.log("almost ending game");
+
       const roundChange = async () => {
         const topContribution = contributions.reduce(
           (max, current) => (current.value > max.value ? current : max),
@@ -919,7 +879,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from pie chart to writing
     } else if (roundTypeParam === "scores") {
-      setTime(10);
+      setTime(30);
 
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -932,7 +892,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from voting to vote count screen
     } else if (roundTypeParam === "voting") {
-      setTime(15);
+      setTime(10);
       // triggers counting of votes
 
       const countVotes = async () => {
@@ -951,7 +911,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       // changes from selecting a prompt to writing the first sentence
     } else if (roundTypeParam === "selecting") {
-      setTime(20);
+      setTime(30);
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
           newRound: "writing",
@@ -964,8 +924,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
   };
 
   return (
-    // TO DO: replace overflow-hidden and fix overflow
     <div className="h-screen w-full overflow-hidden bg-[url('/backgrounds/brownBg.png')] bg-cover bg-no-repeat">
+      {showHelpPopup && (
+        <div className="overflow-hiddenh-fit absolute inset-0 z-50 flex w-fit items-center justify-center">
+          <HelpPopup defaultTab="Game" />
+        </div>
+      )}
       {/* header with timer, prompt, and round number */}
       <div className="flex w-full justify-center">
         <div className="absolute h-fit w-full flex-row items-center rounded-b-2xl bg-[url('/backgrounds/tanTransparentBg.png')] bg-cover bg-no-repeat">
@@ -981,7 +945,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           </div>
           {/* round number */}
           <div className="absolute right-0 top-0 p-3 pr-5 text-5xl text-white">
-            Round {Math.ceil(roundNumber / 4)}/8
+            Round {Math.ceil(roundNumber / 4)}/6
             {/* get from size of array in database */}
           </div>
         </div>
@@ -1000,6 +964,16 @@ export default function GamePage({ params }: { params: { username: string } }) {
               <p className="m-1 rounded-2xl bg-opacity-25 bg-[url('/backgrounds/redBg.png')] bg-cover p-1 text-4xl text-white">
                 Current Contributions
               </p>{" "}
+              {tie ? (
+                <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
+                  There was a tie! We picked our favorite: {votedWinner} won
+                  this round!
+                </p>
+              ) : (
+                <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
+                  {votedWinner} won this round!
+                </p>
+              )}
               <p className="text-3xl">{prompt}</p>
             </div>
           ) : roundType === "voted" ? (
@@ -1063,11 +1037,21 @@ export default function GamePage({ params }: { params: { username: string } }) {
       </div>
 
       {isBothFinishedLoading && (
-        <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
-          <ChatLog
-            username={player?.data ? player?.data?.username : "anonymous"}
-            hostUsername={params.username}
-          />
+        <div className="z-50">
+          <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
+            <ChatLog
+              username={player?.data ? player?.data?.username : "anonymous"}
+              hostUsername={params.username}
+            />
+          </div>
+          <div
+            className="absolute bottom-0 right-1/4 z-40 mb-4 h-fit w-fit cursor-pointer rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain p-3 pl-4 pr-4 text-center text-4xl text-red-400 outline-red-400 hover:text-red-500 hover:outline"
+            onClick={() => {
+              showPopup("help");
+            }}
+          >
+            <IoMdHelp />
+          </div>
         </div>
       )}
 
@@ -1090,7 +1074,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
                 disabled={submissionLoading && !isHost}
                 onClick={() => {
-                  console.log("clicked");
                   const stopTimer = async () => {
                     await axios.delete("/api/pusher/symphony/gameTimer");
                   };
@@ -1120,7 +1103,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
               //disables submission after submitting once
               setSubmissionLoading(true);
               // setSubmittedResponse(false);
-              console.log("SUBMITTING");
 
               // await handleSubmit(onSubmit)();
             }}
@@ -1160,9 +1142,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
           <div> {currentStory} </div>
         ) : roundType === "voting" ? (
           // voting
-          <div className="h-full w-full">
+          <div className="w-fullz-10 h-full">
             {responses && (
-              <div className="mt-6 flex h-65% w-full flex-wrap items-start justify-center hover:z-20">
+              <div className="z-10 mt-6 flex h-65% w-full flex-wrap items-start justify-center hover:z-20">
                 {/* <div className="flex items-center justify-center flex-wrap z-10"> */}
                 {/* TO DO: get responses from database */}
 
@@ -1193,9 +1175,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
             )}
           </div>
         ) : roundType === "voted" ? (
-          <div className="z-40 h-full w-full">
+          <div className="z-20 h-full w-full">
             {responses && (
-              <div className="z-50 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
+              <div className="z-20 mt-6 flex h-65% w-full flex-wrap items-start justify-center">
                 {responsesData.map((response) => (
                   <VoteCount
                     key={response.creatorId}

@@ -29,6 +29,7 @@ export default class exterior extends Scene {
 
   preload() {
     // background
+    console.log("preloading")
     this.load.image("tiles", "/backgrounds/homeBg.png");
     this.load.tilemapTiledJSON("map", "/backgrounds/background.json");
 

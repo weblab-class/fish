@@ -20,6 +20,7 @@ import axios from "axios";
 interface IInvitePopup {
   hostId: string;
   hostUsername: string;
+  isHost: boolean;
 }
 
 async function getGuests(guestIds: string[]) {
@@ -30,7 +31,7 @@ async function getGuests(guestIds: string[]) {
   return filteredGuests;
 }
 
-const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
+const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   const sendInviteMutation = useSendInvite();
   const { data: hostRoom, refetch: refetchHostRoom } = useGetPlayerRoom(
     hostId,
@@ -41,6 +42,7 @@ const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
     [JSON.stringify(hostRoom?.data?.whitelist ?? null)],
   );
   const [guests, setGuests] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // console.log(guestListIds, guests);
 
@@ -61,6 +63,7 @@ const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
   const router = useRouter();
   const [setDefault] = useHomeStore((state) => [state.setDefault]);
   const [isMulti, setIsMulti] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const onInviteSubmit: SubmitHandler<{ inviteUsername: string }> = async (
     data,
@@ -80,8 +83,10 @@ const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
   const onJoinSubmit: SubmitHandler<{ joinUsername: string }> = ({
     joinUsername,
   }) => {
-    router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`);
+    // router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`);
+    window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`;
     resetJoin("joinUsername");
+    // setDefault();
   };
   // closes popup when escape key is pressed
   useEffect(() => {
@@ -157,14 +162,16 @@ const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
         </div>
       </form>
 
-      {isMulti ? (
+      {isHost && isMulti ? (
         <div className="h-full w-1/2 rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
           <div className="h-3/4 w-full bg-[url(/icons/sentenceIcon.png)] bg-contain bg-center bg-no-repeat" />
 
           <div className="flex items-center justify-center">
             <button
+              disabled={loading}
               className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
               onClick={async () => {
+                setLoading(true);
                 await axios.post(
                   `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
                   {
@@ -174,12 +181,18 @@ const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
                 );
               }}
             >
-              Start Game with Current Visitors
+              {loading ? "Loading..." : "Start Game with Current Visitors"}
             </button>
           </div>
         </div>
-      ) : (
-        <form className="-left-1/4 w-1/2 " onSubmit={handleJoin(onJoinSubmit)}>
+      ) : isHost ? (
+        <form
+          className="-left-1/4 w-1/2 "
+          onSubmit={async () => {
+            await handleJoin(onJoinSubmit)();
+            setDefault();
+          }}
+        >
           <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
             <img src="/icons/strawberryCow.png"></img>
             <p className="h-fit w-full text-5xl text-red-950 underline">
@@ -193,11 +206,31 @@ const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
               placeholder="Enter player's username"
               {...registerJoin("joinUsername")}
             />
-            <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white">
+            <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
               Join
             </button>
           </div>
         </form>
+      ) : (
+        <div className="h-full w-1/2 rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+          <div className="h-3/4 w-full bg-[url(/icons/sentenceIcon.png)] bg-contain bg-center bg-no-repeat" />
+
+          <div className="flex items-center justify-center">
+            <button
+              disabled={loading}
+              className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-4 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+              onClick={async () => {
+                setLoading(true);
+                router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
+
+                // setDefault();
+                window.location.reload();
+              }}
+            >
+              {loading ? "Going Home.." : "Go Home"}
+            </button>
+          </div>
+        </div>
       )}
 
       <div

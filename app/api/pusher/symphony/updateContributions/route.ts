@@ -5,7 +5,7 @@ interface Input {
 
     hostUsername:string
     contributions:boolean
-    winnerId:string[]
+    winnerId:string
     tie:boolean
 }
 

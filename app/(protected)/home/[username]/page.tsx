@@ -30,12 +30,13 @@ import Timer from "@/components/timer";
 import Stopwatch from "@/components/stopwatch";
 import { Data } from "phaser";
 import { IoHelp, IoHelpCircle, IoHelpOutline } from "react-icons/io5";
-import { IoIosHelp, IoIosHelpCircleOutline, IoMdHelp } from "react-icons/io";
+import { IoMdHelp } from "react-icons/io";
 import HelpPopup from "@/components/HelpPopup";
+import { BsWindowSidebar } from "react-icons/bs";
 
 // TODO sizing issue
 
-const DynamicGame = dynamic(() => import("@/phaser/Game"), {
+const DynamicGame = dynamic(async () => await import("@/phaser/Game"), {
   ssr: false,
   loading: ({}) => (
     <div>
@@ -144,7 +145,6 @@ export default function Home({ params }: { params: { username: string } }) {
 
   useEffect(() => {
     if (!currentPlayer?.data) return;
-    console.log("cuwerjaf");
 
     if (currentPlayer.data.username === params.username) {
       setIsHost(true);
@@ -192,8 +192,6 @@ export default function Home({ params }: { params: { username: string } }) {
     // bindings
     homeChannel.bind("pusher:subscription_succeeded", async (_: Members) => {
       useErrorRedirectStore.setState({ errorRedirect: false, errorCode: null });
-      console.log("subscription succeeded");
-
       // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
     });
@@ -308,6 +306,9 @@ export default function Home({ params }: { params: { username: string } }) {
 
       homeChannel.unbind("");
       pusherClient.unsubscribe(`presence-home-${params.username}`);
+      if (game) {
+        game.destroy(true);
+      }
     };
   }, []);
   // #endregion
@@ -381,20 +382,21 @@ export default function Home({ params }: { params: { username: string } }) {
               <span
                 className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
                 onClick={async () => {
-                  // IF HOST:
-
                   if (!game) return;
+                  if (!isHost) {
+                    const player = game.registry.get(
+                      "player",
+                    ) as Phaser.GameObjects.Sprite;
+                    const currSceneKey = player.scene.scene.key;
 
-                  const player = game.registry.get(
-                    "player",
-                  ) as Phaser.GameObjects.Sprite;
-                  const currSceneKey = player.scene.scene.key;
-
-                  await axios.post("/api/pusher/home/changeScene", {
-                    hostUsername: params.username,
-                    newScene: "interior",
-                    oldScene: currSceneKey,
-                  });
+                    await axios.post("/api/pusher/home/changeScene", {
+                      hostUsername: params.username,
+                      newScene: "interior",
+                      oldScene: currSceneKey,
+                    });
+                  } else {
+                    window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+                  }
                 }}
               />
 
@@ -419,25 +421,6 @@ export default function Home({ params }: { params: { username: string } }) {
               </div>
             </div>
           )}
-          <div className="absolute bottom-3 left-3 z-10">
-            <button
-              className="rounded-xl bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl text-white outline"
-              onClick={async () => {
-                // TODO put this somewhere better
-                // TODO prevent someone from spam clicking this
-
-                await axios.post(
-                  `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
-                  {
-                    channelName: `presence-home-${params.username}`,
-                    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${params.username}`,
-                  } as IRedirectParams,
-                );
-              }}
-            >
-              Join Sentence Symphony Game
-            </button>
-          </div>
 
           <div className="top-17 absolute bottom-0 right-0 z-40 ml-6 flex h-34% w-1/4 items-end justify-center p-1 text-center">
             <ChatLogPhaser
@@ -519,6 +502,18 @@ export default function Home({ params }: { params: { username: string } }) {
               </div>
             </div>
           )}
+          {!isHost && (
+            <div className="absolute flex w-full justify-center">
+              <div
+                className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/leaveCloud.png')]"
+                onClick={async () => {
+                  if (!game) return;
+
+                  window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+                }}
+              />
+            </div>
+          )}
           {showInvitePopup && (
             <div className="flex h-screen w-screen items-center justify-center">
               <div
@@ -528,6 +523,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 <InvitePopup
                   hostId={session!.user.uid}
                   hostUsername={params.username}
+                  isHost={isHost}
                 />
               </div>
             </div>
@@ -558,7 +554,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 className="flex items-center justify-center bg-slate-200"
                 ref={mailRef}
               >
-                <HelpPopup />
+                <HelpPopup defaultTab="About" />
               </div>
             </div>
           )}

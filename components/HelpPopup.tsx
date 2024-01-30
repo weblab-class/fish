@@ -1,15 +1,15 @@
 import { useHomeStore } from "@/phaser/stores";
 import React, { useState } from "react";
 
-export default function HelpPopup() {
+export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
   const [setDefault] = useHomeStore((state) => [state.setDefault]);
-  const [helpContent, setHelpContent] = useState("About");
+  const [helpContent, setHelpContent] = useState(defaultTab);
 
   return (
-    <div>
+    <div className="z-50">
       {/* how to play pop up */}
 
-      <div className="z-50 flex h-screen w-screen items-center justify-center overscroll-none text-5xl text-white">
+      <div className="z-50 flex h-screen w-screen items-center justify-center overflow-hidden overscroll-none text-5xl text-white">
         <div className="z-10 h-5/6 w-3/4 rounded-3xl bg-[url('/backgrounds/pinkBg.png')] bg-cover outline outline-8 outline-white">
           {/* nav bar */}
           <div className="hover:pointer mt-3  flex items-center justify-evenly bg-[url('/backgrounds/greenBg.png')] p-2">
@@ -125,6 +125,26 @@ export default function HelpPopup() {
                 </p>
                 <div className="h-full">
                   <p className="m-3 flex items-center text-center text-5xl text-gray-700 underline">
+                    How to play Sentence Symphony:
+                  </p>
+                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                    1. You and your friends will try to collaboratively write a
+                    story given a prompt or theme.
+                  </p>
+                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                    2. During each round, everyone will be given 30 seconds to
+                    write a sentence.
+                  </p>
+                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                    3. After each round, everyone will vote on their favorite
+                    response and the most voted response will be added to the
+                    story. You cannot vote for your own responses!
+                  </p>
+                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                    4. After 6 rounds, you will have your full story, and you
+                    will be able to see who contributed the most!
+                  </p>
+                  <p className="m-3 flex items-center text-center text-5xl text-gray-700 underline">
                     How to start a game:
                   </p>
                   <p className="m-3 flex items-center text-4xl text-gray-700">
@@ -144,27 +164,6 @@ export default function HelpPopup() {
                     NOTE: While you can play with just 1-2 players, it is much
                     more fun with 3+ players as you are not allowed to vote for
                     your own responses!
-                  </p>
-
-                  <p className="m-3 flex items-center text-center text-5xl text-gray-700 underline">
-                    How to play Sentence Symphony:
-                  </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
-                    1. You and your friends will try to collaboratively write a
-                    story given a prompt or theme.
-                  </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
-                    2. During each round, everyone will be given 20 seconds to
-                    write a sentence.
-                  </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
-                    3. After each round, everyone will vote on their favorite
-                    response and the most voted response will be added to the
-                    story. You cannot vote for your own responses!
-                  </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
-                    4. After 6 rounds, you will have your full story, and you
-                    will be able to see who contributed the most!
                   </p>
                 </div>
               </div>
