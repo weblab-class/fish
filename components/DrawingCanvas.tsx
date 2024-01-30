@@ -68,7 +68,7 @@ export default class Canvas extends React.Component<{}, { pencil: boolean }> {
           </button>
 
           <button
-            className={`m-2 h-fit rounded-xl ${this.state.pencil ? "bg-gray-600" : "bg-white"} bg-white p-2 text-3xl`}
+            className={`m-2 h-fit rounded-xl ${this.state.pencil ? "bg-gray-600 " : "bg-white "}  p-2 text-3xl`}
             onClick={() => {
               if (!this.canvas.current) return;
               this.canvas.current.eraseMode(false);
