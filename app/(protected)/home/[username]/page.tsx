@@ -108,6 +108,7 @@ export default function Home({ params }: { params: { username: string } }) {
   const [currScene, setCurrScene] = useState("exterior");
   const [gameLoaded, setGameLoaded] = useState(false);
   const [isHost, setIsHost] = useState(false);
+  const [playerLoaded, setPlayerLoaded] = useState(false);
   // const time = new Date();
   // let total =
   //   // @ts-ignore
@@ -150,6 +151,17 @@ export default function Home({ params }: { params: { username: string } }) {
       setIsHost(true);
     }
   }, [gameLoaded]);
+
+  useEffect(() => {
+    if (!currentPlayer?.data) return;
+    if (playerLoaded) return;
+
+    if (currentPlayer.data.username === params.username) {
+      setIsHost(true);
+    }
+
+    setPlayerLoaded(true);
+  });
 
   // handle clicks outside of popups
   useEffect(() => {

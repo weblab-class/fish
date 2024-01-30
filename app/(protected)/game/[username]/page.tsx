@@ -245,7 +245,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
         ]);
 
         if (member.info.username === params.username) {
-          router.push(`/home/${params.username}`);
+          // router.push(`/home/${params.username}`);
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${params.username}`;
         }
       },
     );
@@ -626,7 +627,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
           };
           deleteGame();
 
-          router.push(`/home/${params.username}`);
+          // router.push(`/home/${params.username}`);
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${params.username}`;
         }
 
         // only host controls roundChangeFunc
