@@ -25,6 +25,7 @@ class studyroom extends Scene {
     constructor(hostUsername: string) {
       super("studyroom");
       this.hostUsername = hostUsername;
+
       this.sprites = [];
     }
 
@@ -54,15 +55,22 @@ class studyroom extends Scene {
 
         console.log(info.sprite, info, id, 'url(/players/${info.sprite}One.png')
         const spriteAnimal=info.sprite
+        console.log(spriteAnimal)
         const sprite = document.createElement("div")
 
-        sprite.className = `bg-[url(/players/${spriteAnimal}One.png)] z-50 bg-no-repeat -mb-10 m-1 bg-contain h-45% bg-center w-3/12 flex items-end justify-center`;
-        const desk = document.createElement("img");
-        desk.className = "bottom-0 h-20 w-70 desk";
-        desk.src = "/objects/Desk.png";
-        sprite.appendChild(desk);
-        this.sprites.push(sprite);
-        Phaser.DOM.AddToDOM(sprite, "studyroom_load_sprites");
+          sprite.className = `bg-[url(/players/${spriteAnimal}One.png)] z-50 bg-no-repeat -mb-10 m-1 bg-contain h-45% bg-center w-3/12 flex items-end justify-center`;
+          sprite.style.backgroundImage=`url(/players/${spriteAnimal}One.png)`
+
+          const desk = document.createElement("img");
+          desk.className = "bottom-0 h-20 w-70 desk";
+          desk.src = "/objects/Desk.png";
+
+          sprite.appendChild(desk);
+          this.sprites.push(sprite);
+          Phaser.DOM.AddToDOM(sprite, "studyroom_load_sprites");
+
+
+
 
       })
 
