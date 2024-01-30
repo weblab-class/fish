@@ -90,6 +90,7 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
                 <p className="m-3 flex items-center text-center text-4xl"></p>
               </div>
             )}
+
             {/* multiplayer content */}
             {helpContent === "Multiplayer" && (
               <div>
@@ -177,6 +178,18 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
                     your own responses!
                   </p>
                 </div>
+              </div>
+            )}
+            {/* studyroom content */}
+            {helpContent === "Multiplayer" && (
+              <div>
+                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                  Study with your friends!
+                </h1>
+                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                  Enjoy some relaxing music and time how long you study! Invite
+                  some friends to your Habitat and study together!
+                </p>
               </div>
             )}
           </div>

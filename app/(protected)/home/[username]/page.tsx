@@ -258,6 +258,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
       },
+      setDefault(),
     );
 
     homeChannel.bind(
