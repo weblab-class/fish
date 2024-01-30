@@ -8,9 +8,11 @@ export async function getPlayer(uid: string) {
   return await axios.get<Player | null>(`${process.env.NEXT_PUBLIC_DOMAIN}/api/db/player/get`, { params: { uid } });
 }
 
-export function useGetPlayer(uid: string) {
+export function useGetPlayer(uid: string, autoRun: boolean = true) {
   return useQuery({
     queryKey: ["player", uid],
     queryFn: async () => await getPlayer(uid),
+    enabled: autoRun,
+
   });
 }
