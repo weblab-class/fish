@@ -371,7 +371,7 @@ class interior extends Scene {
     // const hostTag = this.registry.get("hostTag") as Phaser.GameObjects.Text;
     // hostTag.setText(this.getHostUsername());
 
-    console.log("player is on:", this.registry.get("player").scene.scene.key);
+
     // logic for moving the tag
 
     const top = this.hsv[this.i].color;

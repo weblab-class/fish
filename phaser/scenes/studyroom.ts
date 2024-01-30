@@ -62,7 +62,7 @@ class studyroom extends Scene {
     }
 
     cleanup() {
-      console.log("REMOVING")
+
       this.sprites.forEach((sprite) => {
         if (sprite && sprite.parentNode) {
           sprite.parentNode.removeChild(sprite);

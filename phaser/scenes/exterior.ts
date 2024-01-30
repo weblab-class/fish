@@ -42,15 +42,15 @@ export default class exterior extends Scene {
 
     loadSprites(this);
     this.load.on('fileprogress', function (file: { src: any; }) {
-      console.log(file.src);
+
   });
 
   this.load.on('progress', function (value: any) {
-    console.log("progress",value)
+
 });
 
   this.load.on('complete', function () {
-      console.log('complete');
+
   })
 
 
@@ -224,7 +224,7 @@ export default class exterior extends Scene {
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const updatedShowEasel = useHomeStore.getState().showEaselPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
-    console.log("EXTEIRUR")
+
 
 
     if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {

@@ -372,29 +372,6 @@ export default function Home({ params }: { params: { username: string } }) {
                     newScene: "interior",
                     oldScene: currSceneKey,
                   });
-
-                  // IF VISITOR: LEAVE TO HOME
-
-                  // if (!game) return;
-                  // const player = (await game.registry.get(
-                  //   "player",
-                  // )) as Phaser.GameObjects.Sprite;
-                  // const currSceneKey = player.scene.scene.key;
-
-                  // game.scene.getScene("studyroom").cleanup();
-                  // game.scene.switch(currSceneKey, "exterior");
-
-                  // setCurrScene("exterior");
-
-                  // // KEEP THE CODE BELOW: for some reason, the scene does not switch properly unless the button is pressed two times
-                  // const player2 = (await game.registry.get(
-                  //   "player",
-                  // )) as Phaser.GameObjects.Sprite;
-                  // const currSceneKey2 = player2.scene.scene.key;
-
-                  // game.scene.switch(currSceneKey2, "exterior");
-
-                  // setCurrScene("exterior");
                 }}
               />
 
