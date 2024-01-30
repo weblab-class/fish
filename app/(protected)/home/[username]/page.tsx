@@ -323,7 +323,6 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "sceneChange",
       async (data: { newScene: string; oldScene: string }) => {
-        console.log("SCENE CHANGE");
         if (!game) return;
         const player = (await game.registry.get(
           "player",

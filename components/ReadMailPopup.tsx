@@ -20,7 +20,7 @@ export default function ReadMailPopup() {
   const handleDelete = async () => {
     if (!receiver?.data) return;
     const player = await getPlayer(session!.user.uid);
-    console.log("delete funcition called");
+
     const updateMail = async () => {
       const mail = await Promise.all(
         (player?.data?.inbox || []).map(async (letter) => {
@@ -54,10 +54,6 @@ export default function ReadMailPopup() {
     };
     updateMail();
   }, [receiver?.data?.inbox]);
-
-  useEffect(() => {
-    console.log(letters);
-  }, [letters]);
 
   return (
     <div className="absolute z-30 flex h-full w-full items-center justify-center rounded-t-full bg-[url(/backgrounds/brownBg.png)] bg-cover text-white shadow-xl shadow-stone-600 outline-8 outline-amber-900">

@@ -60,7 +60,7 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
             {/* close button */}
             <div className=" top-5% absolute flex items-end justify-end">
               <div
-                className="hover:bg-[url('/backgrounds/pinkBg.png' outline-pink-300)] z-40 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white hover:cursor-pointer hover:outline"
+                className="hover:bg-[url('/backgrounds/whiteGrayBg.png' outline-pink-300)] z-40 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/whiteGrayBg.png')] text-3xl text-black outline outline-black hover:cursor-pointer hover:bg-black hover:bg-[url('/backgrounds/blackBg.png')] hover:text-white hover:outline-white"
                 onClick={() => {
                   setDefault();
                 }}

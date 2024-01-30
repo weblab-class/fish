@@ -9,7 +9,7 @@ interface Input {
 
 export async function POST(req: NextRequest) {
     const {hostUsername, responses } = (await req.json()) as Input;
-    console.log("updating resopnses", responses)
+
 
 
     await pusherServer.trigger(`presence-ss-${hostUsername}`, "updateResponses", {

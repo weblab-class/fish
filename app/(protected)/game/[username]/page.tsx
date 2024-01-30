@@ -558,8 +558,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
         setContributions(data.contributions);
 
         setVotedWinner(data.winnerId);
-        console.log(tie);
-        setTie(tie);
+
+        setTie(data.tie);
       },
     );
 
@@ -680,11 +680,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
               });
 
               setContributions(newContributions);
-              console.log(
-                "deleting",
-                maxVoteOptions.length,
-                maxVoteOptions.length > 1,
-              );
+
+              const tie = maxVoteOptions.length > 1;
 
               await axios.post("/api/pusher/symphony/updateContributions", {
                 contributions: contributions.map((player) => {
@@ -701,7 +698,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 // winnerId: maxVoteOptions.map((options) => {
                 //   options.creatorId;
                 // }),
-                tie: maxVoteOptions.length > 1,
+                tie: tie,
               });
 
               await axios.post("/api/pusher/symphony/updateResponses", {
@@ -925,11 +922,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   return (
     <div className="h-screen w-full overflow-hidden bg-[url('/backgrounds/brownBg.png')] bg-cover bg-no-repeat">
-      {showHelpPopup && (
-        <div className="overflow-hiddenh-fit absolute inset-0 z-50 flex w-fit items-center justify-center">
-          <HelpPopup defaultTab="Game" />
-        </div>
-      )}
       {/* header with timer, prompt, and round number */}
       <div className="flex w-full justify-center">
         <div className="absolute h-fit w-full flex-row items-center rounded-b-2xl bg-[url('/backgrounds/tanTransparentBg.png')] bg-cover bg-no-repeat">
@@ -966,8 +958,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
               </p>{" "}
               {tie ? (
                 <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
-                  There was a tie! We picked our favorite: {votedWinner} won
-                  this round!
+                  There was a tie! So... we picked our favorite: {votedWinner}{" "}
+                  won this round!
                 </p>
               ) : (
                 <p className="rounded-2xl p-1 text-3xl text-amber-950 underline">
@@ -1038,6 +1030,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       {isBothFinishedLoading && (
         <div className="z-50">
+          {showHelpPopup && (
+            <div className="overflow-hiddenh-fit absolute inset-0 z-50 flex w-fit items-center justify-center">
+              <HelpPopup defaultTab="Game" />
+            </div>
+          )}
           <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
             <ChatLog
               username={player?.data ? player?.data?.username : "anonymous"}

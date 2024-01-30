@@ -8,7 +8,6 @@ interface Input{
 }
 export async function POST(req: NextRequest) {
     const {hostUsername,oldScene,newScene} = await req.json() as Input;
-    console.log("HI",`presence-home-${hostUsername}`)
 
     await pusherServer.trigger(`presence-home-${hostUsername}`, "sceneChange", {
         newScene,

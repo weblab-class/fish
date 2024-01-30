@@ -38,8 +38,6 @@ export default function ChatLog(props: {
   }, []);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
-    console.log(data.message, props.username);
-
     await axios.post("/api/pusher/symphony/newMessage", {
       message: data.message,
       username: props.username,

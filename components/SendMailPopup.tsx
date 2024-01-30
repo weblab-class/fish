@@ -29,7 +29,6 @@ export default function SendMailPopup() {
     setLoading(true);
     const { data: receiver } = await getPlayerByUsername(username);
     if (!receiver) throw new Error("Invalid user!"); // TODO add error message to form
-    console.log(receiver[0]);
 
     if (!receiver[0]) {
       setNotFound(true);
@@ -69,6 +68,7 @@ export default function SendMailPopup() {
                 className="ml-5 h-fit rounded-2xl p-2 text-2xl text-zinc-700"
                 placeholder="Username of recepient"
                 required
+                autoComplete="off"
                 minLength={3}
                 maxLength={12}
                 {...register("recipient")}

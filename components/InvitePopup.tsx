@@ -44,8 +44,6 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   const [guests, setGuests] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // console.log(guestListIds, guests);
-
   const {
     register: registerInvite,
     handleSubmit: handleInvite,
@@ -127,8 +125,6 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   }, []);
 
   useEffect(() => {
-    // console.log(guestListIds);
-
     (async () => {
       if (guestListIds?.length) {
         setGuests(await getGuests(guestListIds));
@@ -159,6 +155,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
           <input
             className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
             placeholder="Enter player's username"
+            autoComplete="off"
             {...registerInvite("inviteUsername")}
           />
 
@@ -217,6 +214,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
               Make sure you are on the Players Guest List!
             </p>
             <input
+              autoComplete="off"
               className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
               placeholder="Enter player's username"
               {...registerJoin("joinUsername")}

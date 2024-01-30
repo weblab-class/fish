@@ -42,8 +42,6 @@ export default function ChatLogPhaser(props: {
   }, []);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
-    console.log(data.message, props.username);
-
     await axios.post("/api/pusher/home/chatLog", {
       message: data.message,
       username: props.username,

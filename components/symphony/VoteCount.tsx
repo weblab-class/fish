@@ -8,7 +8,7 @@ export default function VoteCount(props: {
   hostId: string;
 }) {
   return (
-    <div className="z-50 ml-2 mr-2 h-2/5 w-1/5">
+    <div className="z-30 ml-2 mr-2 h-2/5 w-1/5">
       <div
         className={` ml-2 mr-2 bg-[url('/backgrounds/whiteGrayBg.png')] ${
           props.won &&

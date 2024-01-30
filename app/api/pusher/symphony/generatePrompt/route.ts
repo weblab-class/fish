@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         prompt,
       })
 
-      console.log("generating")
+
 
 
   return NextResponse.json({ status: 200 });

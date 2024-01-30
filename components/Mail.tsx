@@ -58,7 +58,6 @@ export default function Mail(props: {
               <button
                 className="absolute inset-y-0 flex h-fit w-3/12 cursor-pointer items-center justify-center bg-[url(/backgrounds/blueBg.png)] p-2 text-3xl"
                 onClick={async (e) => {
-                  console.log("hiding");
                   const { data: sender } = await getPlayerByUsername(
                     props.sender,
                   );
