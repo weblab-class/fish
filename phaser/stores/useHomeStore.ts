@@ -2,25 +2,36 @@ import { create } from "zustand";
 
 import type { StoreStateFunc } from "./types";
 
-type PopupType = "invite" | "mail"|"easel";
+type PopupType = "invite" | "mail" | "easel";
 
 type HomeStoreStateData = {
   game: Phaser.Game | null;
   hostUsername: string;
   showInvitePopup: boolean;
   showMailPopup: boolean;
-  showEaselPopup:boolean;
+  showEaselPopup: boolean;
   text: string;
 };
-const getDefaultHomeStoreStateData = () =>
-  ({
+const getDefaultHomeStoreStateData = (keepGame: boolean = true) => {
+  if (keepGame) {
+    return {
+      hostUsername: "Host",
+      showInvitePopup: false,
+      showMailPopup: false,
+      showEaselPopup: false,
+      text: "",
+    } as HomeStoreStateData;
+  }
+
+  return {
     game: null,
     hostUsername: "Host",
     showInvitePopup: false,
     showMailPopup: false,
-    showEaselPopup:false,
+    showEaselPopup: false,
     text: "",
-  }) as HomeStoreStateData;
+  } as HomeStoreStateData;
+};
 
 type HomeStoreStateFunc = {
   setDefault: () => void;
@@ -37,7 +48,8 @@ type HomeStoreState = HomeStoreStateData &
 export const useHomeStore = create<HomeStoreState>((set) => ({
   ...getDefaultHomeStoreStateData(),
   setData: (data) => set({ ...data }),
-  setDefault: () => set({ ...getDefaultHomeStoreStateData() }),
+  /** Keep the game. If you need to remove the game, then specify using setData. */
+  setDefault: () => set((state) => ({ ...getDefaultHomeStoreStateData() })),
   showPopup: (popup) => {
     const data = getDefaultHomeStoreStateData();
     switch (popup) {
@@ -47,11 +59,11 @@ export const useHomeStore = create<HomeStoreState>((set) => ({
       case "mail":
         data.showMailPopup = true;
         break;
-        case "easel":
-          data.showEaselPopup = true;
-          break;
+      case "easel":
+        data.showEaselPopup = true;
+        break;
     }
     set({ ...data });
   },
-  resetData: () => ({ ...getDefaultHomeStoreStateData() }),
+  resetData: () => ({ ...getDefaultHomeStoreStateData(false) }),
 }));

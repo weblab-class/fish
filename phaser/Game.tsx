@@ -58,7 +58,7 @@ export default function Game({
           playerAnimalSprite,
         ),
         interior,
-        studyroom,
+        new studyroom(hostUsername),
       ],
       dom: {
         createContainer: true,

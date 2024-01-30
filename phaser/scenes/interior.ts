@@ -371,7 +371,7 @@ class interior extends Scene {
     // const hostTag = this.registry.get("hostTag") as Phaser.GameObjects.Text;
     // hostTag.setText(this.getHostUsername());
 
-
+    console.log("player is on:", this.registry.get("player").scene.scene.key);
     // logic for moving the tag
 
     const top = this.hsv[this.i].color;
@@ -407,7 +407,7 @@ class interior extends Scene {
 
     // displays enter house text when overlapping
     if (isOverlappingWelcomeMat) {
-      useHomeStore.setState({ text: "Press [Enter] to exit house" });
+      useHomeStore.setState({ text: "Press [Enter] to exit" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
@@ -430,7 +430,7 @@ class interior extends Scene {
 
     // displays enter house text when overlapping
     if (isOverlappingStudyMat) {
-      useHomeStore.setState({ text: "Press [Enter] to enter study room" });
+      useHomeStore.setState({ text: "Press [Enter] to study" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
@@ -451,7 +451,7 @@ class interior extends Scene {
 
     // displays text when overlapping
     if (isOverlappingGameMenu) {
-      useHomeStore.setState({ text: "Press [Enter] to enter game menu" });
+      useHomeStore.setState({ text: "Press [Enter] to play Sentence Symphony" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 

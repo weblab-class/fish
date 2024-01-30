@@ -55,11 +55,13 @@ export default function ChatLogPhaser(props: {
     "newChat",
     (
       data: { username: string; message: string }, // +1 to the response in the data base if clicked
-    ) =>
+    ) => {
       setMessages([
         ...messages,
         { username: data.username, message: data.message },
-      ]),
+      ]);
+      setShowIcon(false);
+    },
   );
 
   useEffect(() => {
@@ -124,8 +126,8 @@ export default function ChatLogPhaser(props: {
                         message.message == ""
                           ? "text-white "
                           : message.username === props.username
-                            ? "text-green-300 "
-                            : "text-sky-300"
+                            ? "text-sky-600 "
+                            : "text-pink-600"
                       }`}
                     >
                       {message.username}:{" "}
@@ -151,8 +153,8 @@ export default function ChatLogPhaser(props: {
                         message.message == ""
                           ? "text-white "
                           : message.username == props.username
-                            ? "text-green-300 "
-                            : "text-sky-300"
+                            ? "text-sky-600 "
+                            : "text-pink-600"
                       }`}
                     >
                       {message.username}:{" "}

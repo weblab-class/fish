@@ -75,7 +75,7 @@ export default function Home({ params }: { params: { username: string } }) {
   const router = useRouter();
   const { session } = useLuciaSession();
   const signOutMutation = useSignOut();
-  const { data: player } = useGetPlayer(session!.user.uid);
+  const { data: currentPlayer } = useGetPlayer(session!.user.uid);
   const [authorized, setAuthorized] = useState<
     "waiting" | "authorized" | "unauthorized"
   >("waiting");
@@ -101,12 +101,16 @@ export default function Home({ params }: { params: { username: string } }) {
   const [logoutClicked, setLogoutClicked] = useState(false);
   const [currScene, setCurrScene] = useState("exterior");
   const [gameLoaded, setGameLoaded] = useState(false);
-  const time = new Date();
-  let total =
-    document.getElementById("h")?.value * 60 * 60 +
-    document.getElementById("m")?.value * 60 +
-    document.getElementById("s")?.value;
-  time.setSeconds(time.getSeconds() + total);
+  const [isHost, setIsHost] = useState(false);
+  // const time = new Date();
+  // let total =
+  //   // @ts-ignore
+  //   document.getElementById("h")?.value * 60 * 60 +
+  //   // @ts-ignore
+  //   document.getElementById("m")?.value * 60 +
+  //   // @ts-ignore
+  //   document.getElementById("s")?.value;
+  // time.setSeconds(time.getSeconds() + total);
 
   const [redirect, errorCode] = useErrorRedirectStore((state) => [
     state.errorRedirect,
@@ -132,6 +136,15 @@ export default function Home({ params }: { params: { username: string } }) {
       setCurrScene(currSceneKey);
     }
   });
+
+  useEffect(() => {
+    if (!currentPlayer?.data) return;
+    console.log("cuwerjaf");
+
+    if (currentPlayer.data.username === params.username) {
+      setIsHost(true);
+    }
+  }, [gameLoaded]);
 
   // handle clicks outside of popups
   useEffect(() => {
@@ -288,7 +301,7 @@ export default function Home({ params }: { params: { username: string } }) {
     return () => {
       if (!homeChannel.members.me) return; // this means subscription failed, so no point in unsubscribing and unbinding
 
-      homeChannel.unbind();
+      homeChannel.unbind("");
       pusherClient.unsubscribe(`presence-home-${params.username}`);
     };
   }, []);
@@ -300,6 +313,7 @@ export default function Home({ params }: { params: { username: string } }) {
     const homeChannel = pusherClient.subscribe(
       `presence-home-${params.username}`,
     );
+
     homeChannel.bind(
       "sceneChange",
       async (data: { newScene: string; oldScene: string }) => {
@@ -311,6 +325,7 @@ export default function Home({ params }: { params: { username: string } }) {
         const currSceneKey = player.scene.scene.key;
 
         if (data.oldScene == "studyroom") {
+          // @ts-ignore
           game.scene.getScene("studyroom").cleanup();
         }
 
@@ -321,6 +336,7 @@ export default function Home({ params }: { params: { username: string } }) {
         const currSceneKey2 = player.scene.scene.key;
 
         if (data.oldScene == "studyroom") {
+          // @ts-ignore
           game.scene.getScene("studyroom").cleanup();
         }
 
@@ -338,16 +354,16 @@ export default function Home({ params }: { params: { username: string } }) {
       {authorized === "authorized" ? (
         <div>
           <div className="absolute top-0 z-0 m-0 h-full w-full p-0">
-            {player && player.data && (
+            {currentPlayer && currentPlayer.data && (
               <DynamicGame
                 hostUsername={params.username}
-                playerId={player.data._id}
-                playerUsername={player.data.username}
-                playerAnimalSprite={player.data.animalSprite}
+                playerId={currentPlayer.data._id}
+                playerUsername={currentPlayer.data.username}
+                playerAnimalSprite={currentPlayer.data.animalSprite}
               />
             )}
           </div>
-          {/* study room */}
+
           {/* studyroom */}
           <div className="absolute flex h-full w-full select-none items-center justify-center">
             <div
@@ -361,7 +377,9 @@ export default function Home({ params }: { params: { username: string } }) {
                 className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
                 onClick={async () => {
                   // IF HOST:
+
                   if (!game) return;
+
                   const player = game.registry.get(
                     "player",
                   ) as Phaser.GameObjects.Sprite;
@@ -387,9 +405,7 @@ export default function Home({ params }: { params: { username: string } }) {
               </form>
             </span> */}
                 {false ? (
-                  <span className="w-70 z-30">
-                    <Timer expiryTimestamp={time} />
-                  </span>
+                  <span className="w-70 z-30"></span>
                 ) : (
                   <span className="w-70 z-30">
                     <Stopwatch />
@@ -420,12 +436,16 @@ export default function Home({ params }: { params: { username: string } }) {
           {/* TODO CHAT LOG FOR MULTIPLAYER PHASER */}
           <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
             <ChatLogPhaser
-              username={player?.data ? player?.data?.username : "anonymous"}
+              username={
+                currentPlayer?.data
+                  ? currentPlayer?.data?.username
+                  : "anonymous"
+              }
               hostUsername={params.username}
             />
           </div>
           {/* nav bar */}
-          {currScene == "exterior" && (
+          {currScene == "exterior" && isHost && (
             <div>
               <div
                 className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
@@ -437,9 +457,10 @@ export default function Home({ params }: { params: { username: string } }) {
                 }}
               />
               <div
-                className="absolute inset-y-0 right-80 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
+                className="absolute inset-y-0 right-72 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
                 onClick={async () => {
                   if (!game) return;
+
                   const player = game.registry.get(
                     "player",
                   ) as Phaser.GameObjects.Sprite;
@@ -466,9 +487,10 @@ export default function Home({ params }: { params: { username: string } }) {
               />
               <div className="absolute flex w-full justify-center">
                 <div
-                  className="absolute inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
+                  className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
                   onClick={async () => {
                     if (!game) return;
+
                     const player = game.registry.get(
                       "player",
                     ) as Phaser.GameObjects.Sprite;
