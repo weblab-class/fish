@@ -17,6 +17,7 @@ import {
 import { PusherPresenceUserInfo, pusherClient } from "@/services/pusher";
 import { useHomeStore, useMultiplayerStore } from "@/phaser/stores";
 import { NextResponse } from "next/server";
+import { Player } from "@/services/mongo/models";
 import { CustomErrorCode, ICustomError } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
@@ -79,7 +80,10 @@ export default function Home({ params }: { params: { username: string } }) {
   const router = useRouter();
   const { session } = useLuciaSession();
   const signOutMutation = useSignOut();
-  const { data: currentPlayer } = useGetPlayer(session!.user.uid);
+  const { data: currentPlayer, refetch: refetchPlayer } = useGetPlayer(
+    session!.user.uid,
+    false,
+  );
   const [authorized, setAuthorized] = useState<
     "waiting" | "authorized" | "unauthorized"
   >("waiting");
@@ -102,6 +106,7 @@ export default function Home({ params }: { params: { username: string } }) {
     state.showPopup,
     state.setDefault,
   ]);
+
   const inviteRef = useRef<HTMLDivElement>(null);
   const mailRef = useRef<HTMLDivElement>(null);
   const [logoutClicked, setLogoutClicked] = useState(false);
@@ -109,6 +114,7 @@ export default function Home({ params }: { params: { username: string } }) {
   const [gameLoaded, setGameLoaded] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [playerLoaded, setPlayerLoaded] = useState(false);
+  // const [currentPlayer, setCurrentPlayer] = useState<Player | null>();
   // const time = new Date();
   // let total =
   //   // @ts-ignore
@@ -145,7 +151,8 @@ export default function Home({ params }: { params: { username: string } }) {
   });
 
   useEffect(() => {
-    if (!currentPlayer?.data) return;
+    if (!currentPlayer) return;
+    if (!currentPlayer.data) return;
 
     if (currentPlayer.data.username === params.username) {
       setIsHost(true);
@@ -153,14 +160,7 @@ export default function Home({ params }: { params: { username: string } }) {
   }, [gameLoaded]);
 
   useEffect(() => {
-    if (!currentPlayer?.data) return;
-    if (playerLoaded) return;
-
-    if (currentPlayer.data.username === params.username) {
-      setIsHost(true);
-    }
-
-    setPlayerLoaded(true);
+    refetchPlayer();
   });
 
   // handle clicks outside of popups
