@@ -371,19 +371,19 @@ export default function Home({ params }: { params: { username: string } }) {
           </div>
 
           {/* studyroom */}
-          <div className="absolute flex h-full w-full select-none items-center justify-center">
+          <div className="absolute m-0 flex h-screen w-screen select-none items-center justify-center">
             <div
               id="studyroom_load_sprites"
-              className="absolute bottom-0 z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly"
+              className="absolute bottom-10% z-10 flex h-3/5 w-1/2 flex-wrap justify-evenly"
             ></div>
           </div>
           {currScene == "studyroom" && (
-            <div>
+            <div className="absolute h-screen w-screen overflow-hidden bg-black bg-[url('/backgrounds/studyroom.png')] bg-contain bg-center bg-no-repeat">
               <span
                 className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
                 onClick={async () => {
                   if (!game) return;
-                  if (!isHost) {
+                  if (isHost) {
                     const player = game.registry.get(
                       "player",
                     ) as Phaser.GameObjects.Sprite;
@@ -400,7 +400,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 }}
               />
 
-              <div className="w-70 z-30 m-9 flex h-52 items-center justify-center">
+              <div className="w-70 mt-2% z-30 flex h-52 items-center justify-center">
                 {/* <span className = "absolute flex flex-wrap top-0 z-30 h-1/5 w-1/5 m-16 justify-center top-0">
               <form id='duration' className = "z-40 right-0 select-none">
                 <input id='h' name='h' type='number' min='0' max='23' className = "cursor-text opacity-50"/>
@@ -422,7 +422,7 @@ export default function Home({ params }: { params: { username: string } }) {
             </div>
           )}
 
-          <div className="top-17 absolute bottom-0 right-0 z-40 ml-6 flex h-34% w-1/4 items-end justify-center p-1 text-center">
+          <div className="top-17 absolute bottom-0 right-0 z-20 ml-6 flex h-34% w-1/4 items-end justify-center p-1 text-center">
             <ChatLogPhaser
               username={
                 currentPlayer?.data
@@ -502,7 +502,7 @@ export default function Home({ params }: { params: { username: string } }) {
               </div>
             </div>
           )}
-          {!isHost && (
+          {!isHost && gameLoaded && (
             <div className="absolute flex w-full justify-center">
               <div
                 className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/leaveCloud.png')]"

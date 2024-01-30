@@ -41,10 +41,10 @@ class studyroom extends Scene {
       const player = this.physics.add.sprite(725, 830, "transparent");
       this.sprites = [];
 
-      const studyroom = this.add.image(750, 425, "studyroom");
+      // const studyroom = this.add.image(750, 425, "studyroom");
       player.setDataEnabled();
       this.registry.set("player", player);
-      studyroom.setDepth(1)
+
 
       useHomeStore.setState({text: ""});
 

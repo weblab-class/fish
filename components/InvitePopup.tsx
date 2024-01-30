@@ -64,6 +64,8 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   const [setDefault] = useHomeStore((state) => [state.setDefault]);
   const [isMulti, setIsMulti] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [guestNotFound, setGuestNotFound] = useState(false);
+  const [hostNotFound, setHostNotFound] = useState(false);
 
   const onInviteSubmit: SubmitHandler<{ inviteUsername: string }> = async (
     data,
@@ -71,21 +73,34 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
     const username = data.inviteUsername;
     const { data: guest } = await getPlayerByUsername(username);
     if (!guest) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!guest[0]) {
+      setGuestNotFound(true);
+      setTimeout(() => setGuestNotFound(false), 1000);
+    } else {
+      await sendInviteMutation.mutateAsync({
+        hostId: hostId,
+        guestId: guest[0]._id.toString(),
+      });
+      resetInvite("inviteUsername");
 
-    await sendInviteMutation.mutateAsync({
-      hostId: hostId,
-      guestId: guest[0]._id.toString(),
-    });
-    resetInvite("inviteUsername");
-
-    refetchHostRoom();
+      refetchHostRoom();
+    }
   };
-  const onJoinSubmit: SubmitHandler<{ joinUsername: string }> = ({
+  const onJoinSubmit: SubmitHandler<{ joinUsername: string }> = async ({
     joinUsername,
   }) => {
     // router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`);
-    window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`;
-    resetJoin("joinUsername");
+    const { data: host } = await getPlayerByUsername(joinUsername);
+    if (!host) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!host[0]) {
+      setHostNotFound(true);
+      setTimeout(() => setHostNotFound(false), 1000);
+    } else {
+      window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`;
+      resetJoin("joinUsername");
+      setDefault();
+    }
+
     // setDefault();
   };
   // closes popup when escape key is pressed
@@ -136,11 +151,17 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
           <p className="text-2xl text-red-900">
             Control who can visit your habitat!
           </p>
+          {guestNotFound && (
+            <p className="w-full text-center text-2xl text-red-500">
+              User does not exist
+            </p>
+          )}
           <input
             className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
             placeholder="Enter player's username"
             {...registerInvite("inviteUsername")}
           />
+
           <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
             Invite
           </button>
@@ -186,13 +207,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
           </div>
         </div>
       ) : isHost ? (
-        <form
-          className="-left-1/4 w-1/2 "
-          onSubmit={async () => {
-            await handleJoin(onJoinSubmit)();
-            setDefault();
-          }}
-        >
+        <form className="-left-1/4 w-1/2 " onSubmit={handleJoin(onJoinSubmit)}>
           <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
             <img src="/icons/strawberryCow.png"></img>
             <p className="h-fit w-full text-5xl text-red-950 underline">
@@ -209,6 +224,11 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
             <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
               Join
             </button>
+            {hostNotFound && (
+              <p className="w-full text-center text-2xl text-red-500">
+                User does not exist
+              </p>
+            )}
           </div>
         </form>
       ) : (

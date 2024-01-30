@@ -20,11 +20,13 @@ export default function SendMailPopup() {
   const { session } = useLuciaSession();
   const [notFound, setNotFound] = useState<boolean>();
 
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit, resetField, setError } = useForm<FormData>();
 
   // sends the mail
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const username = data.recipient;
+    setLoading(true);
     const { data: receiver } = await getPlayerByUsername(username);
     if (!receiver) throw new Error("Invalid user!"); // TODO add error message to form
     console.log(receiver[0]);
@@ -91,8 +93,11 @@ export default function SendMailPopup() {
             </div>
             {/* Send Mail Button */}
             <div className="flex items-center justify-center">
-              <button className="bottom-0 z-50 m-6 h-fit w-fit rounded-xl bg-[url('/backgrounds/redBg.png')] p-3 text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline">
-                Send
+              <button
+                disabled={loading}
+                className="bottom-0 z-50 m-6 h-fit w-fit rounded-xl bg-[url('/backgrounds/redBg.png')] p-3 text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline"
+              >
+                {loading ? "Sending..." : "Send"}
               </button>
             </div>
           </form>

@@ -1,10 +1,21 @@
 import { useHomeStore } from "@/phaser/stores";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
   const [setDefault] = useHomeStore((state) => [state.setDefault]);
   const [helpContent, setHelpContent] = useState(defaultTab);
 
+  useEffect(() => {
+    const handleEscapePress = (event: KeyboardEvent) => {
+      setDefault();
+    };
+
+    document.addEventListener("keydown", handleEscapePress);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapePress);
+    };
+  });
   return (
     <div className="z-50">
       {/* how to play pop up */}
