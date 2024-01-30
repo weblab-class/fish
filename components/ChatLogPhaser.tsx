@@ -195,7 +195,7 @@ export default function ChatLogPhaser(props: {
 
         <div className="m-2 flex h-1/4 w-full items-end justify-end rounded-full">
           <div
-            className=" mr-4 flex h-full w-17% cursor-pointer items-center justify-center rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain text-2xl text-sky-700 outline-sky-800 hover:text-sky-800 hover:outline"
+            className=" mr-4 flex h-full w-17% cursor-pointer items-center justify-center rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain text-3xl text-sky-700 outline-sky-800 hover:text-sky-800 hover:outline"
             onClick={() => {
               setShowIcon(!showIcon);
             }}

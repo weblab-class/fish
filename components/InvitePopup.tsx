@@ -12,9 +12,14 @@ import {
   useGetPlayerByUsername,
 } from "@/services/react-query/queries/player";
 import type { Player } from "@/services/mongo/models";
+import { pusherClient } from "@/services/pusher";
+import { PresenceChannel } from "pusher-js";
+import { ISendDataParams, IRedirectParams } from "@/phaser/types";
+import axios from "axios";
 
 interface IInvitePopup {
   hostId: string;
+  hostUsername: string;
 }
 
 async function getGuests(guestIds: string[]) {
@@ -25,13 +30,16 @@ async function getGuests(guestIds: string[]) {
   return filteredGuests;
 }
 
-const InvitePopup = ({ hostId }: IInvitePopup) => {
+const InvitePopup = ({ hostId, hostUsername }: IInvitePopup) => {
   const sendInviteMutation = useSendInvite();
   const { data: hostRoom, refetch: refetchHostRoom } = useGetPlayerRoom(
     hostId,
     false,
   );
-  const guestListIds = useMemo(() => hostRoom?.data?.whitelist ?? null, [JSON.stringify(hostRoom?.data?.whitelist ?? null)]);
+  const guestListIds = useMemo(
+    () => hostRoom?.data?.whitelist ?? null,
+    [JSON.stringify(hostRoom?.data?.whitelist ?? null)],
+  );
   const [guests, setGuests] = useState<Player[]>([]);
 
   // console.log(guestListIds, guests);
@@ -52,6 +60,7 @@ const InvitePopup = ({ hostId }: IInvitePopup) => {
 
   const router = useRouter();
   const [setDefault] = useHomeStore((state) => [state.setDefault]);
+  const [isMulti, setIsMulti] = useState(false);
 
   const onInviteSubmit: SubmitHandler<{ inviteUsername: string }> = async (
     data,
@@ -91,6 +100,10 @@ const InvitePopup = ({ hostId }: IInvitePopup) => {
 
   useEffect(() => {
     refetchHostRoom();
+    const homeChannel = pusherClient.subscribe(
+      `presence-home-${hostUsername}`,
+    ) as PresenceChannel;
+    if (homeChannel.members.count > 1) setIsMulti(true);
   }, []);
 
   useEffect(() => {
@@ -104,7 +117,7 @@ const InvitePopup = ({ hostId }: IInvitePopup) => {
 
       setGuests([]);
     })();
-  }, [JSON.stringify(guestListIds)]);  // TODO optimize calls AND fix removal of whitelist 
+  }, [JSON.stringify(guestListIds)]); // TODO optimize calls AND fix removal of whitelist
   return (
     <div className="absolute z-20 flex h-4/5 w-5/6 gap-10 rounded-3xl bg-[url(/backgrounds/tanBg.png)] bg-cover p-7 shadow-xl shadow-stone-600 outline-8 outline-amber-900">
       <form
@@ -123,9 +136,7 @@ const InvitePopup = ({ hostId }: IInvitePopup) => {
             placeholder="Enter player's username"
             {...registerInvite("inviteUsername")}
           />
-          <button
-            className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white"
-          >
+          <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
             Invite
           </button>
 
@@ -146,27 +157,51 @@ const InvitePopup = ({ hostId }: IInvitePopup) => {
         </div>
       </form>
 
-      <form className="-left-1/4 w-1/2 " onSubmit={handleJoin(onJoinSubmit)}>
-        <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
-          <img src="/icons/strawberryCow.png"></img>
-          <p className="h-fit w-full text-5xl text-red-950 underline">
-            Visit a Player&apos;s Habitat
-          </p>
-          <p className="text-2xl text-red-900">
-            Make sure you are on the Players Guest List!
-          </p>
-          <input
-            className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
-            placeholder="Enter player's username"
-            {...registerJoin("joinUsername")}
-          />
-          <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white">
-            Join
-          </button>
+      {isMulti ? (
+        <div className="h-full w-1/2 rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+          <div className="h-3/4 w-full bg-[url(/icons/sentenceIcon.png)] bg-contain bg-center bg-no-repeat" />
+
+          <div className="flex items-center justify-center">
+            <button
+              className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+              onClick={async () => {
+                await axios.post(
+                  `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
+                  {
+                    channelName: `presence-home-${hostUsername}`,
+                    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${hostUsername}`,
+                  } as IRedirectParams,
+                );
+              }}
+            >
+              Start Game with Current Visitors
+            </button>
+          </div>
         </div>
-      </form>
+      ) : (
+        <form className="-left-1/4 w-1/2 " onSubmit={handleJoin(onJoinSubmit)}>
+          <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+            <img src="/icons/strawberryCow.png"></img>
+            <p className="h-fit w-full text-5xl text-red-950 underline">
+              Visit a Player&apos;s Habitat
+            </p>
+            <p className="text-2xl text-red-900">
+              Make sure you are on the Players Guest List!
+            </p>
+            <input
+              className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
+              placeholder="Enter player's username"
+              {...registerJoin("joinUsername")}
+            />
+            <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white">
+              Join
+            </button>
+          </div>
+        </form>
+      )}
+
       <div
-        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white hover:cursor-pointer hover:bg-[url('/backgrounds/brightRedBg.png')]"
+        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url('/backgrounds/brightRedBg.png')] hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
         onClick={() => {
           setDefault();
         }}

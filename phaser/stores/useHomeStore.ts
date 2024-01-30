@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import type { StoreStateFunc } from "./types";
 
-type PopupType = "invite" | "mail" | "easel";
+type PopupType = "invite" | "mail" | "easel" |"help";
 
 type HomeStoreStateData = {
   game: Phaser.Game | null;
@@ -10,6 +10,7 @@ type HomeStoreStateData = {
   showInvitePopup: boolean;
   showMailPopup: boolean;
   showEaselPopup: boolean;
+  showHelpPopup:boolean;
   text: string;
 };
 const getDefaultHomeStoreStateData = (keepGame: boolean = true) => {
@@ -19,6 +20,7 @@ const getDefaultHomeStoreStateData = (keepGame: boolean = true) => {
       showInvitePopup: false,
       showMailPopup: false,
       showEaselPopup: false,
+      showHelpPopup:false,
       text: "",
     } as HomeStoreStateData;
   }
@@ -29,6 +31,7 @@ const getDefaultHomeStoreStateData = (keepGame: boolean = true) => {
     showInvitePopup: false,
     showMailPopup: false,
     showEaselPopup: false,
+    showHelpPopup:false,
     text: "",
   } as HomeStoreStateData;
 };
@@ -61,6 +64,9 @@ export const useHomeStore = create<HomeStoreState>((set) => ({
         break;
       case "easel":
         data.showEaselPopup = true;
+        break;
+        case "help":
+        data.showHelpPopup = true;
         break;
     }
     set({ ...data });

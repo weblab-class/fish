@@ -29,6 +29,9 @@ import EaselPopup from "@/components/EaselPopup";
 import Timer from "@/components/timer";
 import Stopwatch from "@/components/stopwatch";
 import { Data } from "phaser";
+import { IoHelp, IoHelpCircle, IoHelpOutline } from "react-icons/io5";
+import { IoIosHelp, IoIosHelpCircleOutline, IoMdHelp } from "react-icons/io";
+import HelpPopup from "@/components/HelpPopup";
 
 // TODO sizing issue
 
@@ -36,8 +39,8 @@ const DynamicGame = dynamic(() => import("@/phaser/Game"), {
   ssr: false,
   loading: ({}) => (
     <div>
-      <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/greenBg.png)] bg-cover bg-no-repeat">
-        <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/pinkBigBg.png)] outline-dashed outline-4 outline-white">
+      <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/lightBlueBg.png)] bg-cover bg-no-repeat">
+        <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/greenBg.png)] outline-dashed outline-4 outline-white">
           <p className="animate-bounce p-16 pb-5 pl-20 pr-20 text-8xl text-white">
             Loading Game...
           </p>
@@ -86,6 +89,7 @@ export default function Home({ params }: { params: { username: string } }) {
     showInvitePopup,
     showMailPopup,
     showEaselPopup,
+    showHelpPopup,
     showPopup,
     setDefault,
   ] = useHomeStore((state) => [
@@ -93,6 +97,7 @@ export default function Home({ params }: { params: { username: string } }) {
     state.showInvitePopup,
     state.showMailPopup,
     state.showEaselPopup,
+    state.showHelpPopup,
     state.showPopup,
     state.setDefault,
   ]);
@@ -433,8 +438,8 @@ export default function Home({ params }: { params: { username: string } }) {
               Join Sentence Symphony Game
             </button>
           </div>
-          {/* TODO CHAT LOG FOR MULTIPLAYER PHASER */}
-          <div className="top-17 absolute bottom-0 right-0 z-50 ml-6 flex h-34% w-1/4 items-end p-1">
+
+          <div className="top-17 absolute bottom-0 right-0 z-40 ml-6 flex h-34% w-1/4 items-end justify-center p-1 text-center">
             <ChatLogPhaser
               username={
                 currentPlayer?.data
@@ -443,6 +448,14 @@ export default function Home({ params }: { params: { username: string } }) {
               }
               hostUsername={params.username}
             />
+          </div>
+          <div
+            className="right-7% absolute bottom-0 z-40 mb-4 h-fit w-fit cursor-pointer rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain p-3 pl-4 pr-4 text-center text-4xl text-sky-700 outline-sky-800 hover:text-sky-800 hover:outline"
+            onClick={() => {
+              showPopup("help");
+            }}
+          >
+            <IoMdHelp />
           </div>
           {/* nav bar */}
           {currScene == "exterior" && isHost && (
@@ -512,7 +525,10 @@ export default function Home({ params }: { params: { username: string } }) {
                 className="flex items-center justify-center bg-white"
                 ref={inviteRef}
               >
-                <InvitePopup hostId={session!.user.uid} />
+                <InvitePopup
+                  hostId={session!.user.uid}
+                  hostUsername={params.username}
+                />
               </div>
             </div>
           )}
@@ -533,6 +549,16 @@ export default function Home({ params }: { params: { username: string } }) {
                 ref={mailRef}
               >
                 <EaselPopup />
+              </div>
+            </div>
+          )}
+          {showHelpPopup && (
+            <div className="z-50 flex h-screen w-screen items-center justify-center">
+              <div
+                className="flex items-center justify-center bg-slate-200"
+                ref={mailRef}
+              >
+                <HelpPopup />
               </div>
             </div>
           )}

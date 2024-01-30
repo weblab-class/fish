@@ -100,7 +100,7 @@ export default function TitlePageLogin() {
                 </span>
 
                 {/* close button */}
-                <div className=" absolute top-6 flex items-end justify-end">
+                <div className=" top-5% absolute flex items-end justify-end">
                   <div
                     className="hover:bg-[url('/backgrounds/pinkBg.png' outline-pink-300)] z-40 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white hover:cursor-pointer hover:outline"
                     onClick={() => {
@@ -125,6 +125,10 @@ export default function TitlePageLogin() {
                       On f.i.s.h. you can hangout, play games, and study with
                       your friends.
                     </p>
+                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-700">
+                      What does f.i.s.h. stand for?
+                    </h1>
+                    <p className="m-3 flex items-center text-center text-4xl"></p>
                   </div>
                 )}
                 {/* multiplayer content */}
@@ -163,8 +167,15 @@ export default function TitlePageLogin() {
                 {helpContent === "Game" && (
                   <div className="">
                     <h1 className="text-center text-4xl text-gray-200">
-                      on f.i.s.h you can play Sentence Symphony with friends!
+                      Play Sentence Symphony with friends!
                     </h1>
+                    <p className="m-2 text-center text-4xl text-white">
+                      Collaboratively (or competitively) blend together a story
+                      one sentence at a time. Each round, every player will
+                      propose a sentence to add to the story. The most voted
+                      response will be added to the story. Scroll down for more
+                      details!
+                    </p>
                     <div className="">
                       <p className="m-3 flex items-center text-center text-4xl">
                         How to start a game:
@@ -173,9 +184,18 @@ export default function TitlePageLogin() {
                         1. To host a game, have all your friends visit your
                         Habitat &#40;maximum of 5 visitors&#41;
                       </p>
+                      <p className="m-3 flex items-center text-center text-4xl text-gray-300">
+                        IMPORTANT: Make sure all your friends are on your
+                        Habitat before you start the game!
+                      </p>
                       <p className="m-3 flex items-center text-center text-4xl">
-                        2. Navigate to your House and start the game on your
-                        T.V.
+                        2. Navigate to your house and start the game on your
+                        T.V. --OR-- click on the Multiplayer Cloud Tab and start
+                        the game from the popup
+                      </p>
+                      <p className="m-3 flex items-center text-center text-4xl text-gray-300">
+                        NOTE: While you can play with just 1-2 players, it is
+                        much more fun with 3+ players!
                       </p>
 
                       <p className="m-3 flex items-center text-center text-3xl">
@@ -186,17 +206,17 @@ export default function TitlePageLogin() {
                         a story given a prompt or theme.
                       </p>
                       <p className="m-3 flex items-center text-3xl">
-                        2. During each round, everyone will be given 30 seconds
-                        to write a sentence to either start or continue the
-                        story.
+                        2. During each round, everyone will be given 20 seconds
+                        to write a sentence to add to the story.
                       </p>
                       <p className="m-3 flex items-center text-3xl">
                         3. After each round, everyone will vote on their
                         favorite response and the most voted response will be
-                        added to the story.
+                        added to the story. You cannot vote for yourself!
                       </p>
                       <p className="m-3 flex items-center text-3xl">
-                        4. After 8 rounds, you will have your full story!
+                        4. After 6 rounds, you will have your full story, and
+                        you will be able to see who contributed the most!
                       </p>
                     </div>
                   </div>

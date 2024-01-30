@@ -223,6 +223,7 @@ export default class exterior extends Scene {
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
     const updatedShowEasel = useHomeStore.getState().showEaselPopup;
+    const updatedShowHelp = useHomeStore.getState().showHelpPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
 
 
@@ -289,33 +290,33 @@ export default class exterior extends Scene {
     const isOverlappingEasel=self.physics.world.overlap(player,easel)
 
     // displays enter house text when overlapping
-    if (isOverlappingDoor) {
+    if (isOverlappingDoor && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
       useHomeStore.setState({ text: "Press [Enter] to enter" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
       // enters house when enter key is pressed
-      if (isDown && !updatedShowInvite && !updatedShowMail) {
+      if (isDown && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
         this.scene.stop("exterior");
         this.scene.start("interior");
         // this.game.destroy(true);
         useHomeStore.setState({ text: "" });
       }
-    } else if (isOverlappingSwan && !updatedShowInvite && !updatedShowMail && !updatedShowEasel) {
+    } else if (isOverlappingSwan && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to travel" });
       if (isDown) {
         useHomeStore.getState().showPopup("invite");
       }
-    } else if (isOverlappingMail && !updatedShowInvite && !updatedShowMail && !updatedShowEasel){
+    } else if (isOverlappingMail && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp){
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to open mailbox" });
       if (isDown) {
         useHomeStore.getState().showPopup("mail");
       }
-    } else if (isOverlappingEasel && !updatedShowInvite && !updatedShowMail && !updatedShowEasel){
+    } else if (isOverlappingEasel && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp){
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to paint" });
