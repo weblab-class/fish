@@ -1,22 +1,22 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './phaser/**/*.{js,ts,jsx,tsx,mdx}',
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./phaser/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   plugins: [
-    require('tailwind-scrollbar')({ nocompatible: true }),
-
+    require("tailwind-scrollbar")({ nocompatible: true }),
+    require("@headlessui/tailwindcss")({ prefix: "hd" }),
   ],
   theme: {
     extend: {
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       height: {
         '270': '270px',
@@ -76,24 +76,23 @@ const config: Config = {
         "3%":"3%",
 
 
-        "10%":"10%",
-        "13%":"13%",
-        "40%":"40%",
-        "60%":"60%",
-        "8%":"8%",
-        "12%":"12%",
-        "100":"100px",
-        "17%":"19%",
-        "21%":"21%",
-        "22%":"22%",
-        "23%":"23%",
-        "4%":"4%",
-        "20%":"20%",
-
+  
+        "10%": "10%",
+        "13%": "13%",
+        "40%": "40%",
+        "60%": "60%",
+        "8%": "8%",
+        "12%": "12%",
+        "100": "100px",
+        "17%": "19%",
+        "21%": "21%",
+        "22%": "22%",
+        "23%": "23%",
+        "4%": "4%",
+        "20%": "20%",
       },
     },
-  }
-}
-
+  },
+};
 
 export default config;

@@ -5,7 +5,11 @@ import axios from "axios";
 
 import { useHomeStore } from "../stores/useHomeStore";
 import { pusherClient } from "@/services/pusher";
-import loadSprites from "../functions";
+import { loadSprites, sendPositionData, updateOtherPlayers } from "../functions";
+import { useMultiplayerStore } from "../stores";
+import { PlayerRoomStatus } from "@/types";
+import { FRAME_BUFFER } from "../settings/consts";
+import { IChangeSceneParams } from "../types";
 
 /**
  * The interior scene in `/home`.
@@ -14,14 +18,19 @@ class interior extends Scene {
   private i: number;
   private hsv!: Phaser.Types.Display.ColorObject[];
   private tvText1!: Phaser.GameObjects.Text;
+  private hostUsername: string;
+  private frameCounter = 0;
+  private username:string;
 
   //   getHostUsername() {
   //     return useGameStore.getState().hostUsername;
   //   }
 
-  constructor() {
+  constructor(hostUsername: string, username:string) {
     super("interior");
     this.i = 0;
+    this.hostUsername = hostUsername;
+    this.username = username;
   }
 
   preload() {
@@ -40,18 +49,6 @@ class interior extends Scene {
     this.load.image("interiorTiles", "/backgrounds/interior.png");
     this.load.tilemapTiledJSON("interiorMap", "/backgrounds/interior.json");
     this.load.image("transparent", "/backgrounds/transparent.png");
-
-    this.load.on('fileprogress', function (file: { src: any; }) {
-      console.log(file.src);
-  });
-
-  this.load.on('progress', function (value: any) {
-    console.log("interior progress",value)
-});
-
-  this.load.on('complete', function () {
-      console.log('interiorcomplete');
-  })
   }
 
   async create() {
@@ -190,7 +187,12 @@ class interior extends Scene {
     // display player sprite
     // TODO JUST USE USEMULTUPLAYER STORE
     // TODO attempt to registry
-    const player = this.physics.add.sprite(725, 830, "bunny");
+    // const player = this.physics.add.sprite(725, 830, "bunny");
+    // const player = this.registry.get("player");
+    const { sprite, uid, username } = useMultiplayerStore.getState().currentPlayer!;
+    const player = this.physics.add.sprite(-100, -100, sprite);  // position will change when calling initCurrent
+    useMultiplayerStore.getState().initCurrent(uid, username, sprite, player, this.hostUsername, PlayerRoomStatus.INTERIOR);
+    useMultiplayerStore.getState().sendMyData({ });
 
     // collisions
     this.physics.add.collider(player, couch_collider);
@@ -371,7 +373,6 @@ class interior extends Scene {
     // const hostTag = this.registry.get("hostTag") as Phaser.GameObjects.Text;
     // hostTag.setText(this.getHostUsername());
 
-    console.log("player is on:", this.registry.get("player").scene.scene.key);
     // logic for moving the tag
 
     const top = this.hsv[this.i].color;
@@ -391,6 +392,14 @@ class interior extends Scene {
     ) as Phaser.GameObjects.Sprite;
     const studyMat = self.registry.get("studyMat") as Phaser.GameObjects.Sprite;
     const gameMenu = self.registry.get("gameMenu") as Phaser.GameObjects.Sprite;
+    const otherPlayers = useMultiplayerStore.getState().otherPlayers;
+
+    if (this.frameCounter >= FRAME_BUFFER) {
+      this.frameCounter = 0;
+    updateOtherPlayers(this, otherPlayers);}
+
+
+    this.frameCounter++;
 
     /* moving to exterior */
     // detect overlap between player and welcome mat
@@ -406,15 +415,20 @@ class interior extends Scene {
     );
 
     // displays enter house text when overlapping
-    if (isOverlappingWelcomeMat) {
+    if (isOverlappingWelcomeMat && this.hostUsername == this.username) {
       useHomeStore.setState({ text: "Press [Enter] to exit" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
       // enters house when enter key is pressed
       if (isDown) {
-        this.scene.stop("interior");
-        this.scene.start("exterior");
+        useHomeStore.setState({ text: "" });
+
+        await axios.post("/api/pusher/home/changeScene", ({
+          channelName: `presence-home-${this.hostUsername}`,
+          oldScene: "interior",
+          newScene: "exterior",
+        } as IChangeSceneParams));
       }
     }
 
@@ -429,12 +443,12 @@ class interior extends Scene {
     const isOverlappingStudyMat = self.physics.world.overlap(player, studyMat);
 
     // displays enter house text when overlapping
-    if (isOverlappingStudyMat) {
+    if (isOverlappingStudyMat && this.hostUsername == this.username) {
       useHomeStore.setState({ text: "Press [Enter] to study" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
-      // enters house when enter key is pressed
+      // enters studyroom when enter key is pressed
       if (isDown) {
         this.scene.switch("exterior");
       }
@@ -450,7 +464,7 @@ class interior extends Scene {
     const isOverlappingGameMenu = self.physics.world.overlap(player, gameMenu);
 
     // displays text when overlapping
-    if (isOverlappingGameMenu) {
+    if (isOverlappingGameMenu && this.hostUsername == this.username) {
       useHomeStore.setState({ text: "Press [Enter] to play Sentence Symphony" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
@@ -507,29 +521,7 @@ class interior extends Scene {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-330);
     }
 
-    // // stores current player's location
-    // const x = player.x;
-    // const y = player.y;
-
-    // // stores current player's previous location
-    // const oldPosition = player.data?.get("oldPosition") as
-    //   | { x: number; y: number }
-    //   | undefined;
-
-    // // checks if position changed
-    // if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y)) {
-    //   await axios.post("/api/pusher/playerMoved", {
-    //     x,
-    //     y,
-    //     playerId: self.registry.get("socket_id") as string,
-    //   });
-    // }
-
-    // // saves old position
-    // player.data?.set("oldPosition", {
-    //   x,
-    //   y,
-    // });
+    sendPositionData(player);
   }
 }
 

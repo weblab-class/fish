@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Game as PhaserGame } from "phaser";
 
 import { useHomeStore } from "./stores";
 import exterior from "./scenes/exterior";
 import interior from "./scenes/interior";
 import studyroom from "./scenes/studyroom";
-import { Game as PhaserGame } from "phaser";
 import { Player } from "@/services/mongo/models";
 
 interface IGameProps {
@@ -27,14 +27,10 @@ export default function Game({
 }: IGameProps) {
   const parentEl = useRef<HTMLDivElement>(null);
   const [text, setData] = useHomeStore((state) => [state.text, state.setData]);
-  useEffect(() => {
-    console.log("starting game");
-  }, []);
 
   useEffect(() => {
     if (!parentEl.current) return;
 
-    console.log("gameconfig");
     const gameConfig: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
       parent: "phaser-container",
@@ -42,7 +38,8 @@ export default function Game({
       height: 3000,
       backgroundColor: "#000000",
       scale: {
-        mode: Phaser.Scale.ScaleModes.FIT,
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
         width: window.innerWidth,
         height: window.innerHeight,
       },
@@ -60,7 +57,7 @@ export default function Game({
           playerUsername,
           playerAnimalSprite,
         ),
-        interior,
+        new interior(hostUsername),
         new studyroom(hostUsername),
       ],
       dom: {

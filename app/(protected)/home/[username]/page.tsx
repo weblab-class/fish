@@ -18,11 +18,15 @@ import { PusherPresenceUserInfo, pusherClient } from "@/services/pusher";
 import { useHomeStore, useMultiplayerStore } from "@/phaser/stores";
 import { NextResponse } from "next/server";
 import { Player } from "@/services/mongo/models";
-import { CustomErrorCode, ICustomError } from "@/types";
+import { CustomErrorCode, ICustomError, PlayerRoomStatus } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
-import { ISendDataParams, IRedirectParams } from "@/phaser/types";
+import {
+  ISendPlayerDataParams,
+  IRedirectParams,
+  IChangeSceneParams,
+} from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
@@ -76,6 +80,8 @@ const useGameRedirectStoreState = create<IGameRedirectStoreState>(() => ({
  *  - redirect unauthorized players from accessing other player's worlds (the game won't show up in time because it has to load)
  */
 export default function Home({ params }: { params: { username: string } }) {
+  const hostUsername = params.username;
+
   // #region states
   const router = useRouter();
   const { session } = useLuciaSession();
@@ -196,7 +202,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
   // set up pusher
   useEffect(() => {
-    const homeChannelName = `presence-home-${params.username}`;
+    const homeChannelName = `presence-home-${hostUsername}`;
 
     const homeChannel = pusherClient.subscribe(
       homeChannelName,
@@ -207,17 +213,16 @@ export default function Home({ params }: { params: { username: string } }) {
       useErrorRedirectStore.setState({ errorRedirect: false, errorCode: null });
       // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
+      console.log(homeChannel.members);
     });
 
     homeChannel.bind(
       "pusher:subscription_error",
       // if error, redirect
-      async (error: NextResponse<ICustomError>) => {
-        console.log(error);
+      async (error: { error: string; type: string }) => {
         setAuthorized("unauthorized");
         router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
-        // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =
         //   (await error.json()) as ICustomError;
         // const goRedirect = () =>
@@ -255,32 +260,53 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:member_added",
       async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        setDefault();
+
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
+        const welcomeMessage =
+          ":---" + newPlayer.info.username + " has arrived!---";
+        axios.post("/api/pusher/home/chatLog", {
+          hostUsername: params.username,
+          message: "",
+          username: welcomeMessage,
+        });
       },
-      setDefault(),
     );
 
     homeChannel.bind(
       "pusher:member_removed",
-      async (leavingPlayer: { id: string; info: object }) => {
-        if (useGameRedirectStoreState.getState().gameRedirect) {
-          useGameRedirectStoreState.setState({ gameRedirect: false });
-          return;
-        }
-
-        if (leavingPlayer.id === session!.user.uid) {
+      async (leavingPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        const resetAndDelete = async () => {
           // reset multiplayer store
           //  - the store will be emptied, but will be populated by default values if they go back to their home
           useMultiplayerStore.getState().resetData();
-          const host = await getPlayerByUsername(params.username);
+          const host = await getPlayerByUsername(hostUsername);
           if (!host?.data?.at(0)) return;
 
           await deletePlayerFromRoom({
             hostId: host.data[0]._id.toString(),
             guestId: leavingPlayer.id,
           });
+        };
+
+        // if redirecting to a game, then don't clear anything because we might want to come back
+        if (useGameRedirectStoreState.getState().gameRedirect) {
+          useGameRedirectStoreState.setState({ gameRedirect: false });
+          return;
+        }
+
+        if (leavingPlayer.id === session!.user.uid) {
+          return await resetAndDelete();
+        }
+        // now if the host leaves, we need to kick everyone out
+        if (
+          leavingPlayer.info.username === hostUsername &&
+          leavingPlayer.id !== session?.user.uid
+        ) {
+          await resetAndDelete();
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
           return;
         }
 
@@ -291,7 +317,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "recieve-player-data",
-      async ({ senderData, targetId }: ISendDataParams) => {
+      async ({ senderData, targetId }: ISendPlayerDataParams) => {
         // if targetId doesn't exist, then it's meant for everyone besides the sender
         // if targetId does exist, then it's meant for that person
         if (
@@ -316,13 +342,10 @@ export default function Home({ params }: { params: { username: string } }) {
     );
 
     return () => {
-      if (!homeChannel.members.me) return; // this means subscription failed, so no point in unsubscribing and unbinding
+      useHomeStore.getState().resetData();
 
-      homeChannel.unbind("");
-      pusherClient.unsubscribe(`presence-home-${params.username}`);
-      if (game) {
-        game.destroy(true);
-      }
+      homeChannel.unbind();
+      pusherClient.unsubscribe(`presence-home-${hostUsername}`);
     };
   }, []);
   // #endregion
@@ -336,32 +359,40 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "sceneChange",
-      async (data: { newScene: string; oldScene: string }) => {
+      async ({ oldScene, newScene, targetId }: IChangeSceneParams) => {
         if (!game) return;
+        if (oldScene === newScene) return;
+        if (targetId && targetId !== session!.user.uid) return;
+
         const player = (await game.registry.get(
           "player",
         )) as Phaser.GameObjects.Sprite;
         const currSceneKey = player.scene.scene.key;
 
-        if (data.oldScene == "studyroom") {
-          // @ts-ignore
-          game.scene.getScene("studyroom").cleanup();
+        if (oldScene == "studyroom") {
+          for (let _ = 0; _ < 2; ++_) {
+            // @ts-ignore
+            game.scene.getScene("studyroom").cleanup();
+
+            game.scene.switch(currSceneKey, newScene);
+            setCurrScene(newScene);
+          }
+        } else {
+          // keep these two calls of switching scenes, needed for studyroom
+          game.scene.switch(currSceneKey, newScene);
+          game.scene.switch(currSceneKey, newScene);
+          setCurrScene(newScene);
         }
 
-        game.scene.switch(currSceneKey, data.newScene);
+        useMultiplayerStore
+          .getState()
+          .switchScene(newScene as PlayerRoomStatus);
+        // const others = useMultiplayerStore.getState().otherPlayers;
+        // const currNewScene = game.scene.getScene(newScene);
 
-        setCurrScene(data.newScene);
-
-        const currSceneKey2 = player.scene.scene.key;
-
-        if (data.oldScene == "studyroom") {
-          // @ts-ignore
-          game.scene.getScene("studyroom").cleanup();
-        }
-
-        game.scene.switch(currSceneKey2, data.newScene);
-
-        setCurrScene(data.newScene);
+        // for (const other of others.values()) {
+        //   curr
+        // }
       },
     );
     return () => {
@@ -411,11 +442,12 @@ export default function Home({ params }: { params: { username: string } }) {
                     const currSceneKey = player.scene.scene.key;
 
                     await axios.post("/api/pusher/home/changeScene", {
-                      hostUsername: params.username,
+                      channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
                       oldScene: currSceneKey,
-                    });
+                    } as IChangeSceneParams);
                   } else {
+                    // if guest, the door takes you home
                     window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
                   }
                 }}
@@ -433,7 +465,7 @@ export default function Home({ params }: { params: { username: string } }) {
             </div>
           )}
 
-          <div className="top-17 absolute bottom-0 right-0 z-20 ml-6 flex h-34% w-1/4 items-end justify-center p-1 text-center">
+          <div className="top-17 absolute bottom-0 right-0 z-20 ml-6 flex h-45% w-1/4 items-end justify-center p-1 text-center">
             <ChatLogPhaser
               username={
                 currentPlayer?.data
@@ -474,10 +506,10 @@ export default function Home({ params }: { params: { username: string } }) {
                   const currSceneKey = player.scene.scene.key;
 
                   await axios.post("/api/pusher/home/changeScene", {
-                    hostUsername: params.username,
+                    channelName: `presence-home-${hostUsername}`,
                     newScene: "studyroom",
                     oldScene: currSceneKey,
-                  });
+                  } as IChangeSceneParams);
                 }}
               />
               <div
@@ -504,10 +536,10 @@ export default function Home({ params }: { params: { username: string } }) {
                     const currSceneKey = player.scene.scene.key;
 
                     await axios.post("/api/pusher/home/changeScene", {
-                      hostUsername: params.username,
+                      channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
                       oldScene: currSceneKey,
-                    });
+                    } as IChangeSceneParams);
                   }}
                 />
               </div>

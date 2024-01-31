@@ -38,7 +38,7 @@ export default function ChatLogPhaser(props: {
     formState: { isSubmitting },
   } = useForm<Input>();
   useEffect(() => {
-    setMessages([{ username: ":------Chat begins here------", message: "" }]);
+    setMessages([{ message: "----Chat begins here----::", username: ":" }]);
   }, []);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
@@ -107,7 +107,7 @@ export default function ChatLogPhaser(props: {
           >
             {showChat ? (
               <div
-                className="z-50 h-full  w-full overflow-x-hidden overflow-y-scroll rounded-t-2xl border-4 border-b-0 bg-amber-950 bg-opacity-10 p-1 pr-3 text-black scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-sky-800 scrollbar-corner-sky-800 scrollbar-track-rounded-3xl"
+                className="z-50 h-full w-full overflow-x-hidden overflow-y-scroll rounded-t-2xl border-4 border-b-0 bg-white bg-opacity-20 p-1 pr-3 text-black scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-sky-800 scrollbar-corner-sky-800 scrollbar-track-rounded-3xl"
                 ref={chatLogRef}
                 onClick={() => {
                   setShowChat(false);
@@ -122,15 +122,17 @@ export default function ChatLogPhaser(props: {
                     <span
                       className={`${
                         message.message == ""
-                          ? "text-white "
-                          : message.username === props.username
-                            ? "text-sky-600 "
-                            : "text-pink-600"
+                          ? "text-purple-800 "
+                          : message.username == ":"
+                            ? "text-black "
+                            : message.username === props.username
+                              ? "text-sky-600 "
+                              : "text-pink-600"
                       }`}
                     >
                       {message.username}:{" "}
                     </span>
-                    <span className="break-words text-white">
+                    <span className="break-words text-black">
                       {message.message}
                     </span>
                   </div>
@@ -138,7 +140,7 @@ export default function ChatLogPhaser(props: {
               </div>
             ) : (
               <div
-                className="z-40 h-1/3 w-full overflow-x-hidden overflow-y-scroll rounded-t-3xl border-4 border-b-0 bg-amber-950 bg-opacity-10 p-2 text-black"
+                className="z-40 h-1/3 w-full overflow-x-hidden overflow-y-scroll rounded-t-3xl border-4 border-b-0 bg-white bg-opacity-20 p-2 text-black"
                 ref={chatLogRef}
                 onClick={() => {
                   setShowChat(true);
@@ -149,15 +151,17 @@ export default function ChatLogPhaser(props: {
                     <span
                       className={`${
                         message.message == ""
-                          ? "text-white "
-                          : message.username == props.username
-                            ? "text-sky-600 "
-                            : "text-pink-600"
+                          ? "text-purple-800 "
+                          : message.username == ":"
+                            ? "text-black "
+                            : message.username === props.username
+                              ? "text-sky-600 "
+                              : "text-pink-600"
                       }`}
                     >
                       {message.username}:{" "}
                     </span>
-                    <span className="break-words text-white">
+                    <span className="break-words text-black">
                       {message.message}
                     </span>
                   </div>
@@ -191,7 +195,7 @@ export default function ChatLogPhaser(props: {
           </div>
         )}
 
-        <div className="m-2 flex h-1/4 w-full items-end justify-end rounded-full">
+        <div className="m-2 flex h-19% w-full items-end justify-end rounded-full">
           <div
             className=" mr-4 flex h-full w-17% cursor-pointer items-center justify-center rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain text-3xl text-sky-700 outline-sky-800 hover:text-sky-800 hover:outline"
             onClick={() => {

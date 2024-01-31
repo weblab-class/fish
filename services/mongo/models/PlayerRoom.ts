@@ -8,7 +8,7 @@ import mongoose, { model, Schema, Types, Error } from "mongoose";
 import type { Ref as TypeRef } from "@typegoose/typegoose";
 import { Player } from "./Player";
 import { PlayerRoomStatus } from "@/types";
-import { MAX_PLAYERS } from "@/phaser/settings/consts";
+import { MAX_HOME_PLAYERS } from "@/phaser/settings/consts";
 
 @modelOptions({ schemaOptions: { _id: false } })
 export class PlayerData {
@@ -23,9 +23,9 @@ export class PlayerData {
 }
 
 @pre<PlayerRoom>("save", function (next) {
-  if (this.allPlayers.length > MAX_PLAYERS) {
+  if (this.allPlayers.length > MAX_HOME_PLAYERS) {
     const err = new mongoose.Error(
-      `You cannot have more than ${MAX_PLAYERS} players.`,
+      `You cannot have more than ${MAX_HOME_PLAYERS} players.`,
     );
     throw err;
   }

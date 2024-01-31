@@ -1,18 +1,16 @@
+import { IChangeSceneParams } from "@/phaser/types";
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
-interface Input{
-    oldScene:string,
-    newScene:string,
-    hostUsername:string
-}
 export async function POST(req: NextRequest) {
-    const {hostUsername,oldScene,newScene} = await req.json() as Input;
+    const {channelName, oldScene,newScene, targetId} = await req.json() as IChangeSceneParams;
 
-    await pusherServer.trigger(`presence-home-${hostUsername}`, "sceneChange", {
+    await pusherServer.trigger(channelName, "sceneChange", {
+        channelName,
+        oldScene,
         newScene,
-        oldScene
-    });
+        targetId,
+    } as IChangeSceneParams);
 
     return NextResponse.json({ status: 200 });
 }

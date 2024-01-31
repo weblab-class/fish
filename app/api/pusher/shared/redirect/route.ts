@@ -1,4 +1,4 @@
-import { IRedirectParams, ISendDataParams } from "@/phaser/types";
+import { IRedirectParams, ISendPlayerDataParams } from "@/phaser/types";
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 

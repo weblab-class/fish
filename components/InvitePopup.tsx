@@ -14,7 +14,7 @@ import {
 import type { Player } from "@/services/mongo/models";
 import { pusherClient } from "@/services/pusher";
 import { PresenceChannel } from "pusher-js";
-import { ISendDataParams, IRedirectParams } from "@/phaser/types";
+import { ISendPlayerDataParams, IRedirectParams } from "@/phaser/types";
 import axios from "axios";
 
 interface IInvitePopup {
@@ -64,6 +64,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   const [refresh, setRefresh] = useState(false);
   const [guestNotFound, setGuestNotFound] = useState(false);
   const [hostNotFound, setHostNotFound] = useState(false);
+  const [errorText, setErrorText] = useState("");
 
   const onInviteSubmit: SubmitHandler<{ inviteUsername: string }> = async (
     data,
@@ -92,6 +93,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
     if (!host) throw new Error("Invalid user!"); // TODO add error message to form
     if (!host[0]) {
       setHostNotFound(true);
+      setErrorText("User does not exist");
       setTimeout(() => setHostNotFound(false), 1000);
     } else {
       window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`;
@@ -156,6 +158,8 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
             className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
             placeholder="Enter player's username"
             autoComplete="off"
+            required
+            minLength={1}
             {...registerInvite("inviteUsername")}
           />
 
@@ -224,7 +228,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
             </button>
             {hostNotFound && (
               <p className="w-full text-center text-2xl text-red-500">
-                User does not exist
+                {errorText}
               </p>
             )}
           </div>
@@ -252,7 +256,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
       )}
 
       <div
-        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url('/backgrounds/brightRedBg.png')] hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
         onClick={() => {
           setDefault();
         }}

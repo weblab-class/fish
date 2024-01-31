@@ -246,7 +246,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
         if (member.info.username === params.username) {
           // router.push(`/home/${params.username}`);
-          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${params.username}`;
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
         }
       },
     );
