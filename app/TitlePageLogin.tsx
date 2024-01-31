@@ -47,7 +47,11 @@ export default function TitlePageLogin() {
       </div>
       <div className="flex items-center justify-center">
         {/* music */}
-        <audio src="/music/title-screen-my-little-world-simon-folwar.mp3" autoPlay loop></audio>
+        <audio
+          src="/music/title-screen-my-little-world-simon-folwar.mp3"
+          autoPlay
+          loop
+        ></audio>
         {/* title of game */}
         {/* <div className="absolute top-0 flex h-1/2 w-1/2 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div> */}
         <div className="absolute inset-y-8% flex h-2/5 w-2/5 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div>
@@ -139,8 +143,9 @@ export default function TitlePageLogin() {
                     <p className="m-3 flex items-center rounded-xl bg-amber-950 bg-opacity-10 text-center text-4xl text-white">
                       f.i.s.h. is an interactive social game that blends gaming,
                       studying and socializing through cute animal characters.
-                      On f.i.s.h., you can hangout, play a game, and study with
-                      your friends.
+                      On f.i.s.h., you can hangout on your friends' habitats and
+                      chat, play a multiplayer story-writing game, study with
+                      your friends, and send mail!
                     </p>
                   </div>
                 )}

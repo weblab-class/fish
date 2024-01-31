@@ -465,7 +465,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 loop
               ></audio>
               <span
-                className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
+                className={`absolute right-20 top-10 z-10 h-20 w-16 ${isHost && "bg-[url('/objects/leave.png')] hover:bg-[url('/objects/leave_hover.png')] "} bg-right-top bg-no-repeat `}
                 onClick={async () => {
                   if (!game) return;
                   if (isHost) {
@@ -477,11 +477,8 @@ export default function Home({ params }: { params: { username: string } }) {
                     await axios.post("/api/pusher/home/changeScene", {
                       channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
-                      oldScene: currSceneKey,
+                      oldScene: "studyroom",
                     } as IChangeSceneParams);
-                  } else {
-                    // if guest, the door takes you home
-                    window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
                   }
                 }}
               />
@@ -546,7 +543,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 />
                 <div
                   className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
-                  onClick={() => { 
+                  onClick={() => {
                     showPopup("invite");
                   }}
                 />

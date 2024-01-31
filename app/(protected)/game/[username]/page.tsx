@@ -278,20 +278,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     };
   }, []);
 
-  // DELETE LATER
-  // useEffect(() => {
-  //   if (isHost) {
-  //     const hostChannel = pusherClient.subscribe(
-  //       `presence-ss-host-${params.username}`,
-  //     ) as PresenceChannel;
-
-  //     const gameChannel = pusherClient.subscribe(
-  //       `presence-ss-${params.username}`,
-  //     ) as PresenceChannel;
-
-  //   }
-  // });
-
   // events after host and player data are loaded
   useEffect(() => {
     // makes sure timer is stopped before unloading
@@ -355,22 +341,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       hostChannel.bind("pusher:subscription_succeeded", () => {
         setIsSubscribed(true);
       });
-      // hostChannel.bind(
-      //   "pusher:member_removed",
-      //   async (member: { id: any; info: any }) => {
-      //     await axios.post("/api/pusher/symphony/newMessage", {
-      //       hostUsername: params.username,
-      //       message: "hiiiii",
-      //       username: "left",
-      //     });
-      //     if (member.info.username === params.username) {
-      //       if (!host?.data) return;
-      //       await deleteSentenceSymphony.mutateAsync({
-      //         hostId: host?.data[0]._id.toString(),
-      //       });
-      //     }
-      //   },
-      // );
     }
 
     // host makes sure timer stops before unloading
@@ -767,47 +737,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   //   submitting responses
   const onSubmit: SubmitHandler<Input> = async (data) => {
-    // data contains response, send player's id and response to db
-    // submit response to database
-    // response: player,votes
-    //disables change of submission
-
-    // const responseData = { response: data.response, player: "player_id" };
-
-    // if (!submittedResponse && data.response.length > 0) {
-    //   const submitSentenceFunc = async () => {
-    //     if (!host?.data) return;
-    //     setSubmittedResponse(true);
-    //     await submitSentence.mutateAsync({
-    //       hostId: host.data[0]._id.toString(),
-    //       creatorId: session!.user.uid,
-    //       sentence: data.response,
-    //     });
-    //   };
-    //   submitSentenceFunc();
-
-    //   setSubmissionLoading(false);
-    // }
-
-    //host submits for all the players that left
-    // if (isHost) {
-    //   for (let i = 0; i < playerCount - gameChannel.members.count; i++) {
-    //     let responseSubmitted = "";
-
-    //     responseSubmitted =
-    //       "This player left. This will be replaced by AI later :)";
-
-    //     await axios.post("/api/pusher/symphony/submitResponse", {
-    //       response: {
-    //         sentence: responseSubmitted,
-    //         creatorId: deadPlayers[i].playerId,
-    //         voterIds: [],
-    //       },
-    //       hostUsername: params.username,
-    //     });
-    //   }
-    // }
-
     if (!submittedResponse) {
       let responseSubmitted = "";
       if (data.response == "") {
