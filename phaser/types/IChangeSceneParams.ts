@@ -1,6 +1,5 @@
-import { PlayerRoomStatus } from "@/types"
-
 export interface IChangeSceneParams {
-    from: PlayerRoomStatus;
-    to: PlayerRoomStatus;
+  channelName: string;
+  oldScene: string;
+  newScene: string;
 }

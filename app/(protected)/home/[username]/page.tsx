@@ -18,11 +18,11 @@ import { PusherPresenceUserInfo, pusherClient } from "@/services/pusher";
 import { useHomeStore, useMultiplayerStore } from "@/phaser/stores";
 import { NextResponse } from "next/server";
 import { Player } from "@/services/mongo/models";
-import { CustomErrorCode, ICustomError } from "@/types";
+import { CustomErrorCode, ICustomError, PlayerRoomStatus } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
-import { ISendPlayerDataParams, IRedirectParams } from "@/phaser/types";
+import { ISendPlayerDataParams, IRedirectParams, IChangeSceneParams } from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
@@ -162,6 +162,8 @@ export default function Home({ params }: { params: { username: string } }) {
   }, [gameLoaded]);
 
   useEffect(() => {
+    if (gameLoaded) return;
+
     refetchPlayer();
   });
 
@@ -214,7 +216,6 @@ export default function Home({ params }: { params: { username: string } }) {
       "pusher:subscription_error",
       // if error, redirect
       async (error: NextResponse<ICustomError>) => {
-        console.log(error);
         setAuthorized("unauthorized");
         router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
@@ -337,32 +338,37 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "sceneChange",
-      async (data: { newScene: string; oldScene: string }) => {
+      async ({ oldScene, newScene }: IChangeSceneParams) => {
         if (!game) return;
+
         const player = (await game.registry.get(
           "player",
         )) as Phaser.GameObjects.Sprite;
         const currSceneKey = player.scene.scene.key;
 
-        if (data.oldScene == "studyroom") {
-          // @ts-ignore
-          game.scene.getScene("studyroom").cleanup();
+        console.log("BRUH", player);
+
+        if (oldScene == "studyroom") {
+          for (let _ = 0; _ < 2; ++_) {
+            // @ts-ignore
+            game.scene.getScene("studyroom").cleanup();
+    
+            game.scene.switch(currSceneKey, newScene);
+            setCurrScene(newScene);
+          }
+        }
+        else {
+          game.scene.switch(currSceneKey, newScene);
+          setCurrScene(newScene);
         }
 
-        game.scene.switch(currSceneKey, data.newScene);
+        useMultiplayerStore.getState().switchScene(newScene as PlayerRoomStatus);
+        // const others = useMultiplayerStore.getState().otherPlayers;
+        // const currNewScene = game.scene.getScene(newScene);
 
-        setCurrScene(data.newScene);
-
-        const currSceneKey2 = player.scene.scene.key;
-
-        if (data.oldScene == "studyroom") {
-          // @ts-ignore
-          game.scene.getScene("studyroom").cleanup();
-        }
-
-        game.scene.switch(currSceneKey2, data.newScene);
-
-        setCurrScene(data.newScene);
+        // for (const other of others.values()) {
+        //   curr
+        // }
       },
     );
     return () => {
@@ -403,12 +409,13 @@ export default function Home({ params }: { params: { username: string } }) {
                     ) as Phaser.GameObjects.Sprite;
                     const currSceneKey = player.scene.scene.key;
 
-                    await axios.post("/api/pusher/home/changeScene", {
-                      hostUsername: params.username,
+                    await axios.post("/api/pusher/home/changeScene", ({
+                      channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
                       oldScene: currSceneKey,
-                    });
+                    } as IChangeSceneParams));
                   } else {
+                    // if guest, the door takes you home
                     window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
                   }
                 }}
@@ -475,12 +482,12 @@ export default function Home({ params }: { params: { username: string } }) {
                     "player",
                   ) as Phaser.GameObjects.Sprite;
                   const currSceneKey = player.scene.scene.key;
-
-                  await axios.post("/api/pusher/home/changeScene", {
-                    hostUsername: params.username,
+                  
+                  await axios.post("/api/pusher/home/changeScene", ({
+                    channelName: `presence-home-${hostUsername}`,
                     newScene: "studyroom",
                     oldScene: currSceneKey,
-                  });
+                  } as IChangeSceneParams));
                 }}
               />
               <div
@@ -506,11 +513,11 @@ export default function Home({ params }: { params: { username: string } }) {
                     ) as Phaser.GameObjects.Sprite;
                     const currSceneKey = player.scene.scene.key;
 
-                    await axios.post("/api/pusher/home/changeScene", {
-                      hostUsername: params.username,
+                    await axios.post("/api/pusher/home/changeScene", ({
+                      channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
                       oldScene: currSceneKey,
-                    });
+                    } as IChangeSceneParams));
                   }}
                 />
               </div>
