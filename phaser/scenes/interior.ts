@@ -8,6 +8,7 @@ import { pusherClient } from "@/services/pusher";
 import { loadSprites, sendPositionData, updateOtherPlayers } from "../functions";
 import { useMultiplayerStore } from "../stores";
 import { PlayerRoomStatus } from "@/types";
+import { FRAME_BUFFER } from "../settings/consts";
 
 /**
  * The interior scene in `/home`.
@@ -17,6 +18,7 @@ class interior extends Scene {
   private hsv!: Phaser.Types.Display.ColorObject[];
   private tvText1!: Phaser.GameObjects.Text;
   private hostUsername: string;
+  private frameCounter = 0;
 
   //   getHostUsername() {
   //     return useGameStore.getState().hostUsername;
@@ -44,19 +46,6 @@ class interior extends Scene {
     this.load.image("interiorTiles", "/backgrounds/interior.png");
     this.load.tilemapTiledJSON("interiorMap", "/backgrounds/interior.json");
     this.load.image("transparent", "/backgrounds/transparent.png");
-
-    this.load.on('fileprogress', function (file: { src: any; }) {
-      console.log(file.src);
-  });
-
-  this.load.on('progress', function (value: any) {
-    console.log("interior progress",value)
-});
-
-  this.load.on('complete', function () {
-      console.log('interiorcomplete');
-  })
-
   }
 
   async create() {
@@ -381,7 +370,6 @@ class interior extends Scene {
     // const hostTag = this.registry.get("hostTag") as Phaser.GameObjects.Text;
     // hostTag.setText(this.getHostUsername());
 
-    console.log("player is on:", this.registry.get("player").scene.scene.key);
     // logic for moving the tag
 
     const top = this.hsv[this.i].color;
@@ -403,8 +391,12 @@ class interior extends Scene {
     const gameMenu = self.registry.get("gameMenu") as Phaser.GameObjects.Sprite;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
 
-    updateOtherPlayers(this, otherPlayers);
-    console.log("otherPlayers in interior", useMultiplayerStore.getState().otherPlayers)
+    if (this.frameCounter >= FRAME_BUFFER) {
+      this.frameCounter = 0; 
+    updateOtherPlayers(this, otherPlayers);}
+
+
+    this.frameCounter++;
 
     /* moving to exterior */
     // detect overlap between player and welcome mat
@@ -521,7 +513,7 @@ class interior extends Scene {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-330);
     }
 
-    sendPositionData(this, player);
+    sendPositionData(player);
   }
 }
 
