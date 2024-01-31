@@ -7,6 +7,7 @@ import { useHomeStore, useMultiplayerStore } from "../stores";
 import loadSprites from "../functions";
 import { FRAME_BUFFER } from "../settings/consts";
 import { PlayerInfo } from "../types";
+import { PresenceChannel } from "pusher-js";
 
 /**
  * The exterior scene in `/home`.
@@ -59,6 +60,12 @@ export default class exterior extends Scene {
   }
 
   create() {
+
+    // pusher setup
+    const homeChannel= pusherClient.subscribe(`presence-home-${this.hostUsername}`) as PresenceChannel;
+
+    this.registry.set("homeChannel",homeChannel)
+
     // create one-tile tilemap
     const map = this.make.tilemap({
       key: "map",
@@ -220,6 +227,7 @@ export default class exterior extends Scene {
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
     const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
     const easel=self.registry.get("easel")as Phaser.GameObjects.Sprite;
+    const homeChannel=self.registry.get("homeChannel") as PresenceChannel
     const mailbox = self.registry.get("mailbox") as Phaser.GameObjects.Sprite;
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
@@ -240,12 +248,12 @@ export default class exterior extends Scene {
 
         const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
         if (otherSprite) {
-          console.log(playerKey, "has updated")
+
           otherSprite.setPosition(otherInfo.x, otherInfo.y);
           // TODO set anim based on current animation frame here
         }
         else { // joined players
-          console.log(playerKey, "has joined")
+
           this.registry.set(playerKey, this.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite));
         }
 
@@ -258,7 +266,7 @@ export default class exterior extends Scene {
       for (const regPlayerKey of registryOthers) {
         if (currentPlayers.has(regPlayerKey)) continue;
 
-        console.log("DELETING");  // !BUG Does not work
+       // !BUG Does not work
         const oldSprite = this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite;
         this.registry.remove(regPlayerKey);
         oldSprite.destroy(true);  // TEST
@@ -267,6 +275,9 @@ export default class exterior extends Scene {
 
     this.frameCounter++;
 
+    if (this.hostUsername==this.username){
+// ADD CONDITIONS TO PHASER EVENTS
+    }
     self.physics.add.overlap(player, mailbox, () => {
       const keyObj = self.input.keyboard!.addKey("Enter");
       const isDown = keyObj.isDown;

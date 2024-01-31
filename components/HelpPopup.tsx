@@ -74,17 +74,17 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
             {/* About content */}
             {helpContent === "About" && (
               <div>
-                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                   What is f.i.s.h.?
                 </h1>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   f.i.s.h. is an interactive social game that blends gaming,
                   studying and socializing through cute animal characters. On
                   f.i.s.h., you can hangout, play a game, and study with your
                   friends.
                 </p>
 
-                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                   What does f.i.s.h. stand for?
                 </h1>
                 <p className="m-3 flex items-center text-center text-4xl"></p>
@@ -94,31 +94,31 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
             {/* multiplayer content */}
             {helpContent === "Multiplayer" && (
               <div>
-                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                   You can chat, play games, or study with your friends!
                 </h1>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700 underline">
+                <p className="m-3 flex items-center text-center text-4xl text-amber-900 underline">
                   How to invite friends to your Habitat:
                 </p>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   1. Navigate to the Multiplayer Cloud or the Swan
                 </p>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   2. Add your friends&apos; usernames to your Guest List
                 </p>
-                <p className="m-3 mb-8 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 mb-8 flex items-center text-center text-4xl text-white">
                   3. Have your friends follow the instructions below
                 </p>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700 underline">
+                <p className="m-3 flex items-center text-center text-4xl text-amber-900 underline">
                   How to visit a friend&apos;s Habitat:
                 </p>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   1. Make sure your friend has you on their Guest List
                 </p>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   2. Navigate to the Multiplayer Cloud Tab or the Swan
                 </p>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   3. Enter your friend&apos;s username and visit!
                 </p>
               </div>
@@ -126,53 +126,53 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
             {/* Game content */}
             {helpContent === "Game" && (
               <div className="h-85% overflow-auto">
-                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                   Play Sentence Symphony with friends!
                 </h1>
-                <p className="m-2 text-center text-4xl text-gray-600">
+                <p className="m-2 text-center text-4xl text-white">
                   Collaboratively (or competitively) blend together a story one
                   sentence at a time. Each round, every player will propose a
                   sentence to add to the story. The most voted response will be
                   added to the story. Scroll down for more details!
                 </p>
                 <div className="h-full">
-                  <p className="m-3 flex items-center text-center text-5xl text-gray-700 underline">
+                  <p className="m-3 flex items-center text-center text-5xl text-amber-900 underline">
                     How to play Sentence Symphony:
                   </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                  <p className="m-3 flex items-center text-4xl text-white">
                     1. You and your friends will try to collaboratively write a
                     story given a prompt or theme.
                   </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                  <p className="m-3 flex items-center text-4xl text-white">
                     2. During each round, everyone will be given 30 seconds to
                     write a sentence.
                   </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                  <p className="m-3 flex items-center text-4xl text-white">
                     3. After each round, everyone will vote on their favorite
                     response and the most voted response will be added to the
                     story. You cannot vote for your own responses!
                   </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                  <p className="m-3 flex items-center text-4xl text-white">
                     4. After 6 rounds, you will have your full story, and you
                     will be able to see who contributed the most!
                   </p>
-                  <p className="m-3 flex items-center text-center text-5xl text-gray-700 underline">
+                  <p className="m-3 flex items-center text-center text-5xl text-amber-900 underline">
                     How to start a game:
                   </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                  <p className="m-3 flex items-center text-4xl text-white">
                     1. To host a game, have all your friends visit your Habitat
                     &#40;maximum of 5 visitors&#41;
                   </p>
-                  <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-gray-600">
+                  <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-amber-800">
                     IMPORTANT: Make sure all your friends are on your Habitat
                     before you start the game!
                   </p>
-                  <p className="m-3 flex items-center text-4xl text-gray-700">
+                  <p className="m-3 flex items-center text-4xl text-white">
                     2. Navigate to your house and start the game on your T.V.
                     --OR-- click on the Multiplayer Cloud Tab and start the game
                     from the popup
                   </p>
-                  <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-gray-600">
+                  <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-amber-800">
                     NOTE: While you can play with just 1-2 players, it is much
                     more fun with 3+ players as you are not allowed to vote for
                     your own responses!
@@ -181,12 +181,12 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
               </div>
             )}
             {/* studyroom content */}
-            {helpContent === "Multiplayer" && (
+            {helpContent === "Study" && (
               <div>
-                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                   Study with your friends!
                 </h1>
-                <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                <p className="m-3 flex items-center text-center text-4xl text-white">
                   Enjoy some relaxing music and time how long you study! Invite
                   some friends to your Habitat and study together!
                 </p>

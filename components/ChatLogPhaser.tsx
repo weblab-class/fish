@@ -115,7 +115,7 @@ export default function ChatLogPhaser(props: {
               >
                 {messages.map((message) => (
                   <div
-                    className="-mb-2 w-full rounded-2xl bg-opacity-10 bg-cover p-2 text-2xl "
+                    className="-mb-2 w-full rounded-2xl bg-opacity-10 bg-cover p-2 text-left text-2xl "
                     key={id}
                   >
                     {/* TO DO: change comparison statement to props.username and change colors */}
@@ -145,7 +145,7 @@ export default function ChatLogPhaser(props: {
                 }}
               >
                 {messages.map((message) => (
-                  <div className="m-2 w-full text-2xl" key={id}>
+                  <div className="m-2 w-full text-left text-2xl" key={id}>
                     <span
                       className={`${
                         message.message == ""

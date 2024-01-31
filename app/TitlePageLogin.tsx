@@ -36,17 +36,18 @@ export default function TitlePageLogin() {
 
   return (
     <div className="h-screen w-screen bg-[url('/backgrounds/titleScreenBg.png')] bg-cover">
+      <div className="mb-5% h-85% absolute flex w-full items-center justify-center">
+        <h1 className="text-center text-4xl text-pink-300">
+          <TextTransition springConfig={presets.gentle}>
+            {TEXTS[index % TEXTS.length]}
+          </TextTransition>
+        </h1>
+      </div>
       <div className="flex items-center justify-center">
         {/* title of game */}
-        <div className="absolute top-0 flex h-3/4 w-2/3 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-cover"></div>
-        <div className="absolute top-0 flex h-3/4 w-2/3 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-cover">
-          <h1 className="pt-14 text-center text-4xl text-gray-700">
-            <TextTransition springConfig={presets.gentle}>
-              {TEXTS[index % TEXTS.length]}
-            </TextTransition>
-          </h1>
-        </div>
-
+        {/* <div className="absolute top-0 flex h-1/2 w-1/2 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div> */}
+        <div className="absolute inset-y-8% flex h-2/5 w-2/5 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div>
+        <div className="absolute inset-y-8% flex h-2/5 w-2/5 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div>
         {/* login cloud */}
         <a
           href="/api/auth/login/google"
@@ -62,12 +63,12 @@ export default function TitlePageLogin() {
 
         {/* how to play pop up */}
         {showHelpPopup && (
-          <div className="z-30 flex h-screen w-screen items-center justify-center overscroll-none text-5xl text-white">
-            <div className="z-10 h-5/6 w-3/4 rounded-3xl bg-[url('/backgrounds/blueBg.png')] bg-cover outline outline-8 outline-white">
+          <div className="z-50 flex h-screen w-screen items-center justify-center overflow-hidden overscroll-none text-5xl text-white">
+            <div className="z-10 h-5/6 w-3/4 rounded-3xl bg-[url('/backgrounds/pinkBg.png')] bg-cover outline outline-8 outline-white">
               {/* nav bar */}
-              <div className="hover:pointer mt-3  flex justify-evenly bg-[url('/backgrounds/lightBlueBg.png')] p-2">
+              <div className="hover:pointer mt-3  flex items-center justify-evenly bg-[url('/backgrounds/greenBg.png')] p-2">
                 <span
-                  className={`${helpContent === "About" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "About" ? "rounded-xl bg-green-800 bg-opacity-15 p-2 pl-3 pr-3 underline " : "text-gray-100 no-underline "} hover:cursor-pointer`}
                   onClick={() => {
                     setHelpContent("About");
                   }}
@@ -75,7 +76,7 @@ export default function TitlePageLogin() {
                   About
                 </span>
                 <span
-                  className={`${helpContent === "Multiplayer" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "Multiplayer" ? "rounded-xl bg-green-800 bg-opacity-15 p-2 pl-3 pr-3 underline  " : "text-gray-100 no-underline "} hover:cursor-pointer`}
                   onClick={() => {
                     setHelpContent("Multiplayer");
                   }}
@@ -83,7 +84,7 @@ export default function TitlePageLogin() {
                   Multiplayer
                 </span>
                 <span
-                  className={`${helpContent === "Game" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "Game" ? "rounded-xl bg-green-800 bg-opacity-15 p-2 pl-3 pr-3 underline  " : "text-gray-100 no-underline "} hover:cursor-pointer`}
                   onClick={() => {
                     setHelpContent("Game");
                   }}
@@ -91,7 +92,7 @@ export default function TitlePageLogin() {
                   Game
                 </span>
                 <span
-                  className={`${helpContent === "Study" ? "underline " : "text-gray-300 no-underline "} hover:cursor-pointer`}
+                  className={`${helpContent === "Study" ? "rounded-xl bg-green-800 bg-opacity-15 p-2 pl-3 pr-3 underline  " : "text-gray-100 no-underline "} hover:cursor-pointer`}
                   onClick={() => {
                     setHelpContent("Study");
                   }}
@@ -102,7 +103,7 @@ export default function TitlePageLogin() {
                 {/* close button */}
                 <div className=" top-5% absolute flex items-end justify-end">
                   <div
-                    className="hover:bg-[url('/backgrounds/pinkBg.png' outline-pink-300)] z-40 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white hover:cursor-pointer hover:outline"
+                    className="hover:bg-[url('/backgrounds/whiteGrayBg.png' outline-pink-300)] z-40 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/whiteGrayBg.png')] text-3xl text-black outline outline-black hover:cursor-pointer hover:bg-black hover:bg-[url('/backgrounds/blackBg.png')] hover:text-white hover:outline-white"
                     onClick={() => {
                       setShowHelpPopup(false);
                     }}
@@ -112,61 +113,63 @@ export default function TitlePageLogin() {
                 </div>
               </div>
               {/* content */}
-              <div className="p-3">
+              <div className="h-full p-3">
                 {/* About content */}
                 {helpContent === "About" && (
                   <div>
-                    <h1 className="text-center text-gray-200">
+                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                       What is f.i.s.h.?
                     </h1>
-                    <p className="m-3 flex items-center text-center text-4xl">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       f.i.s.h. is an interactive social game that blends gaming,
                       studying and socializing through cute animal characters.
-                      On f.i.s.h. you can hangout, play games, and study with
+                      On f.i.s.h., you can hangout, play a game, and study with
                       your friends.
                     </p>
-                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-700">
+
+                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                       What does f.i.s.h. stand for?
                     </h1>
                     <p className="m-3 flex items-center text-center text-4xl"></p>
                   </div>
                 )}
+
                 {/* multiplayer content */}
                 {helpContent === "Multiplayer" && (
                   <div>
-                    <h1 className="mb-5 text-center text-5xl text-gray-200">
+                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                       You can chat, play games, or study with your friends!
                     </h1>
-                    <p className="m-3 flex items-center text-center text-4xl underline">
+                    <p className="m-3 flex items-center text-center text-4xl text-amber-900 underline">
                       How to invite friends to your Habitat:
                     </p>
-                    <p className="m-3 flex items-center text-center text-4xl">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       1. Navigate to the Multiplayer Cloud or the Swan
                     </p>
-                    <p className="m-3 flex items-center text-center text-4xl">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       2. Add your friends&apos; usernames to your Guest List
                     </p>
-                    <p className="m-3 mb-8 flex items-center text-center text-4xl">
+                    <p className="m-3 mb-8 flex items-center text-center text-4xl text-white">
                       3. Have your friends follow the instructions below
                     </p>
-                    <p className="m-3 flex items-center text-center text-4xl underline">
+                    <p className="m-3 flex items-center text-center text-4xl text-amber-900 underline">
                       How to visit a friend&apos;s Habitat:
                     </p>
-                    <p className="m-3 flex items-center text-center text-4xl">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       1. Make sure your friend has you on their Guest List
                     </p>
-                    <p className="m-3 flex items-center text-center text-4xl">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       2. Navigate to the Multiplayer Cloud Tab or the Swan
                     </p>
-                    <p className="m-3 flex items-center text-center text-4xl">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       3. Enter your friend&apos;s username and visit!
                     </p>
                   </div>
                 )}
                 {/* Game content */}
                 {helpContent === "Game" && (
-                  <div className="">
-                    <h1 className="text-center text-4xl text-gray-200">
+                  <div className="h-85% overflow-auto">
+                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                       Play Sentence Symphony with friends!
                     </h1>
                     <p className="m-2 text-center text-4xl text-white">
@@ -176,57 +179,59 @@ export default function TitlePageLogin() {
                       response will be added to the story. Scroll down for more
                       details!
                     </p>
-                    <div className="">
-                      <p className="m-3 flex items-center text-center text-4xl">
+                    <div className="h-full">
+                      <p className="m-3 flex items-center text-center text-5xl text-amber-900 underline">
+                        How to play Sentence Symphony:
+                      </p>
+                      <p className="m-3 flex items-center text-4xl text-white">
+                        1. You and your friends will try to collaboratively
+                        write a story given a prompt or theme.
+                      </p>
+                      <p className="m-3 flex items-center text-4xl text-white">
+                        2. During each round, everyone will be given 30 seconds
+                        to write a sentence.
+                      </p>
+                      <p className="m-3 flex items-center text-4xl text-white">
+                        3. After each round, everyone will vote on their
+                        favorite response and the most voted response will be
+                        added to the story. You cannot vote for your own
+                        responses!
+                      </p>
+                      <p className="m-3 flex items-center text-4xl text-white">
+                        4. After 6 rounds, you will have your full story, and
+                        you will be able to see who contributed the most!
+                      </p>
+                      <p className="m-3 flex items-center text-center text-5xl text-amber-900 underline">
                         How to start a game:
                       </p>
-                      <p className="m-3 flex items-center text-4xl">
+                      <p className="m-3 flex items-center text-4xl text-white">
                         1. To host a game, have all your friends visit your
                         Habitat &#40;maximum of 5 visitors&#41;
                       </p>
-                      <p className="m-3 flex items-center text-center text-4xl text-gray-300">
+                      <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-amber-800">
                         IMPORTANT: Make sure all your friends are on your
                         Habitat before you start the game!
                       </p>
-                      <p className="m-3 flex items-center text-center text-4xl">
+                      <p className="m-3 flex items-center text-4xl text-white">
                         2. Navigate to your house and start the game on your
                         T.V. --OR-- click on the Multiplayer Cloud Tab and start
                         the game from the popup
                       </p>
-                      <p className="m-3 flex items-center text-center text-4xl text-gray-300">
+                      <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-amber-800">
                         NOTE: While you can play with just 1-2 players, it is
-                        much more fun with 3+ players!
-                      </p>
-
-                      <p className="m-3 flex items-center text-center text-3xl">
-                        How to play Sentence Symphony:
-                      </p>
-                      <p className="m-3 flex items-center text-3xl">
-                        1. You and your friends will be collaboratively writing
-                        a story given a prompt or theme.
-                      </p>
-                      <p className="m-3 flex items-center text-3xl">
-                        2. During each round, everyone will be given 30 seconds
-                        to write a sentence to add to the story.
-                      </p>
-                      <p className="m-3 flex items-center text-3xl">
-                        3. After each round, everyone will vote on their
-                        favorite response and the most voted response will be
-                        added to the story. You cannot vote for yourself!
-                      </p>
-                      <p className="m-3 flex items-center text-3xl">
-                        4. After 6 rounds, you will have your full story, and
-                        you will be able to see who contributed the most!
+                        much more fun with 3+ players as you are not allowed to
+                        vote for your own responses!
                       </p>
                     </div>
                   </div>
                 )}
+                {/* studyroom content */}
                 {helpContent === "Study" && (
                   <div>
-                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-gray-800">
+                    <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                       Study with your friends!
                     </h1>
-                    <p className="m-3 flex items-center text-center text-4xl text-gray-700">
+                    <p className="m-3 flex items-center text-center text-4xl text-white">
                       Enjoy some relaxing music and time how long you study!
                       Invite some friends to your Habitat and study together!
                     </p>
