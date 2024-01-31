@@ -64,6 +64,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   const [refresh, setRefresh] = useState(false);
   const [guestNotFound, setGuestNotFound] = useState(false);
   const [hostNotFound, setHostNotFound] = useState(false);
+  const [errorText, setErrorText] = useState("");
 
   const onInviteSubmit: SubmitHandler<{ inviteUsername: string }> = async (
     data,
@@ -92,6 +93,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
     if (!host) throw new Error("Invalid user!"); // TODO add error message to form
     if (!host[0]) {
       setHostNotFound(true);
+      setErrorText("User does not exist");
       setTimeout(() => setHostNotFound(false), 1000);
     } else {
       window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`;
@@ -224,7 +226,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
             </button>
             {hostNotFound && (
               <p className="w-full text-center text-2xl text-red-500">
-                User does not exist
+                {errorText}
               </p>
             )}
           </div>

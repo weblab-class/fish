@@ -455,7 +455,7 @@ export default function Home({ params }: { params: { username: string } }) {
             </div>
           )}
 
-          <div className="top-17 absolute bottom-0 right-0 z-20 ml-6 flex h-34% w-1/4 items-end justify-center p-1 text-center">
+          <div className="top-17 absolute bottom-0 right-0 z-20 ml-6 flex h-45% w-1/4 items-end justify-center p-1 text-center">
             <ChatLogPhaser
               username={
                 currentPlayer?.data
