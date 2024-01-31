@@ -262,6 +262,15 @@ export default function Home({ params }: { params: { username: string } }) {
       async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
         setDefault();
 
+        if (game) {
+          const player = (await game.registry.get(
+            "player",
+          )) as Phaser.GameObjects.Sprite;
+          const currSceneKey = player.scene.scene.key;
+
+          console.log(currSceneKey);
+        }
+
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
@@ -346,7 +355,6 @@ export default function Home({ params }: { params: { username: string } }) {
 
       homeChannel.unbind();
       pusherClient.unsubscribe(`presence-home-${hostUsername}`);
-      
     };
   }, []);
   // #endregion
@@ -415,12 +423,21 @@ export default function Home({ params }: { params: { username: string } }) {
             )}
           </div>
           {/* interior */}
-          { currScene == "interior" && (
-            <audio src="/music/home-everyday-motion-avbe.mp3" autoPlay loop></audio>
+          {currScene == "interior" && (
+            <audio
+              src="/music/home-everyday-motion-avbe.mp3"
+              autoPlay
+              loop
+            ></audio>
           )}
           {/* exterior */}
-          { currScene == "exterior" && (
-            <audio id="music" src="/music/exterior-pixel-playground-color-parade.mp3" autoPlay loop></audio>
+          {currScene == "exterior" && (
+            <audio
+              id="music"
+              src="/music/exterior-pixel-playground-color-parade.mp3"
+              autoPlay
+              loop
+            ></audio>
           )}
           {/* studyroom */}
           <div className="absolute m-0 flex h-screen w-screen select-none items-center justify-center">
@@ -431,7 +448,11 @@ export default function Home({ params }: { params: { username: string } }) {
           </div>
           {currScene == "studyroom" && (
             <div className="absolute h-screen w-screen overflow-hidden bg-black bg-[url('/backgrounds/studyroom.png')] bg-contain bg-center bg-no-repeat">
-              <audio src="/music/studyroom-skylight-simon-folwar.mp3" autoPlay loop></audio>
+              <audio
+                src="/music/studyroom-skylight-simon-folwar.mp3"
+                autoPlay
+                loop
+              ></audio>
               <span
                 className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
                 onClick={async () => {

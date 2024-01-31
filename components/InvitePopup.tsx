@@ -221,6 +221,8 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
               autoComplete="off"
               className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
               placeholder="Enter player's username"
+              required
+              minLength={1}
               {...registerJoin("joinUsername")}
             />
             <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
