@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
 
     intervalId = setInterval(async () => {
-        console.log(time);
+
         time -= 1;
         if (time>=0){
           const triggerTimer = async () => {
