@@ -78,12 +78,36 @@ export function updateOtherPlayers(
       | Phaser.GameObjects.Sprite
       | undefined;
     if (otherSprite) {
+      if (otherSprite.x !== otherInfo.x || otherSprite.y !== otherInfo.y) {
+        otherSprite.anims.play(`move-${otherUid}`, true);
+      }
+      else {
+        otherSprite.anims.play(`turn-${otherUid}`);
+      }
+
       otherSprite.setPosition(otherInfo.x, otherInfo.y);
+
     } else {
       // joined players
+      const newPlayerSprite = scene.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite);
+      scene.anims.create({
+        key: `move-${otherUid}`,
+        frames: scene.anims.generateFrameNumbers(otherInfo.sprite, {
+          start: 0,
+          end: 1,
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
+      scene.anims.create({
+        key: `turn-${otherUid}`,
+        frames: [{ key: otherInfo.sprite, frame: 0 }],
+        frameRate: 20,
+      });
+
       scene.registry.set(
         playerKey,
-        scene.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite),
+        newPlayerSprite,
       );
     }
 

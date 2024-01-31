@@ -373,23 +373,6 @@ class interior extends Scene {
     //   );
     // });
 
-    // create animations
-    this.anims.create({
-      key: "move",
-      frames: this.anims.generateFrameNumbers("bunny", {
-        start: 0,
-        end: 1,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "turn",
-      frames: [{ key: "bunny", frame: 0 }],
-      frameRate: 20,
-    });
-
     console.log("isFirstLoad ITNERIOR", useIsFirstLoadedStore.getState().isFirstLoaded);
     if (
       useIsFirstLoadedStore.getState().isFirstLoaded &&
