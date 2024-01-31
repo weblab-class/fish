@@ -24,8 +24,6 @@ interface IChannelsRes {
   [channelName: string]: object;
 }
 
-// TODO Errors do not work because Pusher gets rid of the CustomErrorCode
-
 /**
  * Authorize channels and users.
  * - For home channel, use `presence-home-${host username}`
