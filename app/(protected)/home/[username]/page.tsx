@@ -514,67 +514,65 @@ export default function Home({ params }: { params: { username: string } }) {
             <IoMdHelp />
           </div>
           {/* nav bar */}
-          {currScene == "exterior" && isHost && (
-            <div>
-              <div
-                className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
-                onClick={async () => {
-                  setLogoutClicked(true);
-                  await signOutMutation.mutateAsync();
-                  router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
-                  setLogoutClicked(false);
-                }}
-              />
-              <div
-                className="absolute inset-y-0 right-72 z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
-                onClick={async () => {
-                  if (!game) return;
-
-                  const player = game.registry.get(
-                    "player",
-                  ) as Phaser.GameObjects.Sprite;
-                  const currSceneKey = player.scene.scene.key;
-
-                  await axios.post("/api/pusher/home/changeScene", {
-                    channelName: `presence-home-${hostUsername}`,
-                    newScene: "studyroom",
-                    oldScene: currSceneKey,
-                  } as IChangeSceneParams);
-                }}
-              />
-              <div
-                className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
-                onClick={() => {
-                  showPopup("invite");
-                }}
-              />
-              <div
-                className="absolute inset-y-0 left-72 z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
-                onClick={() => {
-                  showPopup("mail");
-                }}
-              />
-              <div className="absolute flex w-full justify-center">
+          <div>
+            {currScene == "exterior" && isHost && (
+              <div>
                 <div
-                  className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
+                  className={`${logoutClicked && "pointer-events-none"} absolute inset-y-0 right-0 z-10 h-28 w-96 bg-[url('/objects/logoutCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:bg-[url('/objects/logoutCloudHover.png')]`}
+                  onClick={async () => {
+                    setLogoutClicked(true);
+                    await signOutMutation.mutateAsync();
+                    router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
+                    setLogoutClicked(false);
+                  }}
+                />
+                <div
+                  className="absolute inset-y-0 right-[20%] z-10 h-28 w-96 bg-[url('/objects/studyCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/studyCloudHover.png')]"
                   onClick={async () => {
                     if (!game) return;
-
                     const player = game.registry.get(
                       "player",
                     ) as Phaser.GameObjects.Sprite;
                     const currSceneKey = player.scene.scene.key;
-
                     await axios.post("/api/pusher/home/changeScene", {
                       channelName: `presence-home-${hostUsername}`,
-                      newScene: "interior",
+                      newScene: "studyroom",
                       oldScene: currSceneKey,
                     } as IChangeSceneParams);
                   }}
                 />
+                <div
+                  className="absolute inset-y-0 left-0 z-10 h-28 w-96 bg-[url('/objects/multiplayerCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/multiplayerCloudHover.png')]"
+                  onClick={() => { 
+                    showPopup("invite");
+                  }}
+                />
+                <div
+                  className="absolute inset-y-0 left-[18%] z-10 h-28 w-96 bg-[url('/objects/mailCloud.png')] bg-right-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/mailCloudHover.png')]"
+                  onClick={() => {
+                    showPopup("mail");
+                  }}
+                />
+                <div className="absolute flex w-full justify-center">
+                  <div
+                    className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/houseCloudHover.png')]"
+                    onClick={async () => {
+                      if (!game) return;
+                      const player = game.registry.get(
+                        "player",
+                      ) as Phaser.GameObjects.Sprite;
+                      const currSceneKey = player.scene.scene.key;
+                      await axios.post("/api/pusher/home/changeScene", {
+                        channelName: `presence-home-${hostUsername}`,
+                        newScene: "interior",
+                        oldScene: currSceneKey,
+                      } as IChangeSceneParams);
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
           {!isHost && gameLoaded && (
             <div className="absolute flex w-full justify-start">
               <div
