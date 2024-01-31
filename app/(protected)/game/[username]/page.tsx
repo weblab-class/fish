@@ -1,6 +1,5 @@
 "use client";
 
-// TO DO: core plugins error, event emitter
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { pusherClient } from "@/services/pusher";
@@ -235,7 +234,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       },
     );
 
-    // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE AND IF MEMBER REMOVED IS HOST, REDIRECT
     gameChannel.bind(
       "pusher:member_removed",
       async (member: { id: any; info: any }) => {
@@ -802,7 +800,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       roundChange();
 
       // stops the game
-      // TO DO: adjust number of rounds in a game
     } else if (roundType === "leaderboard") {
       const roundChange = async () => {
         await axios.post("/api/pusher/symphony/roundChange", {
@@ -1034,7 +1031,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       {
         roundType === "selecting" ? (
           <div className="z-50 flex items-center justify-center">
-            {/* TO DO: only host has access to these buttons */}
             <button
               className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
               disabled={submissionLoading && !isHost}
@@ -1069,17 +1065,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
             onSubmit={async (e) => {
               e.preventDefault();
               setButtonPressed(true);
-              //TO DO: see what presenceChannel.members returns
-              // axios.post("/api/pusher/symphony/submittedResponse", {
-              //   playerSocketId: pusherClient.connection.socket_id,
-              //   members: (gameChannel as PresenceChannel).members,
-              //   hostUsername: params.username,
-              // });
-              //disables submission after submitting once
-              setSubmissionLoading(true);
-              // setSubmittedResponse(false);
 
-              // await handleSubmit(onSubmit)();
+              setSubmissionLoading(true);
             }}
           >
             {/* text area input box */}
@@ -1120,9 +1107,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
           <div className="w-fullz-10 h-full">
             {responses && (
               <div className="z-10 mt-6 flex h-65% w-full flex-wrap items-start justify-center hover:z-20">
-                {/* <div className="flex items-center justify-center flex-wrap z-10"> */}
-                {/* TO DO: get responses from database */}
-
                 {responsesData.map((response) => (
                   <ResponseCard
                     // responses.sessionId
@@ -1175,7 +1159,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
                         ? host?.data[0]._id.toString()
                         : "host-not-found"
                     }
-                    // TO DO, write logic for this
                     won={false}
                   />
                 ))}

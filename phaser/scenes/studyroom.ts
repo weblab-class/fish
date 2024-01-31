@@ -99,7 +99,7 @@ class studyroom extends Scene {
 
       })
 
-      // TO DO: GET PLAYERS FROM PRESENCE, PLAYERS.MAP(()) CHANGE bg-[url(/players/${player.sprite}One.png)]
+
       const allPlayers= homeChannel.members.each(({id, info}: { id: string, info: PusherPresenceUserInfo}) => {
 
 
