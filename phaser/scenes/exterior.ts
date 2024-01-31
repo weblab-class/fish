@@ -12,6 +12,12 @@ import {
 import { FRAME_BUFFER } from "../settings/consts";
 import { IChangeSceneParams, PlayerInfo } from "../types";
 import { PresenceChannel } from "pusher-js";
+import { create } from "zustand";
+
+
+const useIsFirstLoadedStore = create<{isFirstLoaded: boolean}>((set) => ({
+  isFirstLoaded: true,
+}));
 
 /**
  * The exterior scene in `/home`.
@@ -222,13 +228,16 @@ export default class exterior extends Scene {
       frameRate: 20,
     });
 
-    if (remainingInitialization) {
+    console.log("isFirstLoad", useIsFirstLoadedStore.getState().isFirstLoaded);
+    if (useIsFirstLoadedStore.getState().isFirstLoaded && remainingInitialization) {
       console.log("OKAY")
-
+      
       return new Promise(async (resolve) => {
         console.log("OH")
         await remainingInitialization();
         console.log("YAY")
+
+        useIsFirstLoadedStore.setState({ isFirstLoaded: false });
         resolve("hello");
       });
     }
