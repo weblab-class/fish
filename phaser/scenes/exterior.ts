@@ -255,7 +255,7 @@ export default class exterior extends Scene {
 
     if (this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
-      
+
       updateOtherPlayers(this, otherPlayers);
     }
 
@@ -292,10 +292,9 @@ export default class exterior extends Scene {
       let keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
-
-
       // enters house when enter key is pressed
       if (isDown && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp && this.hostUsername==this.username) {
+
         this.scene.stop("exterior");
         this.scene.start("interior");
         // this.game.destroy(true);

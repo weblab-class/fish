@@ -83,8 +83,8 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
                   &apos;frolicking in silly humor&apos;? Dive into our ocean of
                   possibilities and find out if our furry friends are really
                   &apos;fellow creatures in social harmony&apos; or just
-                  'furious inhabitants sharing habitats.&apos; It's a sea-cret
-                  we are ready to unleash.
+                  &apos;furious inhabitants sharing habitats.&apos; It&apos;s a
+                  sea-cret we are ready to unleash.
                 </p>
                 <h1 className="rounded-xl bg-white bg-opacity-25 p-2 text-center text-amber-950">
                   What is f.i.s.h.?
