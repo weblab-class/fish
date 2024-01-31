@@ -382,7 +382,14 @@ export default function Home({ params }: { params: { username: string } }) {
               />
             )}
           </div>
-
+          {/* interior */}
+          { currScene == "interior" && (
+            <audio src="/music/home-everyday-motion-avbe.mp3" autoPlay loop></audio>
+          )}
+          {/* exterior */}
+          { currScene == "exterior" && (
+            <audio id="music" src="/music/exterior-pixel-playground-color-parade.mp3" autoPlay loop></audio>
+          )}
           {/* studyroom */}
           <div className="absolute m-0 flex h-screen w-screen select-none items-center justify-center">
             <div
@@ -392,6 +399,7 @@ export default function Home({ params }: { params: { username: string } }) {
           </div>
           {currScene == "studyroom" && (
             <div className="absolute h-screen w-screen overflow-hidden bg-black bg-[url('/backgrounds/studyroom.png')] bg-contain bg-center bg-no-repeat">
+              <audio src="/music/studyroom-skylight-simon-folwar.mp3" autoPlay loop></audio>
               <span
                 className="absolute right-20 top-10 z-10 h-20 w-16 bg-[url('/objects/leave.png')] bg-right-top bg-no-repeat hover:bg-[url('/objects/leave_hover.png')]"
                 onClick={async () => {
@@ -414,16 +422,6 @@ export default function Home({ params }: { params: { username: string } }) {
               />
 
               <div className="w-70 z-30 mt-2% flex h-52 items-center justify-center">
-                {/* <span className = "absolute flex flex-wrap top-0 z-30 h-1/5 w-1/5 m-16 justify-center top-0">
-              <form id='duration' className = "z-40 right-0 select-none">
-                <input id='h' name='h' type='number' min='0' max='23' className = "cursor-text opacity-50"/>
-                <label htmlFor='h' className = "p-1">h</label>
-                <input id='m' name='m' type='number' min='0' max='59' className = "cursor-text opacity-50"/>
-                <label htmlFor='m' className = "p-1">m</label>
-                <input id='s' name='s' type='number' min='0' max='59' className = "cursor-text opacity-50"/>
-                <label htmlFor='s' className = "p-1">s</label>
-              </form>
-            </span> */}
                 {false ? (
                   <span className="w-70 z-30"></span>
                 ) : (
