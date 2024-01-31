@@ -253,7 +253,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
             });
           }
 
-          // window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
         }
       },
     );
