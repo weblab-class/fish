@@ -284,6 +284,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   useEffect(() => {
     // makes sure timer is stopped before unloading
     const stopTimer = async () => {
+      console.log("deleting timer");
       await axios.delete("/api/pusher/symphony/gameTimer");
     };
 
@@ -294,10 +295,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
     const playerId = player?.data?._id;
 
     if (hostId === playerId) {
-      console.log("changing isHost true");
       setIsHost(true);
     } else {
-      console.log("changing isHost false");
       setIsHost(false);
     }
 
@@ -528,10 +527,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
   });
 
-  useEffect(() => {
-    console.log(isHost, "isHost");
-  }, [isHost]);
-
   // timer events
   // dependencies: roundType, player?.data
   useEffect(() => {
@@ -622,12 +617,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // gameChannel.bind("mostVoted",(data:{mostVotedPrompt:string,newPrompt}))
 
     gameChannel.bind("timer", (data: { time: number }) => {
+      console.log(data.time);
       setTime(data.time);
 
       if (data.time === 0 && roundNumber < 30) {
         // only host controls stopTimer
         if (isHost) {
           const stopTimer = async () => {
+            console.log("delete 3");
             await axios.delete("/api/pusher/symphony/gameTimer");
           };
           stopTimer();
@@ -741,6 +738,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // clean up
     return () => {
       gameChannel.unbind("timer");
+      console.log("unbind timer");
       gameChannel.unbind("roundChange");
     };
   }, [roundType, gameRoomExists]);
@@ -1058,6 +1056,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 disabled={submissionLoading && !isHost}
                 onClick={() => {
                   const stopTimer = async () => {
+                    console.log("deleeting 2");
                     await axios.delete("/api/pusher/symphony/gameTimer");
                   };
                   stopTimer();
