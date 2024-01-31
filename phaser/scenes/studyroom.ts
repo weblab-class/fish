@@ -123,17 +123,17 @@ class studyroom extends Scene {
 
       })
 
-      console.log("isFirstLoad STUDY", useIsFirstLoadedStore.getState().isFirstLoaded);
+
       if (
         useIsFirstLoadedStore.getState().isFirstLoaded &&
         remainingInitialization
       ) {
-        console.log("OKAY STUDY");
+
 
         return new Promise(async (resolve) => {
-          console.log("OH STUDY");
+
           await remainingInitialization();
-          console.log("YAY STUDY");
+
           useIsFirstLoadedStore.setState({ isFirstLoaded: false });
           resolve("hello");
         });

@@ -390,17 +390,17 @@ class interior extends Scene {
       frameRate: 20,
     });
 
-    console.log("isFirstLoad ITNERIOR", useIsFirstLoadedStore.getState().isFirstLoaded);
+
     if (
       useIsFirstLoadedStore.getState().isFirstLoaded &&
       remainingInitialization
     ) {
-      console.log("OKAY INTERIOR");
+
 
       return new Promise(async (resolve) => {
-        console.log("OH INTERIOR");
+
         await remainingInitialization();
-        console.log("YAY INTERIOR");
+
         useIsFirstLoadedStore.setState({ isFirstLoaded: false });
         resolve("hello");
       });

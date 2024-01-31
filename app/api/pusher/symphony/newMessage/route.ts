@@ -9,6 +9,7 @@ interface Chat{
 export async function POST(req: NextRequest) {
     const {message, username, hostUsername} = await req.json() as Chat;
 
+
     await pusherServer.trigger(`presence-ss-chat-${hostUsername}`, "newChat", {
         message,
         username,

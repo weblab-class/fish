@@ -238,7 +238,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // TO DO: REMOVE MEMBER FROM MULTIPLAYER STORE AND IF MEMBER REMOVED IS HOST, REDIRECT
     gameChannel.bind(
       "pusher:member_removed",
-      (member: { id: any; info: any }) => {
+      async (member: { id: any; info: any }) => {
         setDeadPlayers([
           ...deadPlayers,
           { playerId: member.id, gameName: member.info.username },
@@ -246,7 +246,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
         if (member.info.username === params.username) {
           // router.push(`/home/${params.username}`);
-          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+
+          if (isHost) {
+            await deleteSentenceSymphony.mutateAsync({
+              hostId: member.id,
+            });
+          }
+
+          // window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
         }
       },
     );
@@ -270,6 +277,20 @@ export default function GamePage({ params }: { params: { username: string } }) {
       gameChannel.unsubscribe();
     };
   }, []);
+
+  // DELETE LATER
+  // useEffect(() => {
+  //   if (isHost) {
+  //     const hostChannel = pusherClient.subscribe(
+  //       `presence-ss-host-${params.username}`,
+  //     ) as PresenceChannel;
+
+  //     const gameChannel = pusherClient.subscribe(
+  //       `presence-ss-${params.username}`,
+  //     ) as PresenceChannel;
+
+  //   }
+  // });
 
   // events after host and player data are loaded
   useEffect(() => {
@@ -334,17 +355,22 @@ export default function GamePage({ params }: { params: { username: string } }) {
       hostChannel.bind("pusher:subscription_succeeded", () => {
         setIsSubscribed(true);
       });
-      hostChannel.bind(
-        "pusher:member_removed",
-        async (member: { id: any; info: any }) => {
-          if (member.info.username === params.username) {
-            if (!host?.data) return;
-            await deleteSentenceSymphony.mutateAsync({
-              hostId: host?.data[0]._id.toString(),
-            });
-          }
-        },
-      );
+      // hostChannel.bind(
+      //   "pusher:member_removed",
+      //   async (member: { id: any; info: any }) => {
+      //     await axios.post("/api/pusher/symphony/newMessage", {
+      //       hostUsername: params.username,
+      //       message: "hiiiii",
+      //       username: "left",
+      //     });
+      //     if (member.info.username === params.username) {
+      //       if (!host?.data) return;
+      //       await deleteSentenceSymphony.mutateAsync({
+      //         hostId: host?.data[0]._id.toString(),
+      //       });
+      //     }
+      //   },
+      // );
     }
 
     // host makes sure timer stops before unloading
@@ -375,6 +401,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       const hostChannel = pusherClient.subscribe(
         `presence-ss-host-${params.username}`,
       );
+
       hostChannel.bind(
         "mostVoted",
         async (data: { mostVotedResponse: string }) => {
@@ -470,6 +497,23 @@ export default function GamePage({ params }: { params: { username: string } }) {
             });
           };
           updateResponses();
+        },
+      );
+
+      hostChannel.bind(
+        "pusher:member_removed",
+        async (member: { id: any; info: any }) => {
+          // await axios.post("/api/pusher/symphony/newMessage", {
+          //   hostUsername: params.username,
+          //   message: "hiiiii",
+          //   username: "left",
+          // });
+          if (member.info.username === params.username) {
+            if (!host?.data) return;
+            await deleteSentenceSymphony.mutateAsync({
+              hostId: host?.data[0]._id.toString(),
+            });
+          }
         },
       );
 

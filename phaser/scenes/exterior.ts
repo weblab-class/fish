@@ -228,14 +228,14 @@ export default class exterior extends Scene {
       frameRate: 20,
     });
 
-    console.log("isFirstLoad", useIsFirstLoadedStore.getState().isFirstLoaded);
+
     if (useIsFirstLoadedStore.getState().isFirstLoaded && remainingInitialization) {
-      console.log("OKAY")
-      
+
+
       return new Promise(async (resolve) => {
-        console.log("OH")
+
         await remainingInitialization();
-        console.log("YAY")
+
         useIsFirstLoadedStore.setState({ isFirstLoaded: false });
         resolve("hello");
       });
@@ -272,7 +272,7 @@ export default class exterior extends Scene {
 
     if (this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
-      
+
       updateOtherPlayers(this, otherPlayers);
     }
 

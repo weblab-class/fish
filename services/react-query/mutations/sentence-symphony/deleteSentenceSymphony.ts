@@ -9,6 +9,7 @@ interface DeleteParams {
 }
 
 export async function deleteSentenceSymphony({ hostId }: DeleteParams) {
+
   return await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/api/db/sentence-symphony/delete`, { params: { hostId }});
 }
 
