@@ -34,7 +34,7 @@ Node.js, Next.js, Pusher, MongoDB, Lucia Auth, `mongoose`, `typegoose`
 ## ✍️ Contributions
 ### Vy 🐙
 - Created Sentence Symphony game *(so many useEffects)*
-- Designed all popups, title screen, onboarding screen, exterior, sprites, yeahhh
+- Designed all popups, title screen, onboarding screen, exterior, some sprites, yeahhh
 - Stomped on bugs about multiplayer movement/scene changes
 - Carried the project with Pusher
 - Mastered Tailwind
