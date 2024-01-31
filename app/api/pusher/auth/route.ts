@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     );
 
     const presenceData = {
-      user_id: playerUid, 
+      user_id: playerUid,
       user_info: { uid: playerUid, socket_id: socketId, sprite: playerData.animalSprite, username: playerData.username } as PusherPresenceUserInfo,
     } as PresenceChannelData;
 
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       (channelName === `presence-home-${host.username}` ||
         channelName === `presence-ss-${host.username}`)
     ) {
-      console.log("I AM CHECKING FOR DUPLICATE TABS");
+
 
       const usersRes = await pusherServer.get({
         path: `/channels/${channelName}/users`,
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
     if (channelName.startsWith("presence-home-")) {
       // we need to authorize if they are joining someone else's channel
       if (playerUid !== hostUid) {
-        console.log("NOW CHECKING AS A GUEST");
+
 
         /// make sure host is ONLINE (there has to be one that ends in the host username)
         const res = await pusherServer.get({
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
         }
 
         /// SUCCESS! we will add them to the database
-        console.log("AS A GUEST, I AM ADDING MYSELF TO THE HOST ROOM");
+
 
         await addPlayerToRoom({
           hostId: host._id.toString(),
