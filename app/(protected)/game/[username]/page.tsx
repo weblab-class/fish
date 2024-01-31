@@ -59,7 +59,6 @@ type FullResponse = {
 };
 
 // const sessionId= session!.user.uid
-// TODO if a random person tries to join the game without the host's permissions, kick them out
 //      1. it is okay for the random person to subscribe
 //      2. however, when they get the game room, if they are not on there, redirect out (to anywhere)
 
@@ -646,7 +645,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
         if (roundType === "voted") {
           // clears responses for new round and calculates the winning prompt
           if (isHost) {
-            // TODO CHECK THIS <----- (async functions)
             const startNewRoundFunc = async () => {
               const voteOptions = responsesData;
 

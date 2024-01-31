@@ -197,8 +197,6 @@ class interior extends Scene {
     // this.registry.set("socket_id", pusherClient.connection.socket_id);
 
     // display player sprite
-    // TODO JUST USE USEMULTUPLAYER STORE
-    // TODO attempt to registry
     // const player = this.physics.add.sprite(725, 830, "bunny");
     // const player = this.registry.get("player");
     const { sprite, uid, username } =

@@ -28,7 +28,7 @@ export default function SendMailPopup() {
     const username = data.recipient;
     setLoading(true);
     const { data: receiver } = await getPlayerByUsername(username);
-    if (!receiver) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!receiver) throw new Error("Invalid user!");
 
     if (!receiver[0]) {
       setNotFound(true);

@@ -71,7 +71,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   ) => {
     const username = data.inviteUsername;
     const { data: guest } = await getPlayerByUsername(username);
-    if (!guest) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!guest) throw new Error("Invalid user!");
     if (!guest[0]) {
       setGuestNotFound(true);
       setTimeout(() => setGuestNotFound(false), 1000);
@@ -90,7 +90,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   }) => {
     // router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`);
     const { data: host } = await getPlayerByUsername(joinUsername);
-    if (!host) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!host) throw new Error("Invalid user!");
     if (!host[0]) {
       setHostNotFound(true);
       setErrorText("User does not exist");
@@ -135,7 +135,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
 
       setGuests([]);
     })();
-  }, [JSON.stringify(guestListIds)]); // TODO optimize calls AND fix removal of whitelist
+  }, [JSON.stringify(guestListIds)]);
   return (
     <div className="absolute z-20 flex h-4/5 w-5/6 gap-10 rounded-3xl bg-[url(/backgrounds/tanBg.png)] bg-cover p-7 shadow-xl shadow-stone-600 outline-8 outline-amber-900">
       <form
