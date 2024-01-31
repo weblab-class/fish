@@ -92,8 +92,8 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
                 <p className="m-3 flex items-center rounded-xl bg-amber-950 bg-opacity-10 text-center text-4xl text-white">
                   f.i.s.h. is an interactive social game that blends gaming,
                   studying and socializing through cute animal characters. On
-                  f.i.s.h., you can hangout on your friends' habitats and chat,
-                  play a multiplayer story-writing game, study with your
+                  f.i.s.h., you can hangout on your friends&apos; habitats and
+                  chat, play a multiplayer story-writing game, study with your
                   friends, and send mail!
                 </p>
               </div>
