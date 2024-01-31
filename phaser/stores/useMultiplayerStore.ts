@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 import { StoreStateFunc } from "./types";
-import { ISendDataParams, PlayerInfo } from "../types";
+import { ISendPlayerDataParams, PlayerInfo } from "../types";
 import { getDefaultPosition } from "@/phaser/settings/functions";
 import axios from "axios";
 
@@ -46,7 +46,9 @@ type MultiplayerStoreStateFunc = {
     sprite: AnimalSprite,
     phaserSprite: Phaser.GameObjects.Sprite,
     hostUsername: string,
+    scene: PlayerRoomStatus,
   ) => void;
+  switchScene: (newScene: PlayerRoomStatus) => void;
   addOrUpdateOther: (playerInfo: PlayerInfo) => void;
   /** NOTE: Does not delete the sprite out of the screen. Also, does not  */
   deleteOther: (uid: PlayerInfo["uid"]) => void;
@@ -74,6 +76,8 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
       const { x: newX, y: newY } = playerSprite.body!.position;
       const roomStatus = playerSprite.scene.scene.key as PlayerRoomStatus;
 
+      console.log(get().currentPlayer?.username, roomStatus, newX, newY);
+
       set((state) => {
         if (state.currentPlayer)
           return {
@@ -88,22 +92,21 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
         throw new Error("You must initalize before sending your data!");
       });
 
-      // TODO: axios post to notify others to add your data via addOrUpdateOther()
       await axios.post(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/sendData`,
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/sendPlayerData`,
         {
           channelName: `presence-home-${get().hostUsername}`,
           senderData: get().currentPlayer!,
           targetId: targetId ?? null,
-        } as ISendDataParams,
+        } as ISendPlayerDataParams,
       );
     },
-    initCurrent: (uid, username, sprite, phaserSprite, hostUsername) => {
+    initCurrent: (uid, username, sprite, phaserSprite, hostUsername, scene) => {
       const defaultPlayerInfo = getDefaultPlayerInfo(
         uid,
         username,
         sprite,
-        PlayerRoomStatus.EXTERIOR,
+        scene,
       );
 
       set({
@@ -114,6 +117,26 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
 
       phaserSprite.setPosition(defaultPlayerInfo.x, defaultPlayerInfo.y);
       
+    },
+    switchScene: (newScene) => {
+      const { x, y } = getDefaultPosition(newScene);
+
+      const others = get().otherPlayers;
+      for (const otherInfo of Array.from(others.values())) {
+        otherInfo.x = x;
+        otherInfo.y = y;
+        otherInfo.roomStatus = newScene;
+      }
+
+      const curr = get().currentPlayer;
+      if (!curr) {
+        throw new Error("There has to be a player!");
+      }
+      curr.x = x;
+      curr.y = y;
+      curr.roomStatus = newScene;
+
+      set({ currentPlayer: curr, otherPlayers: others });
     },
     addOrUpdateOther: (playerInfo) => {
       get().otherPlayers.set(playerInfo.uid, playerInfo);

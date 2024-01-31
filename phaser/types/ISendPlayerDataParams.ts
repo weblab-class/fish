@@ -1,6 +1,6 @@
 import { PlayerInfo } from ".";
 
-export interface ISendDataParams {
+export interface ISendPlayerDataParams {
     channelName: string;
     senderData: PlayerInfo;
     targetId: string | null;

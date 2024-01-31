@@ -12,12 +12,13 @@ import {
   GAME_ROOM_PLAYER_STATUSES,
   ICustomError,
 } from "@/types";
-import { MAX_PLAYERS } from "@/phaser/settings/consts";
+import { MAX_HOME_PLAYERS } from "@/phaser/settings/consts";
 import { addPlayerToRoom, sendInvite } from "@/services/react-query/mutations/player-room";
 import { getDefaultPosition } from "@/phaser/settings/functions";
 import { getPlayer, getPlayerByUsername } from "@/services/react-query/queries/player";
 import { getPlayerRoom } from "@/services/react-query/queries/player-room";
 import { PresenceChannelData } from "pusher";
+import { redirect } from "next/navigation";
 
 interface IChannelsRes {
   [channelName: string]: object;
@@ -177,7 +178,7 @@ export async function POST(req: NextRequest) {
         }
 
         // see if the room is full
-        if (hostRoom.allPlayers.length === MAX_PLAYERS) {
+        if (hostRoom.allPlayers.length === MAX_HOME_PLAYERS) {
           return NextResponse.json(
             {
               message: "Host room full",
