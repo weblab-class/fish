@@ -19,12 +19,3 @@ export function getDefaultPosition(room: PlayerRoomStatus) {
       };
   }
 }
-
-export const getGames = (username: string) => ([
-  {
-    game: "✏️ Sentence Symphony",
-    desc: "Test how great of an author you are in this blend of grammar, ideas, and AI.",
-    requirements: `Requires ${MIN_SENTENCE_SYMPHONY_PLAYERS} to ${MAX_SENTENCE_SYMPHONY_PLAYERS} players.`,
-    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${username}`
-  },
-]);
