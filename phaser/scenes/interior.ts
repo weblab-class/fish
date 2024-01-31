@@ -5,11 +5,20 @@ import axios from "axios";
 
 import { useHomeStore } from "../stores/useHomeStore";
 import { pusherClient } from "@/services/pusher";
-import { loadSprites, sendPositionData, updateOtherPlayers } from "../functions";
+import {
+  loadSprites,
+  sendPositionData,
+  updateOtherPlayers,
+} from "../functions";
 import { useMultiplayerStore } from "../stores";
 import { PlayerRoomStatus } from "@/types";
 import { FRAME_BUFFER } from "../settings/consts";
 import { IChangeSceneParams } from "../types";
+import { create } from "zustand";
+
+const useIsFirstLoadedStore = create<{ isFirstLoaded: boolean }>((set) => ({
+  isFirstLoaded: true,
+}));
 
 /**
  * The interior scene in `/home`.
@@ -20,13 +29,13 @@ class interior extends Scene {
   private tvText1!: Phaser.GameObjects.Text;
   private hostUsername: string;
   private frameCounter = 0;
-  private username:string;
+  private username: string;
 
   //   getHostUsername() {
   //     return useGameStore.getState().hostUsername;
   //   }
 
-  constructor(hostUsername: string, username:string) {
+  constructor(hostUsername: string, username: string) {
     super("interior");
     this.i = 0;
     this.hostUsername = hostUsername;
@@ -163,8 +172,7 @@ class interior extends Scene {
     tv_collider.setImmovable(true);
     tv_collider.setDepth(10);
     tv_collider.setScale(0.1, 0.1);
-    tv_collider.setOffset(0,-120)
-
+    tv_collider.setOffset(0, -120);
 
     const stairs = this.physics.add.image(1210, 300, "stairs");
     stairs.setImmovable(true);
@@ -175,7 +183,11 @@ class interior extends Scene {
     stairs_collider.setImmovable(true);
     stairs_collider.setDepth(10);
     stairs_collider.setScale(0.1, 0.1);
-    const stairs_collider_two = this.physics.add.image(1130, 100, "transparent");
+    const stairs_collider_two = this.physics.add.image(
+      1130,
+      100,
+      "transparent",
+    );
     stairs_collider_two.setImmovable(true);
     stairs_collider_two.setDepth(10);
     stairs_collider_two.setScale(0.01, 0.8);
@@ -189,10 +201,20 @@ class interior extends Scene {
     // TODO attempt to registry
     // const player = this.physics.add.sprite(725, 830, "bunny");
     // const player = this.registry.get("player");
-    const { sprite, uid, username } = useMultiplayerStore.getState().currentPlayer!;
-    const player = this.physics.add.sprite(-100, -100, sprite);  // position will change when calling initCurrent
-    useMultiplayerStore.getState().initCurrent(uid, username, sprite, player, this.hostUsername, PlayerRoomStatus.INTERIOR);
-    useMultiplayerStore.getState().sendMyData({ });
+    const { sprite, uid, username } =
+      useMultiplayerStore.getState().currentPlayer!;
+    const player = this.physics.add.sprite(-100, -100, sprite); // position will change when calling initCurrent
+    const remainingInitialization = useMultiplayerStore
+      .getState()
+      .initCurrent(
+        uid,
+        username,
+        sprite,
+        player,
+        this.hostUsername,
+        PlayerRoomStatus.INTERIOR,
+      );
+    useMultiplayerStore.getState().sendMyData({});
 
     // collisions
     this.physics.add.collider(player, couch_collider);
@@ -367,6 +389,24 @@ class interior extends Scene {
       frames: [{ key: "bunny", frame: 0 }],
       frameRate: 20,
     });
+
+    console.log("isFirstLoad ITNERIOR", useIsFirstLoadedStore.getState().isFirstLoaded);
+    if (
+      useIsFirstLoadedStore.getState().isFirstLoaded &&
+      remainingInitialization
+    ) {
+      console.log("OKAY INTERIOR");
+
+      return new Promise(async (resolve) => {
+        console.log("OH INTERIOR");
+        await remainingInitialization();
+        console.log("YAY INTERIOR");
+        useIsFirstLoadedStore.setState({ isFirstLoaded: false });
+        resolve("hello");
+      });
+    }
+
+    useIsFirstLoadedStore.setState({ isFirstLoaded: false });
   }
 
   async update() {
@@ -396,8 +436,8 @@ class interior extends Scene {
 
     if (this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
-    updateOtherPlayers(this, otherPlayers);}
-
+      updateOtherPlayers(this, otherPlayers);
+    }
 
     this.frameCounter++;
 
@@ -424,11 +464,11 @@ class interior extends Scene {
       if (isDown) {
         useHomeStore.setState({ text: "" });
 
-        await axios.post("/api/pusher/home/changeScene", ({
+        await axios.post("/api/pusher/home/changeScene", {
           channelName: `presence-home-${this.hostUsername}`,
           oldScene: "interior",
           newScene: "exterior",
-        } as IChangeSceneParams));
+        } as IChangeSceneParams);
       }
     }
 
@@ -450,7 +490,11 @@ class interior extends Scene {
 
       // enters studyroom when enter key is pressed
       if (isDown) {
-        this.scene.switch("exterior");
+        await axios.post("/api/pusher/home/changeScene", {
+          channelName: `presence-home-${this.hostUsername}`,
+          oldScene: "interior",
+          newScene: "studyroom",
+        } as IChangeSceneParams);
       }
     }
 
@@ -465,7 +509,9 @@ class interior extends Scene {
 
     // displays text when overlapping
     if (isOverlappingGameMenu && this.hostUsername == this.username) {
-      useHomeStore.setState({ text: "Press [Enter] to play Sentence Symphony" });
+      useHomeStore.setState({
+        text: "Press [Enter] to play Sentence Symphony",
+      });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 

@@ -2,15 +2,18 @@ import { IChangeSceneParams } from "@/phaser/types";
 import { pusherServer } from "@/services/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
+interface UpdateParams{
+    hostUsername:string
+
+
+}
 export async function POST(req: NextRequest) {
-    const {channelName, oldScene,newScene, targetId} = await req.json() as IChangeSceneParams;
+    const {hostUsername} = await req.json() as UpdateParams;
 
 
-    await pusherServer.trigger(channelName, "sceneChange", {
-        channelName,
-        oldScene,
-        newScene,
-        targetId,
+    await pusherServer.trigger(`presence-study-${hostUsername}`, "updateStudy", {
+
+
     } as IChangeSceneParams);
 
     return NextResponse.json({ status: 200 });

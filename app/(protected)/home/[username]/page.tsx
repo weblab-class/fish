@@ -152,7 +152,7 @@ export default function Home({ params }: { params: { username: string } }) {
     const currSceneKey = player.scene.scene.key;
 
     if (currScene != currSceneKey) {
-      setCurrScene(currSceneKey);
+      // setCurrScene(currSceneKey);
     }
   });
 
@@ -186,7 +186,8 @@ export default function Home({ params }: { params: { username: string } }) {
       document.removeEventListener("click", handleClickOutside);
     };
   });
-
+  // TO DO: REMOVEE
+  useEffect(() => {}, [currScene]);
   // redirect
   useEffect(() => {
     if (redirect) {
@@ -213,8 +214,29 @@ export default function Home({ params }: { params: { username: string } }) {
       useErrorRedirectStore.setState({ errorRedirect: false, errorCode: null });
       // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
-      console.log(homeChannel.members);
     });
+
+    homeChannel.bind(
+      "pusher:member_added",
+      async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        setDefault();
+
+        if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
+
+        useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
+        const welcomeMessage =
+          ":---" + newPlayer.info.username + " has arrived!---";
+        axios.post("/api/pusher/home/chatLog", {
+          hostUsername: params.username,
+          message: "",
+          username: welcomeMessage,
+        });
+
+        axios.post("/api/pusher/home/updatePlayers", {
+          hostUsername: params.username,
+        });
+      },
+    );
 
     homeChannel.bind(
       "pusher:subscription_error",
@@ -257,32 +279,23 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
-    homeChannel.bind(
-      "pusher:member_added",
-      async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
-        setDefault();
+    // homeChannel.bind(
+    //   "pusher:member_added",
+    //   async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+    //     setDefault();
 
-        if (game) {
-          const player = (await game.registry.get(
-            "player",
-          )) as Phaser.GameObjects.Sprite;
-          const currSceneKey = player.scene.scene.key;
+    //     if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
-          console.log(currSceneKey);
-        }
-
-        if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
-
-        useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
-        const welcomeMessage =
-          ":---" + newPlayer.info.username + " has arrived!---";
-        axios.post("/api/pusher/home/chatLog", {
-          hostUsername: params.username,
-          message: "",
-          username: welcomeMessage,
-        });
-      },
-    );
+    //     useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
+    //     const welcomeMessage =
+    //       ":---" + newPlayer.info.username + " has arrived!---";
+    //     axios.post("/api/pusher/home/chatLog", {
+    //       hostUsername: params.username,
+    //       message: "",
+    //       username: welcomeMessage,
+    //     });
+    //   },
+    // );
 
     homeChannel.bind(
       "pusher:member_removed",
@@ -299,6 +312,10 @@ export default function Home({ params }: { params: { username: string } }) {
             guestId: leavingPlayer.id,
           });
         };
+
+        axios.post("/api/pusher/home/updatePlayers", {
+          hostUsername: params.username,
+        });
 
         // if redirecting to a game, then don't clear anything because we might want to come back
         if (useGameRedirectStoreState.getState().gameRedirect) {
@@ -384,11 +401,13 @@ export default function Home({ params }: { params: { username: string } }) {
             game.scene.getScene("studyroom").cleanup();
 
             game.scene.switch(currSceneKey, newScene);
+
             setCurrScene(newScene);
           }
         } else {
           // keep these two calls of switching scenes, needed for studyroom
           game.scene.switch(currSceneKey, newScene);
+          setCurrScene(newScene);
           game.scene.switch(currSceneKey, newScene);
           setCurrScene(newScene);
         }
@@ -568,7 +587,7 @@ export default function Home({ params }: { params: { username: string } }) {
             </div>
           )}
           {!isHost && gameLoaded && (
-            <div className="absolute flex w-full justify-center">
+            <div className="absolute flex w-full justify-start">
               <div
                 className="inset-y-0 z-10 h-28 w-96 bg-[url('/objects/houseCloud.png')] bg-left-top bg-no-repeat hover:z-20 hover:cursor-pointer hover:bg-[url('/objects/leaveCloud.png')]"
                 onClick={async () => {

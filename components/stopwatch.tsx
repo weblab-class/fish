@@ -19,7 +19,6 @@ function Stopwatch() {
       image.src = "/objects/Desk2.png";
     }
   } else if (totalSeconds === 0) {
-    console.log("time 0");
   } else {
     // @ts-ignore
     for (const image of document.getElementsByClassName("desk")) {
