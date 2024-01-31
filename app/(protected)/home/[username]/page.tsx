@@ -207,6 +207,7 @@ export default function Home({ params }: { params: { username: string } }) {
       useErrorRedirectStore.setState({ errorRedirect: false, errorCode: null });
       // **NOTE: when the player has loaded in, that's when we init the store, add to the db, and send the data for others to add**
       setAuthorized("authorized");
+      console.log(homeChannel.members);
     });
 
     homeChannel.bind(
@@ -258,6 +259,13 @@ export default function Home({ params }: { params: { username: string } }) {
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
+        const welcomeMessage =
+          ":---" + newPlayer.info.username + " has arrived!---";
+        axios.post("/api/pusher/home/chatLog", {
+          hostUsername: params.username,
+          message: "",
+          username: welcomeMessage,
+        });
       },
       setDefault(),
     );

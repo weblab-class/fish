@@ -38,7 +38,7 @@ export default function ChatLogPhaser(props: {
     formState: { isSubmitting },
   } = useForm<Input>();
   useEffect(() => {
-    setMessages([{ username: ":------Chat begins here------", message: "" }]);
+    setMessages([{ message: "----Chat begins here----::", username: ":" }]);
   }, []);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
@@ -122,10 +122,12 @@ export default function ChatLogPhaser(props: {
                     <span
                       className={`${
                         message.message == ""
-                          ? "text-white "
-                          : message.username === props.username
-                            ? "text-sky-600 "
-                            : "text-pink-600"
+                          ? "text-yellow-200 "
+                          : message.username == ":"
+                            ? "text-white "
+                            : message.username === props.username
+                              ? "text-sky-600 "
+                              : "text-pink-600"
                       }`}
                     >
                       {message.username}:{" "}
@@ -149,10 +151,12 @@ export default function ChatLogPhaser(props: {
                     <span
                       className={`${
                         message.message == ""
-                          ? "text-white "
-                          : message.username == props.username
-                            ? "text-sky-600 "
-                            : "text-pink-600"
+                          ? "text-yellow-200 "
+                          : message.username == ":"
+                            ? "text-white "
+                            : message.username === props.username
+                              ? "text-sky-600 "
+                              : "text-pink-600"
                       }`}
                     >
                       {message.username}:{" "}

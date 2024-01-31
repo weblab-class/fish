@@ -356,6 +356,7 @@ export default class exterior extends Scene {
     else {
       useHomeStore.setState({ text: "" });
 
+
     }
 
 

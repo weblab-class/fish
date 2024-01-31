@@ -14,22 +14,22 @@ type CachedSessionCallback = () => Promise<Session | null>;
 
 /**
  * Get the current session. This is **server-side**.
- * 
+ *
  * @returns A `Promise` to a `Session`. If the user isn't signed in, then this is `null`.
  */
 export const getPageSession = cache<CachedSessionCallback>(async () => {
 	await mongooseConnect();
-	
+
 	const authRequest = luciaAuth.handleRequest("GET", context);
 	return authRequest.validate();
 });
 
 /**
  * Protect the API route from unauthorized (not logged in) users.
- * 
- * @param req 
- * @param sessionResponse 
- * @returns 
+ *
+ * @param req
+ * @param sessionResponse
+ * @returns
  */
 export async function authorizeApiRoute(req: NextRequest, sessionResponse: (session: Session) => Promise<NextResponse>) {
 	const authRequest = luciaAuth.handleRequest(req.method, context);
@@ -39,6 +39,6 @@ export async function authorizeApiRoute(req: NextRequest, sessionResponse: (sess
 		return await sessionResponse(session);
 	}
 
-	console.log("BRUH");
+
 	return NextResponse.json({ message: "User has not logged in.", code: CustomErrorCode.PLAYER_NOT_AUTHENTICATED } as ICustomError, { status: 403, statusText: "User is not authenticated. Please go back to login."});
 }
