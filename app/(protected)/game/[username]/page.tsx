@@ -500,7 +500,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       });
       return () => {
         hostChannel.unbind_all();
-        hostChannel.unsubscribe;
+        // hostChannel.unsubscribe;
       };
     }
   }, [responsesData, roundType]);
@@ -526,6 +526,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
   });
 
+  useEffect(() => {
+    console.log(isHost, "isHost");
+  }, [isHost]);
+
   // timer events
   // dependencies: roundType, player?.data
   useEffect(() => {
@@ -548,7 +552,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       timerDuration = 10;
     }
 
-    console.log("past gameroomexists");
+    console.log("past gameroomexists", isHost);
     // start timer after new round
     if (isHost) {
       console.log("timer starting called");
