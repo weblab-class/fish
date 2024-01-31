@@ -40,8 +40,6 @@ import HelpPopup from "@/components/HelpPopup";
 import { BsWindowSidebar } from "react-icons/bs";
 import GamePopup from "@/components/GamePopup";
 
-// TODO sizing issue
-
 const DynamicGame = dynamic(async () => await import("@/phaser/Game"), {
   ssr: false,
   loading: ({}) => (
@@ -644,7 +642,6 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
         </div>
       ) : (
-        // TODO Make this much more interesting
         <div>
           <div className="flex h-screen w-screen items-center justify-center bg-[url(/backgrounds/greenBg.png)] bg-cover bg-no-repeat">
             <div className="h-fit w-fit rounded-full bg-[url(/backgrounds/pinkBigBg.png)] outline-dashed outline-4 outline-white">

@@ -14,7 +14,6 @@ interface ForceSubmissionsParams {
 }
 
 export async function forceSubmissions({ hostId }: ForceSubmissionsParams) {
-  // WARNING may break?
   const room = await getSentenceSymphony(hostId);
   if (!room.data) {
     throw Error("Room could not be found.");
@@ -27,7 +26,6 @@ export async function forceSubmissions({ hostId }: ForceSubmissionsParams) {
   const notSubmittedIds = allIds.filter(
     (playerId) => !submittedIds.includes(playerId),
   );
-  console.log("notSubmittedIds", notSubmittedIds, voteOptions);
 
   const completeVoteOptions = [
     ...voteOptions,

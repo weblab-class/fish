@@ -17,7 +17,6 @@ interface StartNewRoundParams {
 export async function startNewRound({
   hostId,
 }: StartNewRoundParams) {
-  // WARNING may break?
   const room = await getSentenceSymphony(hostId);
   if (!room.data) {
     throw Error("Room could not be found.");

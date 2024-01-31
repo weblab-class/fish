@@ -84,7 +84,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
 
       setGuests([]);
     })();
-  }, [JSON.stringify(guestListIds)]); // TODO optimize calls AND fix removal of whitelist
+  }, [JSON.stringify(guestListIds)]);
   return (
     <div className="absolute z-20 flex h-4/5 w-5/6 gap-10 rounded-3xl bg-[url(/backgrounds/tanBg.png)] bg-cover p-7 shadow-xl shadow-stone-600 outline-8 outline-amber-900">
       {isMulti ? (

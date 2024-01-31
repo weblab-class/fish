@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
 
   await mongooseConnect();
   const doc = await SentenceSymphonyGameRoomModel.findByIdAndUpdate(data.hostId, data, { new: true });
-  console.log("DATA SENT:", data, "DOC:", doc, "SUBMIT PLS")
 
   return NextResponse.json(doc, { status: 200 });
 }

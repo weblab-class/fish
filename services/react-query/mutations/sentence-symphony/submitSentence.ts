@@ -20,15 +20,12 @@ export async function submitSentence({
   creatorId,
   sentence,
 }: SubmitSentenceParams) {
-  // WARNING may break?
-  console.log('submitt')
   const room = await getSentenceSymphony(hostId);
   if (!room.data) {
     throw Error("Room could not be found.");
   }
 
   const voteOptions = room.data.voteOptions;
-  console.log(creatorId,sentence,"SUBMITTING SENTENCE")
   voteOptions.push({ sentence, creatorId, voteIds: [] });
 
   return await axios.post(
