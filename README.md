@@ -18,7 +18,7 @@ f.i.s.h. - where the fun in socializing heightens! Is it 'furry interactions in 
 [![Pusher](https://img.shields.io/badge/Pusher-05122A?style=for-the-badge&logo=pusher&logoColor=white)](https://pusher.com/)
 
 ### 🪟 **Frontend**
-React, Phaser, TailwindCSS, Animate.css, Recharts, Zustand, React Query, `react-hook-form`, `react-icons`, `react-timer-hook`, `react-sketch-canvas`, `react-text-transition`, `tailwind-scrollbar`
+React, Phaser, TailwindCSS, Animate.css, Recharts, Zustand, Axios, React Query, Lodash, `react-hook-form`, `react-icons`, `react-timer-hook`, `react-sketch-canvas`, `react-text-transition`, `tailwind-scrollbar`
 
 ### 📚 **Backend**
 Node.js, Next.js, Pusher, MongoDB, Lucia Auth, `mongoose`, `typegoose`
@@ -34,7 +34,7 @@ Node.js, Next.js, Pusher, MongoDB, Lucia Auth, `mongoose`, `typegoose`
 ## ✍️ Contributions
 ### Vy 🐙
 - Created Sentence Symphony game *(so many useEffects)*
-- Designed title screen, onboarding screen, popups, exterior, some sprites, yeahhh
+- Designed all popups, title screen, onboarding screen, exterior, sprites, yeahhh
 - Stomped on bugs about multiplayer movement/scene changes
 - Carried the project with Pusher
 - Mastered Tailwind
@@ -47,8 +47,8 @@ Node.js, Next.js, Pusher, MongoDB, Lucia Auth, `mongoose`, `typegoose`
 - Organize, organize, organize
 
 ### Jocelyn 🐧
-- Decorated interior
-- Timed animals with stopwatch in study room
+- Designed interior and study room
+- Implemented stopwatch with sprite animations in study room
 - MOO-SIC
 - Drew sprites and objects (artist fr)
 - Figured out single-player scene changes
