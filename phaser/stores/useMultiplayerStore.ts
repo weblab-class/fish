@@ -94,7 +94,6 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
         throw new Error("You must initalize before sending your data!");
       });
 
-      console.log(get().currentPlayer!.username, get().currentPlayer!);
       await axios.post(
         `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/home/sendPlayerData`,
         {
@@ -125,8 +124,6 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
         .filter(({ username }) => hostUsername === username)
         .at(0);
       if (host && host.roomStatus !== defaultPlayerInfo.roomStatus) {
-        console.log("HELLO WORLD");
-
         return async () => {
           await axios.post("/api/pusher/home/changeScene", {
             channelName: `presence-home-${hostUsername}`,

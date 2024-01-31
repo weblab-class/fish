@@ -11,7 +11,6 @@ interface calculateWinnerParams {
 }
 
 export async function calculateWinner({ hostId }: calculateWinnerParams) {
-  // WARNING may break?
   const room = await getSentenceSymphony(hostId);
   if (!room.data) {
     throw Error("Room could not be found.");

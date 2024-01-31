@@ -77,7 +77,6 @@ export default function Game({
     return () => {
       setData({ game: null });
       game?.destroy(true, true);
-      console.log("GAME DESROYED");
     };
   }, [parentEl]);
 

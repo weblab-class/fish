@@ -14,8 +14,6 @@ export async function POST(req: NextRequest) {
 
 
   const changeRound = async () => {
-    console.log(newRound)
-
     if (newRound==="preWriting"){
       await pusherServer.trigger(`presence-ss-${hostUsername}`, 'submitVotes',{
         roundNumber,

@@ -20,7 +20,6 @@ export async function updateVote({
   creatorId,
   voterId,
 }: UpdateVoteParams) {
-  // WARNING may break?
   const room = await getSentenceSymphony(hostId);
   if (!room.data) {
     throw Error("Room could not be found.");
@@ -37,7 +36,6 @@ export async function updateVote({
     voteIds: [...creatorOptData.voteIds, voterId],
   };
 
-  console.log("UPDATING VOTE")
   return await axios.post(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/db/sentence-symphony/update`,
     {

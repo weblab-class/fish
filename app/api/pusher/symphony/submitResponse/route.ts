@@ -33,9 +33,6 @@ interface Vote{
 export async function PUT(req: NextRequest) {
     let { creatorId, voterId, hostUsername,responsesData } = (await req.json()) as Vote;
     // let responseVotes=[]
-
-    console.log("voting yeyeye", creatorId,voterId)
-
     // response card component will send the response to db is they are clicked
     await pusherServer.trigger(`presence-ss-host-${hostUsername}`,'submitVote',
     {
