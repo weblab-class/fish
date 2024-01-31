@@ -327,8 +327,6 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
-    homeChannel.bind("change-scene", async () => {});
-
     return () => {
       useHomeStore.getState().resetData();
 

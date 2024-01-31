@@ -9,6 +9,7 @@ import { loadSprites, sendPositionData, updateOtherPlayers } from "../functions"
 import { useMultiplayerStore } from "../stores";
 import { PlayerRoomStatus } from "@/types";
 import { FRAME_BUFFER } from "../settings/consts";
+import { IChangeSceneParams } from "../types";
 
 /**
  * The interior scene in `/home`.
@@ -419,8 +420,13 @@ class interior extends Scene {
 
       // enters house when enter key is pressed
       if (isDown) {
-        this.scene.stop("interior");
-        this.scene.start("exterior");
+        useHomeStore.setState({ text: "" });
+
+        await axios.post("/api/pusher/home/changeScene", ({
+          channelName: `presence-home-${this.hostUsername}`,
+          oldScene: "interior",
+          newScene: "exterior",
+        } as IChangeSceneParams));
       }
     }
 

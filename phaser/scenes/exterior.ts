@@ -10,7 +10,7 @@ import {
   updateOtherPlayers,
 } from "../functions";
 import { FRAME_BUFFER } from "../settings/consts";
-import { PlayerInfo } from "../types";
+import { IChangeSceneParams, PlayerInfo } from "../types";
 import { PresenceChannel } from "pusher-js";
 
 /**
@@ -234,7 +234,7 @@ export default class exterior extends Scene {
     }
   }
 
-  update() {
+  async update() {
     const self = this as Phaser.Scene;
     const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
@@ -312,10 +312,13 @@ export default class exterior extends Scene {
         !updatedShowHelp &&
         this.hostUsername == this.username
       ) {
-        this.scene.stop("exterior");
-        this.scene.start("interior");
-        // this.game.destroy(true);
         useHomeStore.setState({ text: "" });
+
+        await axios.post("/api/pusher/home/changeScene", ({
+          channelName: `presence-home-${this.hostUsername}`,
+          oldScene: "exterior",
+          newScene: "interior",
+        } as IChangeSceneParams));
       }
     } else if (
       isOverlappingSwan &&
