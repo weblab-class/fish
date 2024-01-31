@@ -53,9 +53,9 @@ class studyroom extends Scene {
       // TO DO: GET PLAYERS FROM PRESENCE, PLAYERS.MAP(()) CHANGE bg-[url(/players/${player.sprite}One.png)]
       const allPlayers= homeChannel.members.each(({id, info}: { id: string, info: PusherPresenceUserInfo}) => {
 
-        console.log(info.sprite, info, id, 'url(/players/${info.sprite}One.png')
+
         const spriteAnimal=info.sprite
-        console.log(spriteAnimal)
+
         const sprite = document.createElement("div")
 
           sprite.className = `bg-[url(/players/${spriteAnimal}One.png)] z-50 bg-no-repeat -mb-10 m-1 bg-contain h-45% bg-center w-3/12 flex items-end justify-center`;
