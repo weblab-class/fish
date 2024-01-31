@@ -625,7 +625,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           deleteGame();
 
           // router.push(`/home/${params.username}`);
-          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${params.username}`;
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
         }
 
         // only host controls roundChangeFunc

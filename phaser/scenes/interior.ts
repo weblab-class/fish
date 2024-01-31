@@ -415,6 +415,8 @@ class interior extends Scene {
 
     // logic for moving the tag
 
+    const updatedShowGameMenu = useHomeStore.getState().showGameMenu;
+
     const top = this.hsv[this.i].color;
     const bottom = this.hsv[359 - this.i].color;
 
@@ -455,7 +457,7 @@ class interior extends Scene {
     );
 
     // displays enter house text when overlapping
-    if (isOverlappingWelcomeMat && this.hostUsername == this.username) {
+    if (isOverlappingWelcomeMat && this.hostUsername == this.username && !updatedShowGameMenu) {
       useHomeStore.setState({ text: "Press [Enter] to exit" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
@@ -483,7 +485,7 @@ class interior extends Scene {
     const isOverlappingStudyMat = self.physics.world.overlap(player, studyMat);
 
     // displays enter house text when overlapping
-    if (isOverlappingStudyMat && this.hostUsername == this.username) {
+    if (isOverlappingStudyMat && this.hostUsername == this.username && !updatedShowGameMenu) {
       useHomeStore.setState({ text: "Press [Enter] to study" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
@@ -508,7 +510,7 @@ class interior extends Scene {
     const isOverlappingGameMenu = self.physics.world.overlap(player, gameMenu);
 
     // displays text when overlapping
-    if (isOverlappingGameMenu && this.hostUsername == this.username) {
+    if (isOverlappingGameMenu && this.hostUsername == this.username && !updatedShowGameMenu) {
       useHomeStore.setState({
         text: "Press [Enter] to play Sentence Symphony",
       });
@@ -518,7 +520,7 @@ class interior extends Scene {
       // enters when enter key is pressed
       if (isDown) {
         // game menu popup
-        useHomeStore.getState().showPopup("invite");
+        useHomeStore.getState().showPopup("gameMenu");
       }
     }
 

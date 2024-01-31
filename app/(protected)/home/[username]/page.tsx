@@ -38,6 +38,7 @@ import { IoHelp, IoHelpCircle, IoHelpOutline } from "react-icons/io5";
 import { IoMdHelp } from "react-icons/io";
 import HelpPopup from "@/components/HelpPopup";
 import { BsWindowSidebar } from "react-icons/bs";
+import GamePopup from "@/components/GamePopup";
 
 // TODO sizing issue
 
@@ -101,6 +102,7 @@ export default function Home({ params }: { params: { username: string } }) {
     showMailPopup,
     showEaselPopup,
     showHelpPopup,
+    showGameMenu,
     showPopup,
     setDefault,
   ] = useHomeStore((state) => [
@@ -109,6 +111,7 @@ export default function Home({ params }: { params: { username: string } }) {
     state.showMailPopup,
     state.showEaselPopup,
     state.showHelpPopup,
+    state.showGameMenu,
     state.showPopup,
     state.setDefault,
   ]);
@@ -451,7 +454,11 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
           {/* exterior */}
           {currScene == "exterior" && (
-            <audio src="/music/game2-floating-cat-michael-grubb.mp3" autoPlay loop></audio>
+            <audio
+              src="/music/game2-floating-cat-michael-grubb.mp3"
+              autoPlay
+              loop
+            ></audio>
           )}
           {/* studyroom */}
           <div className="absolute m-0 flex h-screen w-screen select-none items-center justify-center">
@@ -634,6 +641,20 @@ export default function Home({ params }: { params: { username: string } }) {
                 ref={mailRef}
               >
                 <HelpPopup defaultTab="About" />
+              </div>
+            </div>
+          )}
+          {showGameMenu && (
+            <div className="flex h-screen w-screen items-center justify-center">
+              <div
+                className="flex items-center justify-center bg-white"
+                ref={inviteRef}
+              >
+                <GamePopup
+                  hostId={session!.user.uid}
+                  hostUsername={params.username}
+                  isHost={isHost}
+                />
               </div>
             </div>
           )}
