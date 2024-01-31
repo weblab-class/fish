@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { useHomeStore } from "../stores/useHomeStore";
 import { pusherClient } from "@/services/pusher";
-import loadSprites, { sendPositionData, updateOtherPlayers } from "../functions";
+import { loadSprites, sendPositionData, updateOtherPlayers } from "../functions";
 import { useMultiplayerStore } from "../stores";
 import { PlayerRoomStatus } from "@/types";
 

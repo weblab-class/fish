@@ -4,7 +4,7 @@ import { Scene } from "phaser";
 import { pusherClient } from "@/services/pusher";
 import { AnimalSprite, PlayerRoomStatus } from "@/types";
 import { useHomeStore, useMultiplayerStore } from "../stores";
-import loadSprites, { sendPositionData, updateOtherPlayers } from "../functions";
+import { loadSprites, sendPositionData, updateOtherPlayers } from "../functions";
 import { FRAME_BUFFER } from "../settings/consts";
 import { PlayerInfo } from "../types";
 import { PresenceChannel } from "pusher-js";
