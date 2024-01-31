@@ -122,7 +122,7 @@ export default function ChatLogPhaser(props: {
                     <span
                       className={`${
                         message.message == ""
-                          ? "text-yellow-200 "
+                          ? "text-purple-800 "
                           : message.username == ":"
                             ? "text-white "
                             : message.username === props.username
@@ -151,7 +151,7 @@ export default function ChatLogPhaser(props: {
                     <span
                       className={`${
                         message.message == ""
-                          ? "text-yellow-200 "
+                          ? "text-purple-800 "
                           : message.username == ":"
                             ? "text-white "
                             : message.username === props.username
