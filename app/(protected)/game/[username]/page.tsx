@@ -743,6 +743,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
     };
   }, [roundType, gameRoomExists]);
 
+  useEffect(() => {
+    console.log(isHost, "isHost");
+  }, [isHost]);
   //   submitting responses
   const onSubmit: SubmitHandler<Input> = async (data) => {
     if (!submittedResponse) {
