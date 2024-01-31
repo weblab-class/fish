@@ -160,6 +160,7 @@ export default function Home({ params }: { params: { username: string } }) {
   }, [gameLoaded]);
 
   useEffect(() => {
+    if (gameLoaded) return;
     refetchPlayer();
   });
 
@@ -412,7 +413,7 @@ export default function Home({ params }: { params: { username: string } }) {
                 }}
               />
 
-              <div className="w-70 mt-2% z-30 flex h-52 items-center justify-center">
+              <div className="w-70 z-30 mt-2% flex h-52 items-center justify-center">
                 {/* <span className = "absolute flex flex-wrap top-0 z-30 h-1/5 w-1/5 m-16 justify-center top-0">
               <form id='duration' className = "z-40 right-0 select-none">
                 <input id='h' name='h' type='number' min='0' max='23' className = "cursor-text opacity-50"/>
@@ -445,7 +446,7 @@ export default function Home({ params }: { params: { username: string } }) {
             />
           </div>
           <div
-            className="right-7% absolute bottom-0 z-40 mb-4 h-fit w-fit cursor-pointer rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain p-3 pl-4 pr-4 text-center text-4xl text-sky-700 outline-sky-800 hover:text-sky-800 hover:outline"
+            className="absolute bottom-0 right-7% z-40 mb-4 h-fit w-fit cursor-pointer rounded-full bg-[url(/backgrounds/whiteGrayBg.png)] bg-contain p-3 pl-4 pr-4 text-center text-4xl text-sky-700 outline-sky-800 hover:text-sky-800 hover:outline"
             onClick={() => {
               showPopup("help");
             }}

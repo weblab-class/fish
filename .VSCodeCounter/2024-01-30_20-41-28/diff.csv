@@ -1,0 +1,261 @@
+"filename", "language", "JSON", "TypeScript JSX", "JavaScript", "TypeScript", "JSON with Comments", "CSS", "Markdown", "comment", "blank", "total"
+"\Users\kennethchap\Documents\GitHub\fish\.eslintrc.json", "JSON", -3, 0, 0, 0, 0, 0, 0, 0, -1, -4
+"\Users\kennethchap\Documents\GitHub\fish\.prettierrc", "JSON", -5, 0, 0, 0, 0, 0, 0, 0, 0, -5
+"\Users\kennethchap\Documents\GitHub\fish\README.md", "Markdown", 0, 0, 0, 0, 0, 0, -23, 0, -14, -37
+"\Users\kennethchap\Documents\GitHub\fish\app.d.ts", "TypeScript", 0, 0, 0, -7, 0, 0, 0, -1, 0, -8
+"\Users\kennethchap\Documents\GitHub\fish\app\(errors)\no-duplicate-tabs\page.tsx", "TypeScript JSX", 0, -6, 0, 0, 0, 0, 0, 0, -2, -8
+"\Users\kennethchap\Documents\GitHub\fish\app\(protected)\example-sign-out\page.tsx", "TypeScript JSX", 0, -25, 0, 0, 0, 0, 0, -4, -4, -33
+"\Users\kennethchap\Documents\GitHub\fish\app\(protected)\game\[username]\page.tsx", "TypeScript JSX", 0, -897, 0, 0, 0, 0, 0, -85, -104, -1086
+"\Users\kennethchap\Documents\GitHub\fish\app\(protected)\home\[username]\page.tsx", "TypeScript JSX", 0, -211, 0, 0, 0, 0, 0, -54, -30, -295
+"\Users\kennethchap\Documents\GitHub\fish\app\(protected)\layout.tsx", "TypeScript JSX", 0, -28, 0, 0, 0, 0, 0, -7, -7, -42
+"\Users\kennethchap\Documents\GitHub\fish\app\TitlePageLogin.tsx", "TypeScript JSX", 0, -192, 0, 0, 0, 0, 0, -10, -9, -211
+"\Users\kennethchap\Documents\GitHub\fish\app\TitlePageOnboarding.tsx", "TypeScript JSX", 0, -245, 0, 0, 0, 0, 0, -23, -21, -289
+"\Users\kennethchap\Documents\GitHub\fish\app\api\auth\login\google\callback\route.ts", "TypeScript", 0, 0, 0, -58, 0, 0, 0, -4, -12, -74
+"\Users\kennethchap\Documents\GitHub\fish\app\api\auth\login\google\route.ts", "TypeScript", 0, 0, 0, -18, 0, 0, 0, -3, -4, -25
+"\Users\kennethchap\Documents\GitHub\fish\app\api\auth\logout\route.ts", "TypeScript", 0, 0, 0, -18, 0, 0, 0, -3, -8, -29
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\player-room\get\route.ts", "TypeScript", 0, 0, 0, -9, 0, 0, 0, 0, -4, -13
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\player-room\update\route.ts", "TypeScript", 0, 0, 0, -14, 0, 0, 0, 0, -4, -18
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\player\create\route.ts", "TypeScript", 0, 0, 0, -24, 0, 0, 0, 0, -5, -29
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\player\get-by-username\route.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -5, -18
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\player\get\route.ts", "TypeScript", 0, 0, 0, -9, 0, 0, 0, 0, -4, -13
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\player\update\route.ts", "TypeScript", 0, 0, 0, -11, 0, 0, 0, 0, -4, -15
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\sentence-symphony\create\route.ts", "TypeScript", 0, 0, 0, -29, 0, 0, 0, 0, -4, -33
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\sentence-symphony\delete\route.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -4, -17
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\sentence-symphony\get\route.ts", "TypeScript", 0, 0, 0, -9, 0, 0, 0, 0, -4, -13
+"\Users\kennethchap\Documents\GitHub\fish\app\api\db\sentence-symphony\update\route.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -4, -17
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\auth\route.ts", "TypeScript", 0, 0, 0, -151, 0, 0, 0, -30, -21, -202
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\home\requestData\route.ts", "TypeScript", 0, 0, 0, -17, 0, 0, 0, 0, -5, -22
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\home\sendData\route.ts", "TypeScript", 0, 0, 0, -18, 0, 0, 0, 0, -5, -23
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\gameRoomCreated\route.ts", "TypeScript", 0, 0, 0, -12, 0, 0, 0, 0, -12, -24
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\gameTimer\route.ts", "TypeScript", 0, 0, 0, -27, 0, 0, 0, -1, -14, -42
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\generatePrompt\route.ts", "TypeScript", 0, 0, 0, -14, 0, 0, 0, 0, -10, -24
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\newMessage\route.ts", "TypeScript", 0, 0, 0, -15, 0, 0, 0, 0, -4, -19
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\roundChange\route.ts", "TypeScript", 0, 0, 0, -26, 0, 0, 0, 0, -12, -38
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\submittedResponse\route.ts", "TypeScript", 0, 0, 0, -26, 0, 0, 0, -20, -21, -67
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\updateContributions\route.ts", "TypeScript", 0, 0, 0, -12, 0, 0, 0, 0, -11, -23
+"\Users\kennethchap\Documents\GitHub\fish\app\api\pusher\symphony\updateData\route.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -10, -23
+"\Users\kennethchap\Documents\GitHub\fish\app\globals.css", "CSS", 0, 0, 0, 0, 0, -3, 0, 0, -2, -5
+"\Users\kennethchap\Documents\GitHub\fish\app\layout.tsx", "TypeScript JSX", 0, -23, 0, 0, 0, 0, 0, 0, -4, -27
+"\Users\kennethchap\Documents\GitHub\fish\app\not-found.tsx", "TypeScript JSX", 0, -8, 0, 0, 0, 0, 0, 0, -2, -10
+"\Users\kennethchap\Documents\GitHub\fish\app\page.tsx", "TypeScript JSX", 0, -29, 0, 0, 0, 0, 0, -4, -4, -37
+"\Users\kennethchap\Documents\GitHub\fish\components\InvitePopup.tsx", "TypeScript JSX", 0, -72, 0, 0, 0, 0, 0, -1, -8, -81
+"\Users\kennethchap\Documents\GitHub\fish\components\Mail.tsx", "TypeScript JSX", 0, -54, 0, 0, 0, 0, 0, -7, -5, -66
+"\Users\kennethchap\Documents\GitHub\fish\components\MailPopup.tsx", "TypeScript JSX", 0, -76, 0, 0, 0, 0, 0, -1, -8, -85
+"\Users\kennethchap\Documents\GitHub\fish\components\ReadMailPopup.tsx", "TypeScript JSX", 0, -22, 0, 0, 0, 0, 0, -7, -3, -32
+"\Users\kennethchap\Documents\GitHub\fish\components\SendMailPopup.tsx", "TypeScript JSX", 0, -72, 0, 0, 0, 0, 0, -3, -4, -79
+"\Users\kennethchap\Documents\GitHub\fish\components\symphony\ChatLog.tsx", "TypeScript JSX", 0, -158, 0, 0, 0, 0, 0, -31, -13, -202
+"\Users\kennethchap\Documents\GitHub\fish\components\symphony\PieScore.tsx", "TypeScript JSX", 0, -63, 0, 0, 0, 0, 0, -2, -6, -71
+"\Users\kennethchap\Documents\GitHub\fish\components\symphony\ResponseCard.tsx", "TypeScript JSX", 0, -85, 0, 0, 0, 0, 0, -4, -7, -96
+"\Users\kennethchap\Documents\GitHub\fish\components\symphony\VoteCount.tsx", "TypeScript JSX", 0, -32, 0, 0, 0, 0, 0, 0, -3, -35
+"\Users\kennethchap\Documents\GitHub\fish\environment.d.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -2, -15
+"\Users\kennethchap\Documents\GitHub\fish\global.d.ts", "TypeScript", 0, 0, 0, -4, 0, 0, 0, 0, -1, -5
+"\Users\kennethchap\Documents\GitHub\fish\next.config.js", "JavaScript", 0, 0, -8, 0, 0, 0, 0, -2, -3, -13
+"\Users\kennethchap\Documents\GitHub\fish\package-lock.json", "JSON", -5779, 0, 0, 0, 0, 0, 0, 0, -1, -5780
+"\Users\kennethchap\Documents\GitHub\fish\package.json", "JSON", -47, 0, 0, 0, 0, 0, 0, 0, -1, -48
+"\Users\kennethchap\Documents\GitHub\fish\phaser\Game.tsx", "TypeScript JSX", 0, -76, 0, 0, 0, 0, 0, -3, -11, -90
+"\Users\kennethchap\Documents\GitHub\fish\phaser\functions.ts", "TypeScript", 0, 0, 0, -50, 0, 0, 0, -7, 0, -57
+"\Users\kennethchap\Documents\GitHub\fish\phaser\scenes\exterior.ts", "TypeScript", 0, 0, 0, -210, 0, 0, 0, -34, -57, -301
+"\Users\kennethchap\Documents\GitHub\fish\phaser\scenes\interior.ts", "TypeScript", 0, 0, 0, -264, 0, 0, 0, -166, -78, -508
+"\Users\kennethchap\Documents\GitHub\fish\phaser\scenes\studyroom.ts", "TypeScript", 0, 0, 0, -15, 0, 0, 0, -5, -5, -25
+"\Users\kennethchap\Documents\GitHub\fish\phaser\settings\consts.ts", "TypeScript", 0, 0, 0, -3, 0, 0, 0, 0, 0, -3
+"\Users\kennethchap\Documents\GitHub\fish\phaser\settings\functions.ts", "TypeScript", 0, 0, 0, -18, 0, 0, 0, -1, -2, -21
+"\Users\kennethchap\Documents\GitHub\fish\phaser\stores\index.ts", "TypeScript", 0, 0, 0, -2, 0, 0, 0, 0, 0, -2
+"\Users\kennethchap\Documents\GitHub\fish\phaser\stores\types.ts", "TypeScript", 0, 0, 0, -4, 0, 0, 0, 0, -1, -5
+"\Users\kennethchap\Documents\GitHub\fish\phaser\stores\useHomeStore.ts", "TypeScript", 0, 0, 0, -43, 0, 0, 0, -3, -7, -53
+"\Users\kennethchap\Documents\GitHub\fish\phaser\stores\useMultiplayerStore.ts", "TypeScript", 0, 0, 0, -107, 0, 0, 0, -10, -14, -131
+"\Users\kennethchap\Documents\GitHub\fish\phaser\types\IRequestDataParams.ts", "TypeScript", 0, 0, 0, -5, 0, 0, 0, 0, 0, -5
+"\Users\kennethchap\Documents\GitHub\fish\phaser\types\ISendDataParams.ts", "TypeScript", 0, 0, 0, -6, 0, 0, 0, 0, -1, -7
+"\Users\kennethchap\Documents\GitHub\fish\phaser\types\index.ts", "TypeScript", 0, 0, 0, -3, 0, 0, 0, 0, 0, -3
+"\Users\kennethchap\Documents\GitHub\fish\phaser\types\player.ts", "TypeScript", 0, 0, 0, -9, 0, 0, 0, 0, -1, -10
+"\Users\kennethchap\Documents\GitHub\fish\postcss.config.js", "JavaScript", 0, 0, -6, 0, 0, 0, 0, 0, -1, -7
+"\Users\kennethchap\Documents\GitHub\fish\public\backgrounds\background.json", "JSON", -41, 0, 0, 0, 0, 0, 0, 0, 0, -41
+"\Users\kennethchap\Documents\GitHub\fish\public\backgrounds\interior.json", "JSON", -41, 0, 0, 0, 0, 0, 0, 0, -1, -42
+"\Users\kennethchap\Documents\GitHub\fish\services\lucia\LuciaSessionProvider.tsx", "TypeScript JSX", 0, -27, 0, 0, 0, 0, 0, -10, -7, -44
+"\Users\kennethchap\Documents\GitHub\fish\services\lucia\functions.ts", "TypeScript", 0, 0, 0, -23, 0, 0, 0, -12, -9, -44
+"\Users\kennethchap\Documents\GitHub\fish\services\lucia\index.ts", "TypeScript", 0, 0, 0, -28, 0, 0, 0, -4, -6, -38
+"\Users\kennethchap\Documents\GitHub\fish\services\lucia\models.ts", "TypeScript", 0, 0, 0, -33, 0, 0, 0, -1, -11, -45
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\index.ts", "TypeScript", 0, 0, 0, -1, 0, 0, 0, -4, -2, -7
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\Player.ts", "TypeScript", 0, 0, 0, -55, 0, 0, 0, 0, -14, -69
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\PlayerRoom.ts", "TypeScript", 0, 0, 0, -48, 0, 0, 0, 0, -14, -62
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\game\BaseGameRoom.ts", "TypeScript", 0, 0, 0, -22, 0, 0, 0, 0, -7, -29
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\game\SentenceSymphonyGameRoom.ts", "TypeScript", 0, 0, 0, -67, 0, 0, 0, 0, -18, -85
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\game\index.ts", "TypeScript", 0, 0, 0, -2, 0, 0, 0, -4, -2, -8
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\index.ts", "TypeScript", 0, 0, 0, -3, 0, 0, 0, 0, 0, -3
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\models\types.ts", "TypeScript", 0, 0, 0, -5, 0, 0, 0, 0, -2, -7
+"\Users\kennethchap\Documents\GitHub\fish\services\mongo\mongoose.ts", "TypeScript", 0, 0, 0, -24, 0, 0, 0, -7, -7, -38
+"\Users\kennethchap\Documents\GitHub\fish\services\pusher\client.ts", "TypeScript", 0, 0, 0, -14, 0, 0, 0, -1, -2, -17
+"\Users\kennethchap\Documents\GitHub\fish\services\pusher\index.ts", "TypeScript", 0, 0, 0, -3, 0, 0, 0, 0, 0, -3
+"\Users\kennethchap\Documents\GitHub\fish\services\pusher\server.ts", "TypeScript", 0, 0, 0, -8, 0, 0, 0, 0, -1, -9
+"\Users\kennethchap\Documents\GitHub\fish\services\pusher\types.ts", "TypeScript", 0, 0, 0, -7, 0, 0, 0, -1, -1, -9
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\ReactQueryHydrate.tsx", "TypeScript JSX", 0, -5, 0, 0, 0, 0, 0, 0, -2, -7
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\ReactQueryProvider.tsx", "TypeScript JSX", 0, -11, 0, 0, 0, 0, 0, -1, -6, -18
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\auth\index.ts", "TypeScript", 0, 0, 0, -1, 0, 0, 0, 0, 0, -1
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\auth\signOut.ts", "TypeScript", 0, 0, 0, -10, 0, 0, 0, 0, -4, -14
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\index.ts", "TypeScript", 0, 0, 0, -4, 0, 0, 0, 0, -1, -5
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\player-room\addPlayerToRoom.ts", "TypeScript", 0, 0, 0, -37, 0, 0, 0, -5, -7, -49
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\player-room\deletePlayerFromRoom.ts", "TypeScript", 0, 0, 0, -32, 0, 0, 0, -7, -6, -45
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\player-room\index.ts", "TypeScript", 0, 0, 0, -2, 0, 0, 0, 0, 0, -2
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\player\createPlayer.ts", "TypeScript", 0, 0, 0, -12, 0, 0, 0, 0, -4, -16
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\player\index.ts", "TypeScript", 0, 0, 0, -2, 0, 0, 0, 0, 0, -2
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\player\updateCurrentRoomId.ts", "TypeScript", 0, 0, 0, -24, 0, 0, 0, -3, -4, -31
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\createSentenceSymphony.ts", "TypeScript", 0, 0, 0, -12, 0, 0, 0, 0, -4, -16
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\deleteSentenceSymphony.ts", "TypeScript", 0, 0, 0, -15, 0, 0, 0, 0, -5, -20
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\forceSubmissions.ts", "TypeScript", 0, 0, 0, -45, 0, 0, 0, -1, -9, -55
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\index.ts", "TypeScript", 0, 0, 0, -6, 0, 0, 0, 0, -1, -7
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\startNewRound.ts", "TypeScript", 0, 0, 0, -54, 0, 0, 0, -5, -10, -69
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\submitSentence.ts", "TypeScript", 0, 0, 0, -36, 0, 0, 0, -1, -7, -44
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\updateVote.ts", "TypeScript", 0, 0, 0, -46, 0, 0, 0, -1, -7, -54
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\player-room\getPlayerRoom.ts", "TypeScript", 0, 0, 0, -12, 0, 0, 0, 0, -4, -16
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\player-room\index.ts", "TypeScript", 0, 0, 0, -1, 0, 0, 0, 0, 0, -1
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\player\getPlayer.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -4, -17
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\player\getPlayerByUsername.ts", "TypeScript", 0, 0, 0, -12, 0, 0, 0, 0, -4, -16
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\player\index.ts", "TypeScript", 0, 0, 0, -2, 0, 0, 0, 0, 0, -2
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\sentence-symphony\getSentenceSymphony.ts", "TypeScript", 0, 0, 0, -13, 0, 0, 0, 0, -4, -17
+"\Users\kennethchap\Documents\GitHub\fish\services\react-query\queries\sentence-symphony\index.ts", "TypeScript", 0, 0, 0, -1, 0, 0, 0, 0, -1, -2
+"\Users\kennethchap\Documents\GitHub\fish\tailwind.config.ts", "TypeScript", 0, 0, 0, -80, 0, 0, 0, 0, -7, -87
+"\Users\kennethchap\Documents\GitHub\fish\tsconfig.json", "JSON with Comments", 0, 0, 0, 0, -29, 0, 0, 0, -1, -30
+"\Users\kennethchap\Documents\GitHub\fish\types\AnimalSprites.ts", "TypeScript", 0, 0, 0, -14, 0, 0, 0, 0, 0, -14
+"\Users\kennethchap\Documents\GitHub\fish\types\CustomErrors.ts", "TypeScript", 0, 0, 0, -15, 0, 0, 0, 0, -1, -16
+"\Users\kennethchap\Documents\GitHub\fish\types\GameRoomType.ts", "TypeScript", 0, 0, 0, -3, 0, 0, 0, 0, 0, -3
+"\Users\kennethchap\Documents\GitHub\fish\types\PlayerRoomStatus.ts", "TypeScript", 0, 0, 0, -7, 0, 0, 0, 0, -1, -8
+"\Users\kennethchap\Documents\GitHub\fish\types\index.ts", "TypeScript", 0, 0, 0, -4, 0, 0, 0, 0, 0, -4
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\.eslintrc.json", "JSON", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\.prettierrc", "JSON", 5, 0, 0, 0, 0, 0, 0, 0, 0, 5
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\README.md", "Markdown", 0, 0, 0, 0, 0, 0, 23, 0, 14, 37
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app.d.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 1, 0, 8
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\(errors)\error\page.tsx", "TypeScript JSX", 0, 33, 0, 0, 0, 0, 0, 0, 2, 35
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\(errors)\no-duplicate-tabs\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 0, 0, 0, 2, 8
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\(protected)\example-sign-out\page.tsx", "TypeScript JSX", 0, 25, 0, 0, 0, 0, 0, 4, 4, 33
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\(protected)\game\[username]\page.tsx", "TypeScript JSX", 0, 1061, 0, 0, 0, 0, 0, 129, 137, 1327
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\(protected)\home\[username]\page.tsx", "TypeScript JSX", 0, 449, 0, 0, 0, 0, 0, 80, 60, 589
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\(protected)\layout.tsx", "TypeScript JSX", 0, 28, 0, 0, 0, 0, 0, 7, 7, 42
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\TitlePageLogin.tsx", "TypeScript JSX", 0, 228, 0, 0, 0, 0, 0, 12, 9, 249
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\TitlePageOnboarding.tsx", "TypeScript JSX", 0, 245, 0, 0, 0, 0, 0, 23, 21, 289
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\auth\login\google\callback\route.ts", "TypeScript", 0, 0, 0, 59, 0, 0, 0, 4, 12, 75
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\auth\login\google\route.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 3, 4, 25
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\auth\logout\route.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 3, 8, 29
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\player-room\get\route.ts", "TypeScript", 0, 0, 0, 9, 0, 0, 0, 0, 4, 13
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\player-room\update\route.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 4, 18
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\player\create\route.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 0, 5, 29
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\player\get-by-username\route.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 5, 18
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\player\get\route.ts", "TypeScript", 0, 0, 0, 9, 0, 0, 0, 0, 4, 13
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\player\update\route.ts", "TypeScript", 0, 0, 0, 11, 0, 0, 0, 0, 4, 15
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\sentence-symphony\create\route.ts", "TypeScript", 0, 0, 0, 29, 0, 0, 0, 0, 4, 33
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\sentence-symphony\delete\route.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 4, 17
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\sentence-symphony\get\route.ts", "TypeScript", 0, 0, 0, 9, 0, 0, 0, 0, 4, 13
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\db\sentence-symphony\update\route.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 4, 18
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\auth\route.ts", "TypeScript", 0, 0, 0, 154, 0, 0, 0, 30, 21, 205
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\home\changeScene\route.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 4, 19
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\home\chatLog\route.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 4, 19
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\home\sendData\route.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 0, 5, 23
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\shared\redirect\route.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 0, 5, 23
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\gameRoomCreated\route.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 0, 12, 24
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\gameTimer\route.ts", "TypeScript", 0, 0, 0, 30, 0, 0, 0, 1, 17, 48
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\generatePrompt\route.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 11, 24
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\newMessage\route.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 4, 19
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\newRound\route.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 2, 11, 25
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\roundChange\route.ts", "TypeScript", 0, 0, 0, 26, 0, 0, 0, 0, 12, 38
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\submitResponse\route.ts", "TypeScript", 0, 0, 0, 35, 0, 0, 0, 4, 18, 57
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\submittedResponse\route.ts", "TypeScript", 0, 0, 0, 20, 0, 0, 0, 5, 14, 39
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\topContributor\route.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 10, 23
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\updateContributions\route.ts", "TypeScript", 0, 0, 0, 21, 0, 0, 0, 0, 10, 31
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\updateData\route.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 10, 25
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\updateResponses\route.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 11, 24
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\api\pusher\symphony\updateStory\route.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 0, 11, 23
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\globals.css", "CSS", 0, 0, 0, 0, 0, 3, 0, 0, 2, 5
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\layout.tsx", "TypeScript JSX", 0, 26, 0, 0, 0, 0, 0, 0, 4, 30
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\not-found.tsx", "TypeScript JSX", 0, 10, 0, 0, 0, 0, 0, 0, 2, 12
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\app\page.tsx", "TypeScript JSX", 0, 29, 0, 0, 0, 0, 0, 4, 4, 37
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\ChatLogPhaser.tsx", "TypeScript JSX", 0, 189, 0, 0, 0, 0, 0, 6, 13, 208
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\DrawingCanvas.tsx", "TypeScript JSX", 0, 107, 0, 0, 0, 0, 0, 26, 13, 146
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\EaselPopup.tsx", "TypeScript JSX", 0, 27, 0, 0, 0, 0, 0, 0, 5, 32
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\HelpPopup.tsx", "TypeScript JSX", 0, 185, 0, 0, 0, 0, 0, 8, 9, 202
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\InvitePopup.tsx", "TypeScript JSX", 0, 237, 0, 0, 0, 0, 0, 5, 25, 267
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\Mail.tsx", "TypeScript JSX", 0, 94, 0, 0, 0, 0, 0, 6, 8, 108
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\MailPopup.tsx", "TypeScript JSX", 0, 74, 0, 0, 0, 0, 0, 1, 9, 84
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\ReadMailPopup.tsx", "TypeScript JSX", 0, 71, 0, 0, 0, 0, 0, 0, 11, 82
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\SendMailPopup.tsx", "TypeScript JSX", 0, 105, 0, 0, 0, 0, 0, 4, 8, 117
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\stopwatch.tsx", "TypeScript JSX", 0, 55, 0, 0, 0, 0, 0, 2, 5, 62
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\symphony\ChatLog.tsx", "TypeScript JSX", 0, 157, 0, 0, 0, 0, 0, 22, 12, 191
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\symphony\PieScore.tsx", "TypeScript JSX", 0, 63, 0, 0, 0, 0, 0, 2, 6, 71
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\symphony\ResponseCard.tsx", "TypeScript JSX", 0, 95, 0, 0, 0, 0, 0, 13, 10, 118
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\symphony\VoteCount.tsx", "TypeScript JSX", 0, 32, 0, 0, 0, 0, 0, 0, 3, 35
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\components\timer.tsx", "TypeScript JSX", 0, 60, 0, 0, 0, 0, 0, 2, 5, 67
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\environment.d.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 2, 15
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\global.d.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 1, 5
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\next.config.js", "JavaScript", 0, 0, 8, 0, 0, 0, 0, 2, 3, 13
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\package-lock.json", "JSON", 5800, 0, 0, 0, 0, 0, 0, 0, 1, 5801
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\package.json", "JSON", 49, 0, 0, 0, 0, 0, 0, 0, 1, 50
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\Game.tsx", "TypeScript JSX", 0, 85, 0, 0, 0, 0, 0, 3, 11, 99
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\functions.ts", "TypeScript", 0, 0, 0, 56, 0, 0, 0, 7, 5, 68
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\scenes\exterior.ts", "TypeScript", 0, 0, 0, 278, 0, 0, 0, 38, 86, 402
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\scenes\interior.ts", "TypeScript", 0, 0, 0, 287, 0, 0, 0, 166, 84, 537
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\scenes\studyroom.ts", "TypeScript", 0, 0, 0, 58, 0, 0, 0, 3, 36, 97
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\settings\consts.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\settings\functions.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 1, 2, 21
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\stores\index.ts", "TypeScript", 0, 0, 0, 2, 0, 0, 0, 0, 0, 2
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\stores\types.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 1, 5
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\stores\useHomeStore.ts", "TypeScript", 0, 0, 0, 64, 0, 0, 0, 4, 8, 76
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\stores\useMultiplayerStore.ts", "TypeScript", 0, 0, 0, 107, 0, 0, 0, 10, 15, 132
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\types\IRedirectParams.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 0, 0, 5
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\types\ISendDataParams.ts", "TypeScript", 0, 0, 0, 6, 0, 0, 0, 0, 1, 7
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\types\index.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\phaser\types\player.ts", "TypeScript", 0, 0, 0, 9, 0, 0, 0, 0, 1, 10
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\postcss.config.js", "JavaScript", 0, 0, 6, 0, 0, 0, 0, 0, 1, 7
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\public\backgrounds\background.json", "JSON", 41, 0, 0, 0, 0, 0, 0, 0, 0, 41
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\public\backgrounds\interior.json", "JSON", 41, 0, 0, 0, 0, 0, 0, 0, 1, 42
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\lucia\LuciaSessionProvider.tsx", "TypeScript JSX", 0, 27, 0, 0, 0, 0, 0, 10, 7, 44
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\lucia\functions.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 12, 9, 44
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\lucia\index.ts", "TypeScript", 0, 0, 0, 28, 0, 0, 0, 4, 6, 38
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\lucia\models.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 1, 11, 45
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 4, 2, 7
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\Player.ts", "TypeScript", 0, 0, 0, 57, 0, 0, 0, 0, 15, 72
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\PlayerRoom.ts", "TypeScript", 0, 0, 0, 48, 0, 0, 0, 0, 14, 62
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\game\BaseGameRoom.ts", "TypeScript", 0, 0, 0, 22, 0, 0, 0, 0, 7, 29
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\game\SentenceSymphonyGameRoom.ts", "TypeScript", 0, 0, 0, 67, 0, 0, 0, 0, 18, 85
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\game\index.ts", "TypeScript", 0, 0, 0, 2, 0, 0, 0, 4, 2, 8
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\index.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\models\types.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 0, 2, 7
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\mongo\mongoose.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 7, 7, 38
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\pusher\client.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 1, 2, 17
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\pusher\index.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\pusher\server.ts", "TypeScript", 0, 0, 0, 8, 0, 0, 0, 0, 1, 9
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\pusher\types.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 1, 1, 9
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\ReactQueryHydrate.tsx", "TypeScript JSX", 0, 5, 0, 0, 0, 0, 0, 0, 2, 7
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\ReactQueryProvider.tsx", "TypeScript JSX", 0, 11, 0, 0, 0, 0, 0, 1, 6, 18
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\auth\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\auth\signOut.ts", "TypeScript", 0, 0, 0, 10, 0, 0, 0, 0, 4, 14
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\index.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 1, 5
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player-room\addPlayerToRoom.ts", "TypeScript", 0, 0, 0, 40, 0, 0, 0, 7, 8, 55
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player-room\deletePlayerFromRoom.ts", "TypeScript", 0, 0, 0, 32, 0, 0, 0, 7, 6, 45
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player-room\index.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player-room\sendInvite.ts", "TypeScript", 0, 0, 0, 32, 0, 0, 0, 6, 8, 46
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player\addInvite.ts", "TypeScript", 0, 0, 0, 28, 0, 0, 0, 7, 6, 41
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player\createPlayer.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 0, 4, 16
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player\deleteMail.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 6, 11, 50
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player\index.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player\sendMail.ts", "TypeScript", 0, 0, 0, 35, 0, 0, 0, 7, 8, 50
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\player\updateCurrentRoomId.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 3, 4, 31
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\calculateWinner.ts", "TypeScript", 0, 0, 0, 29, 0, 0, 0, 3, 8, 40
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\createSentenceSymphony.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 0, 4, 16
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\deleteSentenceSymphony.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 5, 20
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\forceSubmissions.ts", "TypeScript", 0, 0, 0, 46, 0, 0, 0, 1, 9, 56
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\index.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\startNewRound.ts", "TypeScript", 0, 0, 0, 54, 0, 0, 0, 5, 10, 69
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\submitSentence.ts", "TypeScript", 0, 0, 0, 38, 0, 0, 0, 1, 7, 46
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\mutations\sentence-symphony\updateVote.ts", "TypeScript", 0, 0, 0, 47, 0, 0, 0, 1, 7, 55
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\player-room\getPlayerRoom.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 4, 17
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\player-room\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\player\getPlayer.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 5, 19
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\player\getPlayerByUsername.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 0, 4, 16
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\player\index.ts", "TypeScript", 0, 0, 0, 2, 0, 0, 0, 0, 0, 2
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\sentence-symphony\getSentenceSymphony.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 4, 17
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\services\react-query\queries\sentence-symphony\index.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 1, 2
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\tailwind.config.ts", "TypeScript", 0, 0, 0, 90, 0, 0, 0, 0, 10, 100
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 29, 0, 0, 0, 1, 30
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\types\AnimalSprites.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 0, 14
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\types\CustomErrors.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 0, 1, 16
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\types\GameRoomType.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 0, 3
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\types\PlayerRoomStatus.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"c:\Users\vypha\OneDrive\Documents\GitHub\fish\types\index.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 0, 4
+"Total", "-", 23, 1402, 0, 470, 0, 0, 0, 138, 335, 2368
