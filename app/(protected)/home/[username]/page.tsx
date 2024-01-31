@@ -222,8 +222,8 @@ export default function Home({ params }: { params: { username: string } }) {
         setDefault();
 
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
-
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
+
         const welcomeMessage =
           ":---" + newPlayer.info.username + " has arrived!---";
         axios.post("/api/pusher/home/chatLog", {
@@ -279,27 +279,17 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
-    // homeChannel.bind(
-    //   "pusher:member_added",
-    //   async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
-    //     setDefault();
-
-    //     if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
-
-    //     useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
-    //     const welcomeMessage =
-    //       ":---" + newPlayer.info.username + " has arrived!---";
-    //     axios.post("/api/pusher/home/chatLog", {
-    //       hostUsername: params.username,
-    //       message: "",
-    //       username: welcomeMessage,
-    //     });
-    //   },
-    // );
-
     homeChannel.bind(
       "pusher:member_removed",
       async (leavingPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        const leavingMessage =
+          ":---" + leavingPlayer.info.username + " has left!---";
+        axios.post("/api/pusher/home/chatLog", {
+          hostUsername: params.username,
+          message: "",
+          username: leavingMessage,
+        });
+
         const resetAndDelete = async () => {
           // reset multiplayer store
           //  - the store will be emptied, but will be populated by default values if they go back to their home
@@ -451,7 +441,11 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
           {/* exterior */}
           {currScene == "exterior" && (
-            <audio src="/music/game2-floating-cat-michael-grubb.mp3" autoPlay loop></audio>
+            <audio
+              src="/music/game2-floating-cat-michael-grubb.mp3"
+              autoPlay
+              loop
+            ></audio>
           )}
           {/* studyroom */}
           <div className="absolute m-0 flex h-screen w-screen select-none items-center justify-center">
