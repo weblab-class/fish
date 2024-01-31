@@ -346,6 +346,7 @@ export default function Home({ params }: { params: { username: string } }) {
 
       homeChannel.unbind();
       pusherClient.unsubscribe(`presence-home-${hostUsername}`);
+      
     };
   }, []);
   // #endregion

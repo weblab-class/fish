@@ -236,11 +236,12 @@ export default class exterior extends Scene {
         console.log("OH")
         await remainingInitialization();
         console.log("YAY")
-
         useIsFirstLoadedStore.setState({ isFirstLoaded: false });
         resolve("hello");
       });
     }
+
+    useIsFirstLoadedStore.setState({ isFirstLoaded: false });
   }
 
   async update() {
