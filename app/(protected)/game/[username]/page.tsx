@@ -336,15 +336,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
       });
       hostChannel.bind(
         "pusher:member_removed",
-        (member: { id: any; info: any }) => {
+        async (member: { id: any; info: any }) => {
           if (member.info.username === params.username) {
-            const deleteGame = async () => {
-              if (!host?.data) return;
-              await deleteSentenceSymphony.mutateAsync({
-                hostId: host?.data[0]._id.toString(),
-              });
-            };
-            deleteGame();
+            if (!host?.data) return;
+            await deleteSentenceSymphony.mutateAsync({
+              hostId: host?.data[0]._id.toString(),
+            });
           }
         },
       );
@@ -925,7 +922,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
   return (
     <div className="h-screen w-full overflow-hidden bg-[url('/backgrounds/brownBg.png')] bg-cover bg-no-repeat">
       {/* music */}
-      <audio src="/music/game1-the-gaming-of-the-shrew-zac-tiessen.mp3" autoPlay loop></audio>
+      <audio
+        src="/music/game1-the-gaming-of-the-shrew-zac-tiessen.mp3"
+        autoPlay
+        loop
+      ></audio>
       {/* header with timer, prompt, and round number */}
       <div className="flex w-full justify-center">
         <div className="absolute h-fit w-full flex-row items-center rounded-b-2xl bg-[url('/backgrounds/tanTransparentBg.png')] bg-cover bg-no-repeat">
