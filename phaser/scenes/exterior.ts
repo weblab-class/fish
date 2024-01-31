@@ -61,10 +61,8 @@ export default class exterior extends Scene {
 
   create() {
 
-    // pusher setup
-    const homeChannel= pusherClient.subscribe(`presence-home-${this.hostUsername}`) as PresenceChannel;
 
-    this.registry.set("homeChannel",homeChannel)
+
 
     // create one-tile tilemap
     const map = this.make.tilemap({
@@ -169,6 +167,9 @@ export default class exterior extends Scene {
 
     this.cameras.main.setZoom(1.2, 1.2);
 
+
+
+
     // set bounds on player movement
     player.setCollideWorldBounds(true);
     this.physics.world.enable(player);
@@ -199,8 +200,8 @@ export default class exterior extends Scene {
     });
     this.registry.set("otherPlayers", otherPlayers);
 
-    // controls
-    this.registry.set("cursors", this.input.keyboard!.createCursorKeys());
+
+
     this.registry.set("physics", this.physics);
 
     // create animations
@@ -234,6 +235,21 @@ export default class exterior extends Scene {
     const updatedShowEasel = useHomeStore.getState().showEaselPopup;
     const updatedShowHelp = useHomeStore.getState().showHelpPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
+    const up= self.input.keyboard!.addKey("Up");
+    const down= self.input.keyboard!.addKey("Down");
+    const left= self.input.keyboard!.addKey("Left");
+    const right= self.input.keyboard!.addKey("Right");
+
+    // if (self.input.keyboard){
+    //   self.input.keyboard.addKey('SPACE').on('down', function (event:any) {
+
+    //       event?.stopPropagation()
+
+
+    // }, self);
+
+    // }
+
 
 
 
@@ -275,9 +291,6 @@ export default class exterior extends Scene {
 
     this.frameCounter++;
 
-    if (this.hostUsername==this.username){
-// ADD CONDITIONS TO PHASER EVENTS
-    }
     self.physics.add.overlap(player, mailbox, () => {
       const keyObj = self.input.keyboard!.addKey("Enter");
       const isDown = keyObj.isDown;
@@ -301,14 +314,18 @@ export default class exterior extends Scene {
     const isOverlappingMail=self.physics.world.overlap(player,mailbox)
     const isOverlappingEasel=self.physics.world.overlap(player,easel)
 
+
+
     // displays enter house text when overlapping
-    if (isOverlappingDoor && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
+    if (isOverlappingDoor && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp && this.hostUsername==this.username) {
       useHomeStore.setState({ text: "Press [Enter] to enter" });
-      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
+      let keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
+
+
       // enters house when enter key is pressed
-      if (isDown && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
+      if (isDown && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp && this.hostUsername==this.username) {
         this.scene.stop("exterior");
         this.scene.start("interior");
         // this.game.destroy(true);
@@ -321,14 +338,14 @@ export default class exterior extends Scene {
       if (isDown) {
         useHomeStore.getState().showPopup("invite");
       }
-    } else if (isOverlappingMail && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp){
+    } else if (isOverlappingMail && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp  && this.hostUsername==this.username){
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to open mailbox" });
       if (isDown) {
         useHomeStore.getState().showPopup("mail");
       }
-    } else if (isOverlappingEasel && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp){
+    } else if (isOverlappingEasel && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp && this.hostUsername==this.username){
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to paint" });
@@ -338,28 +355,25 @@ export default class exterior extends Scene {
     }
     else {
       useHomeStore.setState({ text: "" });
+
     }
 
-    // access arrow keys
-    const cursors = self.registry.get(
-      "cursors",
-    ) as Phaser.Types.Input.Keyboard.CursorKeys;
 
     // player movement
 
-    if (cursors.left.isDown) {
+    if (left.isDown) {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityX(-200);
 
       player.anims.play("move", true);
-    } else if (cursors.right.isDown) {
+    } else if (right.isDown) {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityX(200);
 
       player.anims.play("move", true);
-    } else if (cursors.up.isDown) {
+    } else if (up.isDown) {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-200);
 
       player.anims.play("move", true);
-    } else if (cursors.down.isDown) {
+    } else if (down.isDown) {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(200);
 
       player.anims.play("move", true);
@@ -371,7 +385,7 @@ export default class exterior extends Scene {
     }
 
     if (
-      cursors.up.isDown &&
+      up.isDown &&
       (player.body! as Phaser.Physics.Arcade.Body).touching.down
     ) {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-330);

@@ -27,7 +27,7 @@ export default function loadSprites(scene: Phaser.Scene) {
       frameHeight: 110,
     });
     scene.load.spritesheet("penguin", "/players/penguin.png", {
-      frameWidth: 82,
+      frameWidth: 81.7,
       frameHeight: 122,
     });
     scene.load.spritesheet("cat", "/players/cat.png", {
@@ -56,12 +56,12 @@ export default function loadSprites(scene: Phaser.Scene) {
     });
 
     scene.load.on('progress', function (value: any) {
-      console.log("progress",value)
+
   });
 
 
     scene.load.on('fileprogress', function (file: { src: any; }) {
-      console.log("sprites",file.src);
+
   });
 
   }
