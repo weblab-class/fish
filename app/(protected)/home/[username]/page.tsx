@@ -265,14 +265,8 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "pusher:member_removed",
-      async (leavingPlayer: { id: string; info: object }) => {
-        // if redirecting to a game, then don't clear anything because we might want to come back
-        if (useGameRedirectStoreState.getState().gameRedirect) {
-          useGameRedirectStoreState.setState({ gameRedirect: false });
-          return;
-        }
-
-        if (leavingPlayer.id === session!.user.uid) {
+      async (leavingPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        const resetAndDelete = async () => {
           // reset multiplayer store
           //  - the store will be emptied, but will be populated by default values if they go back to their home
           useMultiplayerStore.getState().resetData();
@@ -283,8 +277,24 @@ export default function Home({ params }: { params: { username: string } }) {
             hostId: host.data[0]._id.toString(),
             guestId: leavingPlayer.id,
           });
+        }
+
+        // if redirecting to a game, then don't clear anything because we might want to come back
+        if (useGameRedirectStoreState.getState().gameRedirect) {
+          useGameRedirectStoreState.setState({ gameRedirect: false });
           return;
         }
+
+        if (leavingPlayer.id === session!.user.uid) {
+          return await resetAndDelete();
+        }
+        // now if the host leaves, we need to kick everyone out
+        if (leavingPlayer.info.username === hostUsername && leavingPlayer.id !== session?.user.uid) {
+          await resetAndDelete();
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+          return;
+        }
+
 
         // remove the player from their store
         useMultiplayerStore.getState().deleteOther(leavingPlayer.id);

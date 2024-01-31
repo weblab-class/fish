@@ -10,7 +10,6 @@ import {
 import { getDefaultPosition } from "@/phaser/settings/functions";
 import axios, { AxiosResponse } from "axios";
 
-
 // PLAYER DATA
 const getDefaultPlayerInfo = (
   uid: string,
@@ -52,7 +51,7 @@ type MultiplayerStoreStateFunc = {
     phaserSprite: Phaser.GameObjects.Sprite,
     hostUsername: string,
     scene: PlayerRoomStatus,
-  ) => Promise<AxiosResponse<any, any>> | void;
+  ) => (() => Promise<void>) | void;
   switchScene: (newScene: PlayerRoomStatus) => void;
   addOrUpdateOther: (playerInfo: PlayerInfo) => void;
   /** NOTE: Does not delete the sprite out of the screen. Also, does not  */
@@ -123,14 +122,16 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
       const host = Array.from(get().otherPlayers.values())
         .filter(({ username }) => hostUsername === username)
         .at(0);
-        console.log("host",host)
+      console.log("host", host);
       if (host && host.roomStatus !== defaultPlayerInfo.roomStatus) {
-        return axios.post("/api/pusher/home/changeScene", {
-          channelName: `presence-home-${hostUsername}`,
-          newScene: host.roomStatus,
-          oldScene: "exterior",
-          targetId: uid,
-        } as IChangeSceneParams);
+        return async () => {
+          await axios.post("/api/pusher/home/changeScene", {
+            channelName: `presence-home-${hostUsername}`,
+            newScene: host.roomStatus,
+            oldScene: "exterior",
+            targetId: uid,
+          } as IChangeSceneParams);
+        };
       }
     },
     switchScene: (newScene) => {

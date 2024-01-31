@@ -227,7 +227,7 @@ export default class exterior extends Scene {
 
       return new Promise(async (resolve) => {
         console.log("OH")
-        await remainingInitialization;
+        await remainingInitialization();
         console.log("YAY")
         resolve("hello");
       });
