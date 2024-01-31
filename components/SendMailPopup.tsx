@@ -32,7 +32,10 @@ export default function SendMailPopup() {
 
     if (!receiver[0]) {
       setNotFound(true);
-      setTimeout(() => setNotFound(false), 1000);
+      setTimeout(() => {
+        setNotFound(false);
+        setLoading(false);
+      }, 1000);
     } else {
       await sendMail.mutateAsync({
         senderId: session!.user.uid,
