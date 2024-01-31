@@ -30,7 +30,6 @@ export default class exterior extends Scene {
 
   preload() {
     // background
-    console.log("preloading")
     this.load.image("tiles", "/backgrounds/homeBg.png");
     this.load.tilemapTiledJSON("map", "/backgrounds/background.json");
 
@@ -254,7 +253,7 @@ export default class exterior extends Scene {
 
 
 
-    if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
+    if (this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
       
       updateOtherPlayers(this, otherPlayers);
@@ -362,6 +361,6 @@ export default class exterior extends Scene {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-330);
     }
 
-    sendPositionData(this, player);
+    sendPositionData(player);
   }
 }

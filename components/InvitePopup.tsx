@@ -252,7 +252,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
       )}
 
       <div
-        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url('/backgrounds/brightRedBg.png')] hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
         onClick={() => {
           setDefault();
         }}
