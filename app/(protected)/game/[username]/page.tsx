@@ -275,6 +275,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(gameRoomExists, "GRE");
+  }, [gameRoomExists]);
+
   // events after host and player data are loaded
   useEffect(() => {
     // makes sure timer is stopped before unloading
@@ -542,8 +546,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
       timerDuration = 10;
     }
 
+    console.log("past gameroomexists");
     // start timer after new round
     if (isHost) {
+      console.log("timer starting called");
       const timer = async () => {
         await axios.post(`/api/pusher/symphony/gameTimer`, {
           time: timerDuration,
