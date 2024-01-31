@@ -380,6 +380,7 @@ export default function Home({ params }: { params: { username: string } }) {
         if (oldScene === newScene) return;
         if (targetId && targetId !== session!.user.uid) return;
 
+        // setDefault();
         const player = (await game.registry.get(
           "player",
         )) as Phaser.GameObjects.Sprite;
