@@ -20,6 +20,8 @@ export default function TitlePageOnboarding() {
   const [sprite, setSprite] = useState("select");
   const { register, handleSubmit, setError } = useForm<Input>();
   const [spriteSelected, setSpriteSelected] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
   const createPlayerMutation = useCreatePlayer();
@@ -40,6 +42,8 @@ export default function TitlePageOnboarding() {
       }, 2000);
     }
 
+    setLoading(true);
+
     try {
       await createPlayerMutation.mutateAsync({
         _id: session!.user.uid,
@@ -49,8 +53,11 @@ export default function TitlePageOnboarding() {
 
       router.push(`/home/${data.username}`);
     } catch (error) {
-      alert(error);
-      console.log(error);
+      setIsError(true);
+      setLoading(false);
+      setTimeout(() => {
+        setIsError(false);
+      }, 2000);
     }
   };
   return (
@@ -91,6 +98,7 @@ export default function TitlePageOnboarding() {
                 placeholder="Enter a Username"
                 minLength={3}
                 required
+                disabled={loading}
                 maxLength={12}
                 pattern="^[a-zA-Z0-9]*$"
                 title="Only letters and numbers are allowed."
@@ -98,15 +106,24 @@ export default function TitlePageOnboarding() {
                 {...register("username")}
               ></input>
             </div>
+
             <div className="h-full w-full">
               <div className="flex items-center justify-center">
-                <button className="m-5 rounded-lg bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline hover:bg-[url('/backgrounds/pinkBg.png')] ">
-                  Confirm
+                <button
+                  disabled={loading}
+                  className="m-5 rounded-lg bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline hover:bg-[url('/backgrounds/pinkBg.png')] "
+                >
+                  {loading ? "Loading..." : "Confirm"}
                 </button>
               </div>
               {!spriteSelected && (
                 <p className="bg-[url('/backgrounds/whiteGrayBg.png')] text-center text-5xl text-red-500">
                   Please select an animal!
+                </p>
+              )}
+              {isError && (
+                <p className="bg-[url('/backgrounds/whiteGrayBg.png')] text-center text-5xl text-red-500">
+                  Username is taken!
                 </p>
               )}
             </div>
