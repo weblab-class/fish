@@ -55,6 +55,9 @@ export default function TitlePageOnboarding() {
   };
   return (
     <div>
+      {/* music */}
+      <audio src="/music/game2-floating-cat-michael-grubb.mp3" autoPlay loop></audio>
+
       {/* if player if new */}
 
       <div

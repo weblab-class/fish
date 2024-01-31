@@ -46,6 +46,8 @@ export default function TitlePageLogin() {
         </h1>
       </div>
       <div className="flex items-center justify-center">
+        {/* music */}
+        <audio src="/music/title-screen-my-little-world-simon-folwar.mp3" autoPlay loop></audio>
         {/* title of game */}
         {/* <div className="absolute top-0 flex h-1/2 w-1/2 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div> */}
         <div className="absolute inset-y-8% flex h-2/5 w-2/5 items-center justify-center bg-[url('/backgrounds/fishPinkText.png')] bg-contain bg-center bg-no-repeat"></div>
