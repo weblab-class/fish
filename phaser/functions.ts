@@ -59,76 +59,77 @@ export function loadSprites(scene: Phaser.Scene) {
     frameHeight: 122,
   });
 
-    scene.load.on('progress', function (value: any) {
+  scene.load.on("progress", function (value: any) {});
 
-  });
+  scene.load.on("fileprogress", function (file: { src: any }) {});
+}
 
+export function updateOtherPlayers(
+  scene: Scene,
+  otherPlayers: Map<string, PlayerInfo>,
+) {
+  const currentPlayers: Map<string, true> = new Map(); // we don't use value, but just the map key for O(1) access
 
-    scene.load.on('fileprogress', function (file: { src: any; }) {
+  // update existing players
+  for (const [otherUid, otherInfo] of Array.from(otherPlayers)) {
+    const playerKey = `player-${otherUid}-${scene.scene.key}`;
 
-  });
-
-  }
-
-  export function updateOtherPlayers(scene: Scene, otherPlayers: Map<string, PlayerInfo>) {
-    const currentPlayers: Map<string, true> = new Map(); // we don't use value, but just the map key for O(1) access
-  
-    // update existing players
-    for (const [otherUid, otherInfo] of Array.from(otherPlayers)) {
-      const playerKey = `player-${otherUid}-${scene.scene.key}`;
-  
-      const otherSprite = scene.registry.get(playerKey) as
-        | Phaser.GameObjects.Sprite
-        | undefined;
-      if (otherSprite) {
-        otherSprite.setPosition(otherInfo.x, otherInfo.y);
-      } else {
-        // joined players
-        scene.registry.set(
-          playerKey,
-          scene.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite),
-        );
-      }
-  
-      currentPlayers.set(playerKey, true);
+    const otherSprite = scene.registry.get(playerKey) as
+      | Phaser.GameObjects.Sprite
+      | undefined;
+    if (otherSprite) {
+      otherSprite.setPosition(otherInfo.x, otherInfo.y);
+    } else {
+      // joined players
+      scene.registry.set(
+        playerKey,
+        scene.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite),
+      );
     }
-  
-    const registryOthers = Object.getOwnPropertyNames(
-      scene.registry.getAll(),
-    ).filter((key) => key.startsWith("player-"));
-  
-    // delete people who have left
-    for (const regPlayerKey of registryOthers) {
-      if (currentPlayers.has(regPlayerKey)) continue;
-    
-      const oldSprite = scene.registry.get(
-        regPlayerKey,
-      ) as Phaser.GameObjects.Sprite;
-      scene.registry.remove(regPlayerKey);
 
-      oldSprite.destroy(true); 
-    }
+    currentPlayers.set(playerKey, true);
   }
-  
-  export function sendPositionData(player: Phaser.GameObjects.Sprite) {
-      // stores current player's location
-      const x = player.x;
-      const y = player.y;
-  
-      // stores current player's previous location
-      const oldPosition = player.data?.get("oldPosition") as
-        | { x: number; y: number }
-        | undefined;
-  
-      // checks if position changed and if we are in multiplayer mode
-      if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y) && useMultiplayerStore.getState().otherPlayers.size > 0) {
-        // send data to everyone
-        useMultiplayerStore.getState().sendMyData({ });
-      }
-  
-      // saves old position
-      player.data?.set("oldPosition", {
-        x,
-        y,
-      });
+
+  const registryOthers = Object.getOwnPropertyNames(
+    scene.registry.getAll(),
+  ).filter((key) => key.startsWith("player-"));
+
+  // delete people who have left
+  for (const regPlayerKey of registryOthers) {
+    if (currentPlayers.has(regPlayerKey)) continue;
+
+    const oldSprite = scene.registry.get(
+      regPlayerKey,
+    ) as Phaser.GameObjects.Sprite;
+    scene.registry.remove(regPlayerKey);
+
+    oldSprite.destroy(true);
   }
+}
+
+export function sendPositionData(player: Phaser.GameObjects.Sprite) {
+  // stores current player's location
+  const x = player.x;
+  const y = player.y;
+
+  // stores current player's previous location
+  const oldPosition = player.data?.get("oldPosition") as
+    | { x: number; y: number }
+    | undefined;
+
+  // checks if position changed and if we are in multiplayer mode
+  if (
+    (!oldPosition ||
+      (oldPosition && (x !== oldPosition.x || y !== oldPosition.y))) &&
+    useMultiplayerStore.getState().otherPlayers.size > 0
+  ) {
+    // send data to everyone
+    useMultiplayerStore.getState().sendMyData({});
+  }
+
+  // saves old position
+  player.data?.set("oldPosition", {
+    x,
+    y,
+  });
+}

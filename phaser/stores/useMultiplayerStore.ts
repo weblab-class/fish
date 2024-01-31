@@ -119,10 +119,10 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
 
       phaserSprite.setPosition(defaultPlayerInfo.x, defaultPlayerInfo.y);
 
-      const host = Array.from(get().otherPlayers.values())
+      const otherPlayers = Array.from(get().otherPlayers.values());
+      const host = otherPlayers
         .filter(({ username }) => hostUsername === username)
         .at(0);
-      console.log("host", host);
       if (host && host.roomStatus !== defaultPlayerInfo.roomStatus) {
         return async () => {
           await axios.post("/api/pusher/home/changeScene", {
