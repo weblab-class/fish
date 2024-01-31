@@ -13,7 +13,7 @@ import {
   ICustomError,
 } from "@/types";
 import { MAX_HOME_PLAYERS } from "@/phaser/settings/consts";
-import { addPlayerToRoom, sendInvite } from "@/services/react-query/mutations/player-room";
+import { updateRoomStatus, sendInvite, addPlayerToRoom } from "@/services/react-query/mutations/player-room";
 import { getDefaultPosition } from "@/phaser/settings/functions";
 import { getPlayer, getPlayerByUsername } from "@/services/react-query/queries/player";
 import { getPlayerRoom } from "@/services/react-query/queries/player-room";
