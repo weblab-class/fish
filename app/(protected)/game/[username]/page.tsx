@@ -256,6 +256,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     );
 
     gameChannel.bind("gameRoomCreated", () => {
+      console.log("bind created");
       setGameRoomExists(true);
     });
 
@@ -321,6 +322,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         setGameRoomExists(true);
       };
       createSentenceSymphonyFunc();
+      console.log("create sentence symp");
 
       if (isHost) {
         handleGenerate();
