@@ -1,8 +1,8 @@
 /**
  * Load in all of the player sprites.
- * 
- * **NOTE: You only need to use this in a preload lifecycle event in one scene. However, feel free to use them in each.** 
- * 
+ *
+ * **NOTE: You only need to use this in a preload lifecycle event in one scene. However, feel free to use them in each.**
+ *
  * @param scene The scene you want to use this function in.
  */
 export default function loadSprites(scene: Phaser.Scene) {
@@ -54,4 +54,14 @@ export default function loadSprites(scene: Phaser.Scene) {
       frameWidth: 75,
       frameHeight: 122,
     });
+
+    scene.load.on('progress', function (value: any) {
+      console.log("progress",value)
+  });
+
+
+    scene.load.on('fileprogress', function (file: { src: any; }) {
+      console.log("sprites",file.src);
+  });
+
   }

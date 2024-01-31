@@ -27,7 +27,7 @@ export async function forceSubmissions({ hostId }: ForceSubmissionsParams) {
   const notSubmittedIds = allIds.filter(
     (playerId) => !submittedIds.includes(playerId),
   );
-  console.log("notSubmittedIds", notSubmittedIds);
+  console.log("notSubmittedIds", notSubmittedIds, voteOptions);
 
   const completeVoteOptions = [
     ...voteOptions,

@@ -37,6 +37,7 @@ export async function updateVote({
     voteIds: [...creatorOptData.voteIds, voterId],
   };
 
+  console.log("UPDATING VOTE")
   return await axios.post(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/db/sentence-symphony/update`,
     {

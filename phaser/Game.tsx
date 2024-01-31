@@ -27,12 +27,16 @@ export default function Game({
 }: IGameProps) {
   const parentEl = useRef<HTMLDivElement>(null);
   const [text, setData] = useHomeStore((state) => [state.text, state.setData]);
+  useEffect(() => {
+    console.log("starting game");
+  }, []);
 
   useEffect(() => {
     if (!parentEl.current) return;
 
+    console.log("gameconfig");
     const gameConfig: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
+      type: Phaser.CANVAS,
       parent: "phaser-container",
       width: 2000,
       height: 3000,
@@ -47,13 +51,18 @@ export default function Game({
         default: "arcade",
         arcade: {
           gravity: { y: 0 },
-          debug: true,
+          debug: false,
         },
       },
       scene: [
-        new exterior(hostUsername, playerId.toString(), playerUsername, playerAnimalSprite),
+        new exterior(
+          hostUsername,
+          playerId.toString(),
+          playerUsername,
+          playerAnimalSprite,
+        ),
         interior,
-        studyroom,
+        new studyroom(hostUsername),
       ],
       dom: {
         createContainer: true,

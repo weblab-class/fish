@@ -4,7 +4,7 @@ import { useHomeStore } from "@/phaser/stores";
 import { useSendInvite } from "@/services/react-query/mutations/player-room";
 import { useGetPlayerRoom } from "@/services/react-query/queries/player-room";
 import { useRouter } from "next/navigation";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   getPlayer,
@@ -12,14 +12,16 @@ import {
   useGetPlayerByUsername,
 } from "@/services/react-query/queries/player";
 import type { Player } from "@/services/mongo/models";
-import { Menu, Transition } from "@headlessui/react";
-import {
-  FaChevronDown,
-  FaChevronUp,
-  FaPlay,
-  FaPlayCircle,
-} from "react-icons/fa";
-import { getGames } from "@/phaser/settings/functions";
+import { pusherClient } from "@/services/pusher";
+import { PresenceChannel } from "pusher-js";
+import { ISendPlayerDataParams, IRedirectParams } from "@/phaser/types";
+import axios from "axios";
+
+interface IInvitePopup {
+  hostId: string;
+  hostUsername: string;
+  isHost: boolean;
+}
 
 async function getGuests(guestIds: string[]) {
   const guests = await Promise.all(guestIds.map((id) => getPlayer(id)!));
@@ -29,21 +31,18 @@ async function getGuests(guestIds: string[]) {
   return filteredGuests;
 }
 
-interface IInvitePopup {
-  hostId: string;
-  hostUsername: string;
-}
-
-export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
+const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
   const sendInviteMutation = useSendInvite();
   const { data: hostRoom, refetch: refetchHostRoom } = useGetPlayerRoom(
     hostId,
     false,
   );
-  const guestListIds = hostRoom?.data?.whitelist ?? null;
+  const guestListIds = useMemo(
+    () => hostRoom?.data?.whitelist ?? null,
+    [JSON.stringify(hostRoom?.data?.whitelist ?? null)],
+  );
   const [guests, setGuests] = useState<Player[]>([]);
-
-  // console.log(guestListIds, guests);
+  const [loading, setLoading] = useState(false);
 
   const {
     register: registerInvite,
@@ -61,6 +60,10 @@ export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
 
   const router = useRouter();
   const [setDefault] = useHomeStore((state) => [state.setDefault]);
+  const [isMulti, setIsMulti] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [guestNotFound, setGuestNotFound] = useState(false);
+  const [hostNotFound, setHostNotFound] = useState(false);
 
   const onInviteSubmit: SubmitHandler<{ inviteUsername: string }> = async (
     data,
@@ -68,20 +71,35 @@ export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
     const username = data.inviteUsername;
     const { data: guest } = await getPlayerByUsername(username);
     if (!guest) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!guest[0]) {
+      setGuestNotFound(true);
+      setTimeout(() => setGuestNotFound(false), 1000);
+    } else {
+      await sendInviteMutation.mutateAsync({
+        hostId: hostId,
+        guestId: guest[0]._id.toString(),
+      });
+      resetInvite("inviteUsername");
 
-    await sendInviteMutation.mutateAsync({
-      hostId: hostId,
-      guestId: guest[0]._id.toString(),
-    });
-    resetInvite("inviteUsername");
-
-    refetchHostRoom();
+      refetchHostRoom();
+    }
   };
-  const onJoinSubmit: SubmitHandler<{ joinUsername: string }> = ({
+  const onJoinSubmit: SubmitHandler<{ joinUsername: string }> = async ({
     joinUsername,
   }) => {
-    router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`);
-    resetJoin("joinUsername");
+    // router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`);
+    const { data: host } = await getPlayerByUsername(joinUsername);
+    if (!host) throw new Error("Invalid user!"); // TODO add error message to form
+    if (!host[0]) {
+      setHostNotFound(true);
+      setTimeout(() => setHostNotFound(false), 1000);
+    } else {
+      window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}/home/${joinUsername}`;
+      resetJoin("joinUsername");
+      setDefault();
+    }
+
+    // setDefault();
   };
   // closes popup when escape key is pressed
   useEffect(() => {
@@ -100,11 +118,13 @@ export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
 
   useEffect(() => {
     refetchHostRoom();
+    const homeChannel = pusherClient.subscribe(
+      `presence-home-${hostUsername}`,
+    ) as PresenceChannel;
+    if (homeChannel.members.count > 1) setIsMulti(true);
   }, []);
 
   useEffect(() => {
-    // console.log(guestListIds);
-
     (async () => {
       if (guestListIds?.length) {
         setGuests(await getGuests(guestListIds));
@@ -120,19 +140,26 @@ export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
         className="-left-1/4 w-1/2 "
         onSubmit={handleInvite(onInviteSubmit)}
       >
-        <div className="relative h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+        <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
           <p className="h-fit w-full text-5xl text-red-950 underline">
             Add Player&apos;s to Guest List
           </p>
           <p className="text-2xl text-red-900">
             Control who can visit your habitat!
           </p>
+          {guestNotFound && (
+            <p className="w-full text-center text-2xl text-red-500">
+              User does not exist
+            </p>
+          )}
           <input
             className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
             placeholder="Enter player's username"
+            autoComplete="off"
             {...registerInvite("inviteUsername")}
           />
-          <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white">
+
+          <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
             Invite
           </button>
 
@@ -150,33 +177,82 @@ export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
               <div>Add your animal friends to your habitat!</div>
             )}
           </div>
-          <div className="absolute bottom-5 right-5">
-            <GameMenuPopover hostUsername={hostUsername} />
-          </div>
         </div>
       </form>
 
-      <form className="-left-1/4 w-1/2 " onSubmit={handleJoin(onJoinSubmit)}>
-        <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
-          <img src="/icons/strawberryCow.png"></img>
-          <p className="h-fit w-full text-5xl text-red-950 underline">
-            Visit a Player&apos;s Habitat
-          </p>
-          <p className="text-2xl text-red-900">
-            Make sure you are on the Players Guest List!
-          </p>
-          <input
-            className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
-            placeholder="Enter player's username"
-            {...registerJoin("joinUsername")}
-          />
-          <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white">
-            Join
-          </button>
+      {isHost && isMulti ? (
+        <div className="h-full w-1/2 rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+          <div className="h-3/4 w-full bg-[url(/icons/sentenceIcon.png)] bg-contain bg-center bg-no-repeat" />
+
+          <div className="flex items-center justify-center">
+            <button
+              disabled={loading}
+              className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+              onClick={async () => {
+                setLoading(true);
+                await axios.post(
+                  `${process.env.NEXT_PUBLIC_DOMAIN}/api/pusher/shared/redirect`,
+                  {
+                    channelName: `presence-home-${hostUsername}`,
+                    redirectLink: `${process.env.NEXT_PUBLIC_DOMAIN}/game/${hostUsername}`,
+                  } as IRedirectParams,
+                );
+              }}
+            >
+              {loading ? "Loading..." : "Start Game with Current Visitors"}
+            </button>
+          </div>
         </div>
-      </form>
+      ) : isHost ? (
+        <form className="-left-1/4 w-1/2 " onSubmit={handleJoin(onJoinSubmit)}>
+          <div className="h-full w-full rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+            <img src="/icons/strawberryCow.png"></img>
+            <p className="h-fit w-full text-5xl text-red-950 underline">
+              Visit a Player&apos;s Habitat
+            </p>
+            <p className="text-2xl text-red-900">
+              Make sure you are on the Players Guest List!
+            </p>
+            <input
+              autoComplete="off"
+              className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
+              placeholder="Enter player's username"
+              {...registerJoin("joinUsername")}
+            />
+            <button className="ml-2 mt-4 h-14 w-28 rounded-3xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline">
+              Join
+            </button>
+            {hostNotFound && (
+              <p className="w-full text-center text-2xl text-red-500">
+                User does not exist
+              </p>
+            )}
+          </div>
+        </form>
+      ) : (
+        <div className="h-full w-1/2 rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4">
+          <div className="h-3/4 w-full bg-[url(/icons/sentenceIcon.png)] bg-contain bg-center bg-no-repeat" />
+
+          <div className="flex items-center justify-center">
+            <button
+              disabled={loading}
+              className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-4 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+              onClick={async () => {
+                setLoading(true);
+                router.push(`${process.env.NEXT_PUBLIC_DOMAIN}`);
+
+                // setDefault();
+                window.location.reload();
+              }}
+            >
+              {loading ? "Going Home.." : "Go Home"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
-        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white hover:cursor-pointer hover:bg-[url('/backgrounds/brightRedBg.png')]"
+        className="absolute right-0 top-0 z-30 flex h-16 w-16 items-center justify-center rounded-2xl bg-[url('/backgrounds/redBg.png')] text-3xl text-white outline-white hover:cursor-pointer hover:bg-[url('/backgrounds/brightRedBg.png')] hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
         onClick={() => {
           setDefault();
         }}
@@ -185,58 +261,6 @@ export default function InvitePopup({ hostId, hostUsername }: IInvitePopup) {
       </div>
     </div>
   );
-}
+};
 
-interface IGameMenuPopoverProps {
-  hostUsername: string;
-}
-
-function GameMenuPopover({ hostUsername }: IGameMenuPopoverProps) {
-  const router = useRouter();
-
-  const games = getGames(hostUsername);
-
-  return (
-    <Menu>
-      {({ open }) => (
-        <>
-          <Menu.Button className="flex flex-row items-center gap-3 rounded-2xl bg-[url(/backgrounds/brightRedBg.png)] px-4 py-2 text-[25px] text-white">
-            🎮 Play a game!
-            {!open ? <FaChevronUp /> : <FaChevronDown />}
-          </Menu.Button>
-          {/** https://headlessui.com/react/menu */}
-          <Transition
-            as={Fragment}
-            enter="transition ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
-          >
-            <Menu.Items className="absolute -top-2 right-0 flex h-max w-64 -translate-y-full transform flex-col gap-3 rounded-xl bg-white">
-              {games.map(({ game, desc, redirectLink, requirements }) => (
-                <Menu.Item>
-                  <div
-                    className="active-border group relative h-44 rounded-xl p-3 hover:border-green-400 hover:bg-slate-100"
-                    onClick={() => router.push(redirectLink)}
-                  >
-                    <h1 className="text-2xl">{game}</h1>
-                    <p className="block text-lg group-hover:hidden">{desc}</p>
-                    <p className="block text-md italic group-hover:hidden">{requirements}</p>
-                    <div className="-translate-y-5/12 absolute left-1/2 top-1/2 -translate-x-1/2 transform">
-                      <div className="hidden h-fit flex-row items-center justify-end gap-3 text-xl group-hover:flex">
-                        <FaPlayCircle scale="0.5" />
-                        <p>Let's PLAY!</p>
-                      </div>
-                    </div>
-                  </div>
-                </Menu.Item>
-              ))}
-            </Menu.Items>
-          </Transition>
-        </>
-      )}
-    </Menu>
-  );
-}
+export default InvitePopup;

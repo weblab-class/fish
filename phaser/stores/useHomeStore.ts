@@ -2,28 +2,43 @@ import { create } from "zustand";
 
 import type { StoreStateFunc } from "./types";
 
-type PopupType = "invite" | "mail";
+type PopupType = "invite" | "mail" | "easel" |"help";
 
 type HomeStoreStateData = {
   game: Phaser.Game | null;
-  showClouds: boolean;
+  hostUsername: string;
   showInvitePopup: boolean;
   showMailPopup: boolean;
+  showEaselPopup: boolean;
+  showHelpPopup:boolean;
   text: string;
 };
-const getDefaultHomeStoreStateData = () =>
-  ({
+const getDefaultHomeStoreStateData = (keepGame: boolean = true) => {
+  if (keepGame) {
+    return {
+      hostUsername: "Host",
+      showInvitePopup: false,
+      showMailPopup: false,
+      showEaselPopup: false,
+      showHelpPopup:false,
+      text: "",
+    } as HomeStoreStateData;
+  }
+
+  return {
     game: null,
-    showClouds: true,
+    hostUsername: "Host",
     showInvitePopup: false,
     showMailPopup: false,
+    showEaselPopup: false,
+    showHelpPopup:false,
     text: "",
-  }) as HomeStoreStateData;
+  } as HomeStoreStateData;
+};
 
 type HomeStoreStateFunc = {
   setDefault: () => void;
   showPopup: (popup: PopupType) => void;
-  setCloudVisbility: (visibility: boolean) => void;
 };
 
 type HomeStoreState = HomeStoreStateData &
@@ -36,7 +51,8 @@ type HomeStoreState = HomeStoreStateData &
 export const useHomeStore = create<HomeStoreState>((set) => ({
   ...getDefaultHomeStoreStateData(),
   setData: (data) => set({ ...data }),
-  setDefault: () => set({ showClouds: true, showInvitePopup: false, showMailPopup: false }),
+  /** Keep the game. If you need to remove the game, then specify using setData. */
+  setDefault: () => set((state) => ({ ...getDefaultHomeStoreStateData() })),
   showPopup: (popup) => {
     const data = getDefaultHomeStoreStateData();
     switch (popup) {
@@ -46,15 +62,14 @@ export const useHomeStore = create<HomeStoreState>((set) => ({
       case "mail":
         data.showMailPopup = true;
         break;
+      case "easel":
+        data.showEaselPopup = true;
+        break;
+        case "help":
+        data.showHelpPopup = true;
+        break;
     }
     set({ ...data });
   },
-  setCloudVisbility: (visbility) => {
-    if (visbility) {
-      return set({ showClouds: true })
-    }
-
-    set({ showClouds: false, showInvitePopup: false, showMailPopup: false })
-  },
-  resetData: () => ({ ...getDefaultHomeStoreStateData() }),
+  resetData: () => ({ ...getDefaultHomeStoreStateData(false) }),
 }));

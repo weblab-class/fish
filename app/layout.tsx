@@ -7,8 +7,11 @@ import ReactQueryProvider from "@/services/react-query/ReactQueryProvider";
 const gamja = Gamja_Flower({ subsets: ["latin"], weight: ["400"] });
 
 export const metadata: Metadata = {
-  title: "Fish",
+  title: "fish",
   description: "This is temporary.",
+  icons: {
+    icon: "/icons/fishIcon.png",
+  },
 };
 
 export default function RootLayout({

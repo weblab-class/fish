@@ -7,6 +7,7 @@ import { useHomeStore, useMultiplayerStore } from "../stores";
 import loadSprites from "../functions";
 import { FRAME_BUFFER } from "../settings/consts";
 import { PlayerInfo } from "../types";
+import { PresenceChannel } from "pusher-js";
 
 /**
  * The exterior scene in `/home`.
@@ -29,18 +30,42 @@ export default class exterior extends Scene {
 
   preload() {
     // background
+    console.log("preloading")
     this.load.image("tiles", "/backgrounds/homeBg.png");
     this.load.tilemapTiledJSON("map", "/backgrounds/background.json");
 
     // collision objects
     this.load.image("house", "/objects/house.png");
     this.load.image("swan", "/objects/swan.png");
+    this.load.image("mailbox","/objects/mailbox.png")
     this.load.image("transparent", "/backgrounds/transparent.png");
+    this.load.image("easel","/objects/easel.png")
+    this.load.image("exteriorTree","/objects/exteriorTree.png")
 
     loadSprites(this);
+    this.load.on('fileprogress', function (file: { src: any; }) {
+
+  });
+
+  this.load.on('progress', function (value: any) {
+
+});
+
+  this.load.on('complete', function () {
+
+  })
+
+
+
   }
 
   create() {
+
+    // pusher setup
+    const homeChannel= pusherClient.subscribe(`presence-home-${this.hostUsername}`) as PresenceChannel;
+
+    this.registry.set("homeChannel",homeChannel)
+
     // create one-tile tilemap
     const map = this.make.tilemap({
       key: "map",
@@ -50,6 +75,9 @@ export default class exterior extends Scene {
 
     const tileset = map.addTilesetImage("homeBg", "tiles");
     map.createLayer("layer", tileset!, 0, 0);
+
+
+
 
     // create static house and door
     const house = this.physics.add.image(730, 400, "house");
@@ -73,6 +101,34 @@ export default class exterior extends Scene {
     swan.setOrigin(0.5, 0.5);
     swan.setSize(120, 60);
     swan.setOffset(15, 0);
+
+    const mailbox=this.physics.add.image(500,510,"mailbox")
+    mailbox.setDepth(0);
+    mailbox.setImmovable(true);
+    mailbox.setOrigin(0.5, 0.5);
+    mailbox.setSize(60, 60);
+    mailbox.setOffset(0, 0);
+
+    const tree=this.physics.add.image(200,450,"exteriorTree")
+    tree.setDepth(0);
+    tree.setImmovable(true);
+    tree.setOrigin(0.5, 0.5);
+    tree.setSize(80, 200);
+    tree.setOffset(80, 40);
+
+
+    const easel=this.physics.add.image(400,700,"easel")
+    easel.setOrigin(0.5, 0.5);
+    easel.setSize(100, 100);
+    easel.setImmovable(true);
+    easel.setOffset(0, 30);
+
+    const easelTwo=this.physics.add.image(400,700,"easel")
+    easelTwo.setOrigin(0.5, 0.5);
+    easelTwo.setSize(80, 20);
+    easelTwo.setImmovable(true);
+    easelTwo.setOffset(0, 30);
+
 
     const lowerPond = this.physics.add.image(2240, 1200, "transparent");
     lowerPond.setImmovable(true);
@@ -105,8 +161,12 @@ export default class exterior extends Scene {
     this.physics.add.collider(player, midPond);
     this.physics.add.collider(player, upperPond);
 
+    this.physics.add.collider(player,tree)
+    this.physics.add.collider(player,easelTwo)
+
     // camera follows player
     this.cameras.main.startFollow(player);
+
     this.cameras.main.setZoom(1.2, 1.2);
 
     // set bounds on player movement
@@ -130,6 +190,8 @@ export default class exterior extends Scene {
     this.registry.set("player", player);
     this.registry.set("door", door);
     this.registry.set("swan", swan);
+    this.registry.set("mailbox", mailbox);
+    this.registry.set("easel",easel)
 
     // store other players
     const otherPlayers = this.physics.add.group({
@@ -164,10 +226,16 @@ export default class exterior extends Scene {
     const player = self.registry.get("player") as Phaser.GameObjects.Sprite;
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
     const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
+    const easel=self.registry.get("easel")as Phaser.GameObjects.Sprite;
+    const homeChannel=self.registry.get("homeChannel") as PresenceChannel
+    const mailbox = self.registry.get("mailbox") as Phaser.GameObjects.Sprite;
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
+    const updatedShowEasel = useHomeStore.getState().showEaselPopup;
+    const updatedShowHelp = useHomeStore.getState().showHelpPopup;
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
-    console.log(useMultiplayerStore.getState())
+
+
 
     if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
@@ -180,12 +248,12 @@ export default class exterior extends Scene {
 
         const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
         if (otherSprite) {
-          console.log(playerKey, "has updated")
+
           otherSprite.setPosition(otherInfo.x, otherInfo.y);
           // TODO set anim based on current animation frame here
         }
         else { // joined players
-          console.log(playerKey, "has joined")
+
           this.registry.set(playerKey, this.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite));
         }
 
@@ -198,7 +266,7 @@ export default class exterior extends Scene {
       for (const regPlayerKey of registryOthers) {
         if (currentPlayers.has(regPlayerKey)) continue;
 
-        console.log("DELETING");  // !BUG Does not work
+       // !BUG Does not work
         const oldSprite = this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite;
         this.registry.remove(regPlayerKey);
         oldSprite.destroy(true);  // TEST
@@ -206,6 +274,20 @@ export default class exterior extends Scene {
     }
 
     this.frameCounter++;
+
+    if (this.hostUsername==this.username){
+// ADD CONDITIONS TO PHASER EVENTS
+    }
+    self.physics.add.overlap(player, mailbox, () => {
+      const keyObj = self.input.keyboard!.addKey("Enter");
+      const isDown = keyObj.isDown;
+    });
+
+    self.physics.add.overlap(player, easel, () => {
+      const keyObj = self.input.keyboard!.addKey("Enter");
+      const isDown = keyObj.isDown;
+    });
+
 
     // detect overlap between player and door
     self.physics.add.overlap(player, door, () => {
@@ -216,28 +298,45 @@ export default class exterior extends Scene {
     // checks if player is overlapping with door
     const isOverlappingDoor = self.physics.world.overlap(player, door);
     const isOverlappingSwan = self.physics.world.overlap(player, swan);
+    const isOverlappingMail=self.physics.world.overlap(player,mailbox)
+    const isOverlappingEasel=self.physics.world.overlap(player,easel)
 
     // displays enter house text when overlapping
-    if (isOverlappingDoor) {
+    if (isOverlappingDoor && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
       useHomeStore.setState({ text: "Press [Enter] to enter" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
       // enters house when enter key is pressed
-      if (isDown && !updatedShowInvite && !updatedShowMail) {
+      if (isDown && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
         this.scene.stop("exterior");
         this.scene.start("interior");
         // this.game.destroy(true);
         useHomeStore.setState({ text: "" });
       }
-    } else if (isOverlappingSwan && !updatedShowInvite && !updatedShowMail) {
+    } else if (isOverlappingSwan && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to travel" });
       if (isDown) {
         useHomeStore.getState().showPopup("invite");
       }
-    } else {
+    } else if (isOverlappingMail && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp){
+      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
+      const isDown = keyObj.isDown;
+      useHomeStore.setState({ text: "Press [Enter] to open mailbox" });
+      if (isDown) {
+        useHomeStore.getState().showPopup("mail");
+      }
+    } else if (isOverlappingEasel && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp){
+      const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
+      const isDown = keyObj.isDown;
+      useHomeStore.setState({ text: "Press [Enter] to paint" });
+      if (isDown) {
+        useHomeStore.getState().showPopup("easel");
+      }
+    }
+    else {
       useHomeStore.setState({ text: "" });
     }
 

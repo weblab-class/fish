@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE (req: NextRequest){
         // Stop the timer
         clearInterval(intervalId);
-        console.log('cleared')
+
 
 
         return NextResponse.json({ status: 200 });
