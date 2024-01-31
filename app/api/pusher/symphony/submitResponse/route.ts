@@ -14,7 +14,6 @@ interface Input {
 export async function POST(req: NextRequest) {
     let { response, hostUsername } = (await req.json()) as Input;
     // let responseVotes=[]
-    console.log("submitting responses new", response)
 
     // response card component will send the response to db is they are clicked
     await pusherServer.trigger(`presence-ss-${hostUsername}`,'submitSentence',{response})

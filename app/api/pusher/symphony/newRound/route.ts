@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     // let responseVotes=[]
 
     // response card component will send the response to db is they are clicked
-    console.log("deleting responses")
+
     await pusherServer.trigger(`presence-ss-host-${hostUsername}`,'deleteResponses',{})
 
 
