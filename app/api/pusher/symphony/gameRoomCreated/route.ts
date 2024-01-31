@@ -11,7 +11,6 @@ interface Username {
 export async function POST(req: NextRequest) {
     const {hostUsername } = (await req.json()) as Username;
 
-    console.log("gameRoom called")
 
     await pusherServer.trigger(`presence-ss-${hostUsername}`, "gameRoomCreated", {
 

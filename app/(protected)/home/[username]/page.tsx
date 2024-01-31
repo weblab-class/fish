@@ -187,8 +187,7 @@ export default function Home({ params }: { params: { username: string } }) {
       document.removeEventListener("click", handleClickOutside);
     };
   });
-  // TO DO: REMOVEE
-  useEffect(() => {}, [currScene]);
+
   // redirect
   useEffect(() => {
     if (redirect) {
