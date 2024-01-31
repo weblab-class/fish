@@ -57,7 +57,7 @@ export default function Game({
           playerUsername,
           playerAnimalSprite,
         ),
-        new interior(hostUsername),
+        new interior(hostUsername, playerUsername),
         new studyroom(hostUsername),
       ],
       dom: {
