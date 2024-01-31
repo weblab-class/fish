@@ -432,12 +432,7 @@ export default function Home({ params }: { params: { username: string } }) {
           )}
           {/* exterior */}
           {currScene == "exterior" && (
-            <audio
-              id="music"
-              src="/music/exterior-pixel-playground-color-parade.mp3"
-              autoPlay
-              loop
-            ></audio>
+            <audio src="/music/game2-floating-cat-michael-grubb.mp3" autoPlay loop></audio>
           )}
           {/* studyroom */}
           <div className="absolute m-0 flex h-screen w-screen select-none items-center justify-center">
