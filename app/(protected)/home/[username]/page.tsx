@@ -22,7 +22,11 @@ import { CustomErrorCode, ICustomError, PlayerRoomStatus } from "@/types";
 import { PresenceChannelData } from "pusher";
 import { create } from "zustand";
 import axios from "axios";
-import { ISendPlayerDataParams, IRedirectParams, IChangeSceneParams } from "@/phaser/types";
+import {
+  ISendPlayerDataParams,
+  IRedirectParams,
+  IChangeSceneParams,
+} from "@/phaser/types";
 import ChatLog from "@/components/symphony/ChatLog";
 import { deletePlayerFromRoom } from "@/services/react-query/mutations/player-room";
 import ChatLogPhaser from "@/components/ChatLogPhaser";
@@ -357,17 +361,20 @@ export default function Home({ params }: { params: { username: string } }) {
           for (let _ = 0; _ < 2; ++_) {
             // @ts-ignore
             game.scene.getScene("studyroom").cleanup();
-    
+
             game.scene.switch(currSceneKey, newScene);
             setCurrScene(newScene);
           }
-        }
-        else {
+        } else {
+          // keep these two calls of switching scenes, needed for studyroom
+          game.scene.switch(currSceneKey, newScene);
           game.scene.switch(currSceneKey, newScene);
           setCurrScene(newScene);
         }
 
-        useMultiplayerStore.getState().switchScene(newScene as PlayerRoomStatus);
+        useMultiplayerStore
+          .getState()
+          .switchScene(newScene as PlayerRoomStatus);
         // const others = useMultiplayerStore.getState().otherPlayers;
         // const currNewScene = game.scene.getScene(newScene);
 
@@ -414,11 +421,11 @@ export default function Home({ params }: { params: { username: string } }) {
                     ) as Phaser.GameObjects.Sprite;
                     const currSceneKey = player.scene.scene.key;
 
-                    await axios.post("/api/pusher/home/changeScene", ({
+                    await axios.post("/api/pusher/home/changeScene", {
                       channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
                       oldScene: currSceneKey,
-                    } as IChangeSceneParams));
+                    } as IChangeSceneParams);
                   } else {
                     // if guest, the door takes you home
                     window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
@@ -487,12 +494,12 @@ export default function Home({ params }: { params: { username: string } }) {
                     "player",
                   ) as Phaser.GameObjects.Sprite;
                   const currSceneKey = player.scene.scene.key;
-                  
-                  await axios.post("/api/pusher/home/changeScene", ({
+
+                  await axios.post("/api/pusher/home/changeScene", {
                     channelName: `presence-home-${hostUsername}`,
                     newScene: "studyroom",
                     oldScene: currSceneKey,
-                  } as IChangeSceneParams));
+                  } as IChangeSceneParams);
                 }}
               />
               <div
@@ -518,11 +525,11 @@ export default function Home({ params }: { params: { username: string } }) {
                     ) as Phaser.GameObjects.Sprite;
                     const currSceneKey = player.scene.scene.key;
 
-                    await axios.post("/api/pusher/home/changeScene", ({
+                    await axios.post("/api/pusher/home/changeScene", {
                       channelName: `presence-home-${hostUsername}`,
                       newScene: "interior",
                       oldScene: currSceneKey,
-                    } as IChangeSceneParams));
+                    } as IChangeSceneParams);
                   }}
                 />
               </div>
