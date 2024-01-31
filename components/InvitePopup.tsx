@@ -14,7 +14,7 @@ import {
 import type { Player } from "@/services/mongo/models";
 import { pusherClient } from "@/services/pusher";
 import { PresenceChannel } from "pusher-js";
-import { ISendDataParams, IRedirectParams } from "@/phaser/types";
+import { ISendPlayerDataParams, IRedirectParams } from "@/phaser/types";
 import axios from "axios";
 
 interface IInvitePopup {

@@ -2,9 +2,9 @@ import axios from "axios";
 import { Scene } from "phaser";
 
 import { pusherClient } from "@/services/pusher";
-import { AnimalSprite } from "@/types";
+import { AnimalSprite, PlayerRoomStatus } from "@/types";
 import { useHomeStore, useMultiplayerStore } from "../stores";
-import loadSprites from "../functions";
+import loadSprites, { sendPositionData, updateOtherPlayers } from "../functions";
 import { FRAME_BUFFER } from "../settings/consts";
 import { PlayerInfo } from "../types";
 import { PresenceChannel } from "pusher-js";
@@ -61,8 +61,10 @@ export default class exterior extends Scene {
 
   create() {
 
+    // pusher setup
+    const homeChannel= pusherClient.subscribe(`presence-home-${this.hostUsername}`) as PresenceChannel;
 
-
+    this.registry.set("homeChannel",homeChannel)
 
     // create one-tile tilemap
     const map = this.make.tilemap({
@@ -148,7 +150,7 @@ export default class exterior extends Scene {
 
     // display player sprite
     const player = this.physics.add.sprite(-100, -100, this.sprite);  // position will change when calling initCurrent
-    useMultiplayerStore.getState().initCurrent(this.uid, this.username, this.sprite, player, this.hostUsername);
+    useMultiplayerStore.getState().initCurrent(this.uid, this.username, this.sprite, player, this.hostUsername, PlayerRoomStatus.EXTERIOR);
     useMultiplayerStore.getState().sendMyData({ });
 
     // collision between player and house
@@ -228,7 +230,6 @@ export default class exterior extends Scene {
     const door = self.registry.get("door") as Phaser.GameObjects.Sprite;
     const swan = self.registry.get("swan") as Phaser.GameObjects.Sprite;
     const easel=self.registry.get("easel")as Phaser.GameObjects.Sprite;
-    const homeChannel=self.registry.get("homeChannel") as PresenceChannel
     const mailbox = self.registry.get("mailbox") as Phaser.GameObjects.Sprite;
     const updatedShowInvite = useHomeStore.getState().showInvitePopup;
     const updatedShowMail = useHomeStore.getState().showMailPopup;
@@ -255,38 +256,8 @@ export default class exterior extends Scene {
 
     if (otherPlayers.size > 0 && this.frameCounter >= FRAME_BUFFER) {
       this.frameCounter = 0;
-
-      const currentPlayers: Map<string, true> = new Map();  // we don't use value, but just the map key for O(1) access
-
-      // update existing players
-      for (const [ otherUid, otherInfo ] of Array.from(otherPlayers)) {
-        const playerKey = `player-${otherUid}`;
-
-        const otherSprite = this.registry.get(playerKey) as Phaser.GameObjects.Sprite | undefined;
-        if (otherSprite) {
-
-          otherSprite.setPosition(otherInfo.x, otherInfo.y);
-          // TODO set anim based on current animation frame here
-        }
-        else { // joined players
-
-          this.registry.set(playerKey, this.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite));
-        }
-
-        currentPlayers.set(playerKey, true);
-      }
-
-      const registryOthers = Object.getOwnPropertyNames(this.registry.getAll()).filter(key => key.startsWith("player-"));
-
-      // delete people who have left
-      for (const regPlayerKey of registryOthers) {
-        if (currentPlayers.has(regPlayerKey)) continue;
-
-       // !BUG Does not work
-        const oldSprite = this.registry.get(regPlayerKey) as Phaser.GameObjects.Sprite;
-        this.registry.remove(regPlayerKey);
-        oldSprite.destroy(true);  // TEST
-      }
+      
+      updateOtherPlayers(this, otherPlayers);
     }
 
     this.frameCounter++;
@@ -331,7 +302,7 @@ export default class exterior extends Scene {
         // this.game.destroy(true);
         useHomeStore.setState({ text: "" });
       }
-    } else if (isOverlappingSwan && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp) {
+    } else if (isOverlappingSwan && !updatedShowInvite && !updatedShowMail && !updatedShowEasel && !updatedShowHelp  && this.hostUsername==this.username) {
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
       useHomeStore.setState({ text: "Press [Enter] to travel" });
@@ -391,25 +362,6 @@ export default class exterior extends Scene {
       (player.body! as Phaser.Physics.Arcade.Body).setVelocityY(-330);
     }
 
-    // stores current player's location
-    const x = player.x;
-    const y = player.y;
-
-    // stores current player's previous location
-    const oldPosition = player.data?.get("oldPosition") as
-      | { x: number; y: number }
-      | undefined;
-
-    // checks if position changed and if we are in multiplayer mode
-    if (oldPosition && (x !== oldPosition.x || y !== oldPosition.y) && useMultiplayerStore.getState().otherPlayers.size > 0) {
-      // send data to everyone
-      useMultiplayerStore.getState().sendMyData({ });
-    }
-
-    // saves old position
-    player.data?.set("oldPosition", {
-      x,
-      y,
-    });
+    sendPositionData(this, player);
   }
 }
