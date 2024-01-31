@@ -294,8 +294,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
     const playerId = player?.data?._id;
 
     if (hostId === playerId) {
+      console.log("changing isHost true");
       setIsHost(true);
     } else {
+      console.log("changing isHost false");
       setIsHost(false);
     }
 
