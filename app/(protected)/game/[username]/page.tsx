@@ -244,23 +244,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
           { playerId: member.id, gameName: member.info.username },
         ]);
 
-        const leaveMessage =
-          ":--" + member.info.username + " has left the game. --";
-        axios.post("/api/pusher/symphony/newMessage", {
-          message: "",
-          username: leaveMessage,
-          hostUsername: params.username,
-        });
-
         if (member.info.username === params.username) {
-          const deleteGame = async () => {
-            if (!host?.data) return;
-            await deleteSentenceSymphony.mutateAsync({
-              hostId: host?.data[0]._id.toString(),
-            });
-            window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
-          };
-          deleteGame();
+          // router.push(`/home/${params.username}`);
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
         }
       },
     );
@@ -351,13 +337,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
       hostChannel.bind(
         "pusher:member_removed",
         (member: { id: any; info: any }) => {
-          const deleteGame = async () => {
-            if (!host?.data) return;
-            await deleteSentenceSymphony.mutateAsync({
-              hostId: host?.data[0]._id.toString(),
-            });
-          };
-          deleteGame();
+          if (member.info.username === params.username) {
+            const deleteGame = async () => {
+              if (!host?.data) return;
+              await deleteSentenceSymphony.mutateAsync({
+                hostId: host?.data[0]._id.toString(),
+              });
+            };
+            deleteGame();
+          }
         },
       );
     }
@@ -498,6 +486,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       });
       return () => {
         hostChannel.unbind_all();
+        hostChannel.unsubscribe;
       };
     }
   }, [responsesData, roundType]);
