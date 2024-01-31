@@ -158,6 +158,8 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
             className="h-16 w-3/4 rounded-xl p-2 text-2xl text-black outline-red-900"
             placeholder="Enter player's username"
             autoComplete="off"
+            required
+            minLength={1}
             {...registerInvite("inviteUsername")}
           />
 

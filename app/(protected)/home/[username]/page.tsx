@@ -219,11 +219,10 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:subscription_error",
       // if error, redirect
-      async (error: NextResponse<ICustomError>) => {
+      async (error: { error: string, type: string }) => {
         setAuthorized("unauthorized");
         router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
-        // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =
         //   (await error.json()) as ICustomError;
         // const goRedirect = () =>
@@ -261,6 +260,8 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:member_added",
       async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        setDefault();
+
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
@@ -272,19 +273,12 @@ export default function Home({ params }: { params: { username: string } }) {
           username: welcomeMessage,
         });
       },
-      setDefault(),
     );
 
     homeChannel.bind(
       "pusher:member_removed",
-      async (leavingPlayer: { id: string; info: object }) => {
-        // if redirecting to a game, then don't clear anything because we might want to come back
-        if (useGameRedirectStoreState.getState().gameRedirect) {
-          useGameRedirectStoreState.setState({ gameRedirect: false });
-          return;
-        }
-
-        if (leavingPlayer.id === session!.user.uid) {
+      async (leavingPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        const resetAndDelete = async () => {
           // reset multiplayer store
           //  - the store will be emptied, but will be populated by default values if they go back to their home
           useMultiplayerStore.getState().resetData();
@@ -295,8 +289,24 @@ export default function Home({ params }: { params: { username: string } }) {
             hostId: host.data[0]._id.toString(),
             guestId: leavingPlayer.id,
           });
+        }
+
+        // if redirecting to a game, then don't clear anything because we might want to come back
+        if (useGameRedirectStoreState.getState().gameRedirect) {
+          useGameRedirectStoreState.setState({ gameRedirect: false });
           return;
         }
+
+        if (leavingPlayer.id === session!.user.uid) {
+          return await resetAndDelete();
+        }
+        // now if the host leaves, we need to kick everyone out
+        if (leavingPlayer.info.username === hostUsername && leavingPlayer.id !== session?.user.uid) {
+          await resetAndDelete();
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+          return;
+        }
+
 
         // remove the player from their store
         useMultiplayerStore.getState().deleteOther(leavingPlayer.id);
@@ -329,8 +339,6 @@ export default function Home({ params }: { params: { username: string } }) {
       },
     );
 
-    homeChannel.bind("change-scene", async () => {});
-
     return () => {
       useHomeStore.getState().resetData();
 
@@ -349,8 +357,10 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "sceneChange",
-      async ({ oldScene, newScene }: IChangeSceneParams) => {
+      async ({ oldScene, newScene, targetId }: IChangeSceneParams) => {
         if (!game) return;
+        if (oldScene === newScene) return;
+        if (targetId && targetId !== session!.user.uid) return;
 
         const player = (await game.registry.get(
           "player",
