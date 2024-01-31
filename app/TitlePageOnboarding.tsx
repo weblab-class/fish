@@ -35,29 +35,29 @@ export default function TitlePageOnboarding() {
   }, []);
 
   const onSubmit: SubmitHandler<Input> = async (data) => {
+    setLoading(true);
     if (sprite === "select") {
       setSpriteSelected(false);
+      setLoading(false);
       setTimeout(() => {
         setSpriteSelected(true);
       }, 2000);
-    }
+    } else {
+      try {
+        await createPlayerMutation.mutateAsync({
+          _id: session!.user.uid,
+          username: data.username,
+          animalSprite: sprite as AnimalSprite,
+        });
 
-    setLoading(true);
-
-    try {
-      await createPlayerMutation.mutateAsync({
-        _id: session!.user.uid,
-        username: data.username,
-        animalSprite: sprite as AnimalSprite,
-      });
-
-      router.push(`/home/${data.username}`);
-    } catch (error) {
-      setIsError(true);
-      setLoading(false);
-      setTimeout(() => {
-        setIsError(false);
-      }, 2000);
+        router.push(`/home/${data.username}`);
+      } catch (error) {
+        setIsError(true);
+        setLoading(false);
+        setTimeout(() => {
+          setIsError(false);
+        }, 2000);
+      }
     }
   };
   return (
