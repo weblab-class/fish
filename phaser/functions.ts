@@ -97,8 +97,6 @@ export function loadSprites(scene: Phaser.Scene) {
     const registryOthers = Object.getOwnPropertyNames(
       scene.registry.getAll(),
     ).filter((key) => key.startsWith("player-"));
-
-    console.log(registryOthers);
   
     // delete people who have left
     for (const regPlayerKey of registryOthers) {

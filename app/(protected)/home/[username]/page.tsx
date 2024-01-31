@@ -214,11 +214,10 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:subscription_error",
       // if error, redirect
-      async (error: NextResponse<ICustomError>) => {
+      async (error: { error: string, type: string }) => {
         setAuthorized("unauthorized");
         router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
-        // TODO fix .json() (maybe use zustand error store)
         // const { message: errMsg, code: errCode } =
         //   (await error.json()) as ICustomError;
         // const goRedirect = () =>
@@ -256,11 +255,12 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:member_added",
       async (newPlayer: { id: string; info: PusherPresenceUserInfo }) => {
+        setDefault();
+
         if (newPlayer.id === session!.user.uid) return; // we don't want this to run on the same person
 
         useMultiplayerStore.getState().sendMyData({ to: newPlayer.id });
       },
-      setDefault(),
     );
 
     homeChannel.bind(
@@ -337,8 +337,10 @@ export default function Home({ params }: { params: { username: string } }) {
 
     homeChannel.bind(
       "sceneChange",
-      async ({ oldScene, newScene }: IChangeSceneParams) => {
+      async ({ oldScene, newScene, targetId }: IChangeSceneParams) => {
         if (!game) return;
+        if (oldScene === newScene) return;
+        if (targetId && targetId !== session!.user.uid) return;
 
         const player = (await game.registry.get(
           "player",
