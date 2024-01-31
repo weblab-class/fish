@@ -9,7 +9,6 @@ const config: Config = {
   ],
   plugins: [
     require("tailwind-scrollbar")({ nocompatible: true }),
-    require("@headlessui/tailwindcss")({ prefix: "hd" }),
   ],
   theme: {
     extend: {
