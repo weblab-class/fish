@@ -472,7 +472,7 @@ class interior extends Scene {
       // enters when enter key is pressed
       if (isDown) {
         // game menu popup
-        console.log("game menu");
+        useHomeStore.getState().showPopup("invite");
       }
     }
 
