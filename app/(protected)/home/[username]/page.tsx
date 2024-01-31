@@ -219,7 +219,7 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:subscription_error",
       // if error, redirect
-      async (error: { error: string, type: string }) => {
+      async (error: { error: string; type: string }) => {
         setAuthorized("unauthorized");
         router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/error`);
 
@@ -289,7 +289,7 @@ export default function Home({ params }: { params: { username: string } }) {
             hostId: host.data[0]._id.toString(),
             guestId: leavingPlayer.id,
           });
-        }
+        };
 
         // if redirecting to a game, then don't clear anything because we might want to come back
         if (useGameRedirectStoreState.getState().gameRedirect) {
@@ -301,12 +301,14 @@ export default function Home({ params }: { params: { username: string } }) {
           return await resetAndDelete();
         }
         // now if the host leaves, we need to kick everyone out
-        if (leavingPlayer.info.username === hostUsername && leavingPlayer.id !== session?.user.uid) {
+        if (
+          leavingPlayer.info.username === hostUsername &&
+          leavingPlayer.id !== session?.user.uid
+        ) {
           await resetAndDelete();
           window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
           return;
         }
-
 
         // remove the player from their store
         useMultiplayerStore.getState().deleteOther(leavingPlayer.id);

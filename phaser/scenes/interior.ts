@@ -20,15 +20,17 @@ class interior extends Scene {
   private tvText1!: Phaser.GameObjects.Text;
   private hostUsername: string;
   private frameCounter = 0;
+  private username:string;
 
   //   getHostUsername() {
   //     return useGameStore.getState().hostUsername;
   //   }
 
-  constructor(hostUsername: string) {
+  constructor(hostUsername: string, username:string) {
     super("interior");
     this.i = 0;
     this.hostUsername = hostUsername;
+    this.username = username;
   }
 
   preload() {
@@ -393,7 +395,7 @@ class interior extends Scene {
     const otherPlayers = useMultiplayerStore.getState().otherPlayers;
 
     if (this.frameCounter >= FRAME_BUFFER) {
-      this.frameCounter = 0; 
+      this.frameCounter = 0;
     updateOtherPlayers(this, otherPlayers);}
 
 
@@ -413,7 +415,7 @@ class interior extends Scene {
     );
 
     // displays enter house text when overlapping
-    if (isOverlappingWelcomeMat) {
+    if (isOverlappingWelcomeMat && this.hostUsername == this.username) {
       useHomeStore.setState({ text: "Press [Enter] to exit" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
@@ -441,12 +443,12 @@ class interior extends Scene {
     const isOverlappingStudyMat = self.physics.world.overlap(player, studyMat);
 
     // displays enter house text when overlapping
-    if (isOverlappingStudyMat) {
+    if (isOverlappingStudyMat && this.hostUsername == this.username) {
       useHomeStore.setState({ text: "Press [Enter] to study" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
 
-      // enters house when enter key is pressed
+      // enters studyroom when enter key is pressed
       if (isDown) {
         this.scene.switch("exterior");
       }
@@ -462,7 +464,7 @@ class interior extends Scene {
     const isOverlappingGameMenu = self.physics.world.overlap(player, gameMenu);
 
     // displays text when overlapping
-    if (isOverlappingGameMenu) {
+    if (isOverlappingGameMenu && this.hostUsername == this.username) {
       useHomeStore.setState({ text: "Press [Enter] to play Sentence Symphony" });
       const keyObj = self.input.keyboard!.addKey("Enter"); // Get key object
       const isDown = keyObj.isDown;
