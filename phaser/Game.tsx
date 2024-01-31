@@ -27,14 +27,10 @@ export default function Game({
 }: IGameProps) {
   const parentEl = useRef<HTMLDivElement>(null);
   const [text, setData] = useHomeStore((state) => [state.text, state.setData]);
-  useEffect(() => {
-    console.log("starting game");
-  }, []);
 
   useEffect(() => {
     if (!parentEl.current) return;
 
-    console.log("gameconfig");
     const gameConfig: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
       parent: "phaser-container",

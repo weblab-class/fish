@@ -345,8 +345,6 @@ export default function Home({ params }: { params: { username: string } }) {
         )) as Phaser.GameObjects.Sprite;
         const currSceneKey = player.scene.scene.key;
 
-        console.log("BRUH", player);
-
         if (oldScene == "studyroom") {
           for (let _ = 0; _ < 2; ++_) {
             // @ts-ignore

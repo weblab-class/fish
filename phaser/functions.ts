@@ -82,11 +82,9 @@ export function loadSprites(scene: Phaser.Scene) {
         | undefined;
       if (otherSprite) {
         otherSprite.setPosition(otherInfo.x, otherInfo.y);
-        console.log(`updating ${otherInfo.username} in ${scene.scene.key}`, otherInfo);
         // TODO set anim based on current animation frame here
       } else {
         // joined players
-        console.log(`joining ${otherInfo.username} in ${scene.scene.key}`, otherInfo);
         scene.registry.set(
           playerKey,
           scene.add.sprite(otherInfo.x, otherInfo.y, otherInfo.sprite),
@@ -99,23 +97,23 @@ export function loadSprites(scene: Phaser.Scene) {
     const registryOthers = Object.getOwnPropertyNames(
       scene.registry.getAll(),
     ).filter((key) => key.startsWith("player-"));
+
+    console.log(registryOthers);
   
     // delete people who have left
     for (const regPlayerKey of registryOthers) {
       if (currentPlayers.has(regPlayerKey)) continue;
-  
-      console.log(`deleting`);
-  
-      // !BUG Does not work
+    
       const oldSprite = scene.registry.get(
         regPlayerKey,
       ) as Phaser.GameObjects.Sprite;
       scene.registry.remove(regPlayerKey);
-      oldSprite.destroy(true); // TEST
+
+      oldSprite.destroy(true); 
     }
   }
   
-  export function sendPositionData(scene: Scene, player: Phaser.GameObjects.Sprite) {
+  export function sendPositionData(player: Phaser.GameObjects.Sprite) {
       // stores current player's location
       const x = player.x;
       const y = player.y;

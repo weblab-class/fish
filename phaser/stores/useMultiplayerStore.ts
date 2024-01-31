@@ -76,8 +76,6 @@ export const useMultiplayerStore = create<MultiplayerStoreState>(
       const { x: newX, y: newY } = playerSprite.body!.position;
       const roomStatus = playerSprite.scene.scene.key as PlayerRoomStatus;
 
-      console.log(get().currentPlayer?.username, roomStatus, newX, newY);
-
       set((state) => {
         if (state.currentPlayer)
           return {
