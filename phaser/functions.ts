@@ -82,7 +82,6 @@ export function loadSprites(scene: Phaser.Scene) {
         | undefined;
       if (otherSprite) {
         otherSprite.setPosition(otherInfo.x, otherInfo.y);
-        // TODO set anim based on current animation frame here
       } else {
         // joined players
         scene.registry.set(
