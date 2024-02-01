@@ -11,6 +11,7 @@ import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import { useSignOut } from "@/services/react-query/auth";
 import { useRouter } from "next/navigation";
 import {
+  getPlayer,
   getPlayerByUsername,
   useGetPlayer,
 } from "@/services/react-query/queries/player";
@@ -288,13 +289,18 @@ export default function Home({ params }: { params: { username: string } }) {
     homeChannel.bind(
       "pusher:member_removed",
       async (leavingPlayer: { id: string; info: PusherPresenceUserInfo }) => {
-        const leavingMessage =
-          ":---" + leavingPlayer.info.username + " has left!---";
-        axios.post("/api/pusher/home/chatLog", {
-          hostUsername: params.username,
-          message: "",
-          username: leavingMessage,
-        });
+        const host = await getPlayerByUsername(hostUsername);
+        if (!host?.data?.at(0)) return;
+
+        if (session!.user.uid === host.data[0]._id) {
+          const leavingMessage =
+            ":---" + leavingPlayer.info.username + " has left!---";
+          axios.post("/api/pusher/home/chatLog", {
+            hostUsername: params.username,
+            message: "",
+            username: leavingMessage,
+          });
+        }
 
         const resetAndDelete = async () => {
           // reset multiplayer store
