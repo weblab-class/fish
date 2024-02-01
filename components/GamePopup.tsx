@@ -72,7 +72,10 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
     const homeChannel = pusherClient.subscribe(
       `presence-home-${hostUsername}`,
     ) as PresenceChannel;
-    if (homeChannel.members.count > 1) setIsMulti(true);
+    if (homeChannel.members.count > 1) {
+      setIsMulti(true);
+      console.log();
+    }
   }, []);
 
   useEffect(() => {
@@ -104,7 +107,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
 
         <div className="flex items-center justify-center">
           <button
-            disabled={!(loading && !isMulti)}
+            disabled={loading || !isMulti}
             className={`${!isMulti && "cursor-not-allowed "} ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline`}
             onClick={async () => {
               setLoading(true);
