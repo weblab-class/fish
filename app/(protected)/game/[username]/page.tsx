@@ -14,6 +14,7 @@ import { useLuciaSession } from "@/services/lucia/LuciaSessionProvider";
 import dynamic from "next/dynamic";
 import { takeWhile as _takeWhile, random as _random } from "lodash";
 import {
+  getPlayerByUsername,
   useGetPlayer,
   useGetPlayerByUsername,
 } from "@/services/react-query/queries/player";
@@ -141,6 +142,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   const [responses, setResponses] = useState<FullResponse[]>([]);
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const [topContributor, setTopContributor] = useState<string>("");
+  const [hostExist, setHostExist] = useState(false);
   const [memberCount, setMemberCount] = useState<number>(0);
   const [playerCount, setPlayerCount] = useState<number>(0);
   const [deadPlayers, setDeadPlayers] = useState<GamePlayerInfo[]>([]);
@@ -265,22 +267,33 @@ export default function GamePage({ params }: { params: { username: string } }) {
           { playerId: member.id, gameName: member.info.username },
         ]);
 
-        if (member.info.username === params.username) {
-          // router.push(`/home/${params.username}`);
+        const leavingMessage = ":---" + member.info.username + " has left!---";
+        await axios.post("/api/pusher/symphony/newMessage", {
+          hostUsername: params.username,
+          message: "",
+          username: leavingMessage,
+        });
 
-          if (isHost) {
-            await deleteSentenceSymphony.mutateAsync({
-              hostId: member.id,
-            });
-          }
+        await axios.post("/api/pusher/symphony/newMessage", {
+          hostUsername: params.username,
+          message: "",
+          username: ":-----RETURNING HOME...-----",
+        });
 
-          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+        const host = await getPlayerByUsername(params.username);
+        if (!host.data) return;
+        const hostId = host.data[0]._id;
+        if (session!.user.uid == hostId) {
+          await deleteSentenceSymphony.mutateAsync({
+            hostId: host?.data[0]._id.toString(),
+          });
         }
+
+        window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
       },
     );
 
     gameChannel.bind("gameRoomCreated", () => {
-      console.log("game room created");
       setGameRoomExists(true);
     });
 
@@ -296,8 +309,31 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     return () => {
       gameChannel.unbind_all();
+      window.removeEventListener("beforeunload", () => {
+        stopTimer();
+      });
       if (isHost) {
         pusherClient.unsubscribe(`presence-ss-host-${params.username}`);
+      }
+      gameChannel.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isHost) {
+      window.addEventListener("beforeunload", async () => {
+        stopTimer();
+
+        if (!host?.data) return;
+        await deleteSentenceSymphony.mutateAsync({
+          hostId: host?.data[0]._id.toString(),
+        });
+      });
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", () => {
+        stopTimer();
         const deleteGame = async () => {
           if (!host?.data) return;
           await deleteSentenceSymphony.mutateAsync({
@@ -305,14 +341,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
           });
         };
         deleteGame();
-      }
-      gameChannel.unsubscribe();
+      });
     };
-  }, []);
-
-  useEffect(() => {
-    console.log(gameRoomExists, "changed gre");
-  }, [gameRoomExists]);
+  }, [hostExist]);
 
   // events after host and player data are loaded
   useEffect(() => {
@@ -328,6 +359,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
     const playerId = player?.data?._id;
 
     if (hostId === playerId) {
+      if (!isHost) {
+        setHostExist(true);
+      }
       setIsHost(true);
     } else {
       setIsHost(false);
@@ -362,7 +396,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       }
 
       const gameRoomCreatedFunc = async () => {
-        console.log("posting gameroom");
         await axios.post("/api/pusher/symphony/gameRoomCreated", {
           hostUsername: params.username,
         });
@@ -381,18 +414,13 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
 
     // host makes sure timer stops before unloading
-    window.addEventListener("beforeunload", () => {
-      stopTimer();
-    });
 
     // clean up
     return () => {
       gameChannel.unbind_all;
 
       pusherClient.unsubscribe(`presence-ss-${params.username}`);
-      window.removeEventListener("beforeunload", () => {
-        stopTimer();
-      });
+
       stopTimer();
     };
   }, [isBothFinishedLoading, memberCount, isSubscribed]);
@@ -429,13 +457,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [currentStory]);
 
   useEffect(() => {
-    console.log("game room use effect");
     if (gameRoomExists) {
-      console.log("game room use effect inside");
       const gameRoomRecFunc = async function () {
-        console.log("function called");
         if (!host?.data) return;
-        console.log("past host data checl");
+
         const gameRoomRes = await getSentenceSymphony(
           host!.data[0]._id.toString(),
         );
@@ -447,8 +472,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
               .sprite;
           }),
         ];
-
-        console.log("game room use effect past the get");
 
         setAllPlayers(gameRoomPlayers);
         setPlayerCount(gameRoomPlayers.length);
@@ -667,13 +690,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
         if (roundType === "story") {
           if (!player?.data) return;
-          const deleteGame = async () => {
-            if (!host?.data) return;
-            await deleteSentenceSymphony.mutateAsync({
-              hostId: host?.data[0]._id.toString(),
-            });
-          };
-          deleteGame();
 
           // router.push(`/home/${params.username}`);
           window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
