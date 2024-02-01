@@ -1231,7 +1231,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     creatorUsername={
                       allPlayers.find(
                         (player) => player.playerId === response.creatorId,
-                      )?.gameName ?? "AI-wahhh"
+                      )?.gameName ?? "Anonymous"
                     }
                     voterId={session!.user.uid}
                     hostId={
