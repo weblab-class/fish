@@ -296,6 +296,16 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     return () => {
       gameChannel.unbind_all();
+      if (isHost) {
+        pusherClient.unsubscribe(`presence-ss-host-${params.username}`);
+        const deleteGame = async () => {
+          if (!host?.data) return;
+          await deleteSentenceSymphony.mutateAsync({
+            hostId: host?.data[0]._id.toString(),
+          });
+        };
+        deleteGame();
+      }
       gameChannel.unsubscribe();
     };
   }, []);
@@ -378,9 +388,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // clean up
     return () => {
       gameChannel.unbind_all;
-      if (isHost) {
-        pusherClient.unsubscribe(`presence-ss-host-${params.username}`);
-      }
 
       pusherClient.unsubscribe(`presence-ss-${params.username}`);
       window.removeEventListener("beforeunload", () => {
