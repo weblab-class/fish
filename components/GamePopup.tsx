@@ -105,7 +105,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
         <div className="flex items-center justify-center">
           <button
             disabled={!(loading && !isMulti)}
-            className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
+            className={`${!isMulti && "cursor-not-allowed "} ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline`}
             onClick={async () => {
               setLoading(true);
               await axios.post(

@@ -198,13 +198,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   let intervalId: NodeJS.Timeout | undefined;
   const stopTimer = function () {
-    clearInterval(intervalId);
+    // console.log("deleting timer");
+    // clearInterval(intervalId);
+    // console.log("deleting timer id", intervalId);
   };
-  const timerControl = function (startTime: number) {
+  const timerControl = async function (startTime: number) {
     let time = startTime;
-    intervalId = setInterval(async () => {
-      console.log("time inside", time);
 
+    intervalId = setInterval(async () => {
       time -= 1;
       if (time >= 0) {
         const triggerTimer = async () => {
@@ -218,6 +219,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
         };
         await triggerTimer();
       } else {
+        console.log("clearing");
         clearInterval(intervalId);
       }
     }, 1000);
@@ -576,14 +578,13 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // start timer after new round
     if (isHost) {
       console.log("timer starting called");
-      // const timer = async () => {
-      //   await axios.post(`/api/pusher/symphony/gameTimer`, {
-      //     time: timerDuration,
-      //     hostUsername: params.username,
-      //   });
-      // };
-      // timer();
-      timerControl(timerDuration);
+      const timer = async () => {
+        clearInterval(intervalId);
+        console.log("start", intervalId);
+        await timerControl(timerDuration);
+        console.log("end", intervalId);
+      };
+      timer();
     }
 
     gameChannel.bind("updateResponses", (data: { responses: Response[] }) => {
@@ -646,6 +647,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
       if (data.time === 0 && roundNumber < 30) {
         // only host controls stopTimer
+        console.log("round,", roundType);
         if (isHost) {
           stopTimer();
         }
@@ -871,7 +873,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // clean up
     return () => {
-      gameChannel.unbind("timer");
+      gameChannel.unbind("updateTime");
       console.log("unbind timer");
       gameChannel.unbind("roundChange");
     };
@@ -1184,20 +1186,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 ? "Generate New Prompt"
                 : "Waiting for host to select a prompt..."}
             </button>
-            {isHost && (
-              <button
-                className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
-                disabled={submissionLoading && !isHost}
-                onClick={() => {
-                  stopTimer();
-
-                  // change to writing round for everyone
-                  roundChangeFunc(roundType);
-                }}
-              >
-                {isHost ? "Start Game" : "Waiting for host to start..."}
-              </button>
-            )}
           </div>
         ) : roundType === "writing" ? (
           <form
