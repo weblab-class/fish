@@ -197,11 +197,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   };
 
   let intervalId: NodeJS.Timeout | undefined;
-  const stopTimer = function () {
-    // console.log("deleting timer");
-    // clearInterval(intervalId);
-    // console.log("deleting timer id", intervalId);
-  };
+  const stopTimer = function () {};
   const timerControl = async function (startTime: number) {
     let time = startTime;
 
@@ -219,7 +215,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
         };
         await triggerTimer();
       } else {
-        console.log("clearing");
         clearInterval(intervalId);
       }
     }, 1000);
@@ -348,7 +343,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
         setGameRoomExists(true);
       };
       createSentenceSymphonyFunc();
-      console.log("create sentence symp");
 
       if (isHost) {
         handleGenerate();
@@ -574,15 +568,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
       timerDuration = 10;
     }
 
-    console.log("past gameroomexists", isHost);
     // start timer after new round
     if (isHost) {
-      console.log("timer starting called");
       const timer = async () => {
         clearInterval(intervalId);
-        console.log("start", intervalId);
+
         await timerControl(timerDuration);
-        console.log("end", intervalId);
       };
       timer();
     }
@@ -642,12 +633,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // gameChannel.bind("mostVoted",(data:{mostVotedPrompt:string,newPrompt}))
 
     gameChannel.bind("updateTime", (data: { time: number }) => {
-      console.log(data.time, "guest");
       setTime(data.time);
 
       if (data.time === 0 && roundNumber < 30) {
         // only host controls stopTimer
-        console.log("round,", roundType);
+
         if (isHost) {
           stopTimer();
         }
@@ -757,7 +747,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       }
     });
     gameChannel.bind("timer", (data: { time: number }) => {
-      console.log(data.time);
       setTime(data.time);
 
       if (data.time === 0 && roundNumber < 30) {
@@ -874,14 +863,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // clean up
     return () => {
       gameChannel.unbind("updateTime");
-      console.log("unbind timer");
+
       gameChannel.unbind("roundChange");
     };
   }, [roundType, gameRoomExists]);
 
-  useEffect(() => {
-    console.log(isHost, "isHost");
-  }, [isHost]);
   //   submitting responses
   const onSubmit: SubmitHandler<Input> = async (data) => {
     if (!submittedResponse) {
