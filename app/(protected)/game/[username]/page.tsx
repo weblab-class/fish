@@ -280,6 +280,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
     );
 
     gameChannel.bind("gameRoomCreated", () => {
+      console.log("game room created");
       setGameRoomExists(true);
     });
 
@@ -349,6 +350,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       }
 
       const gameRoomCreatedFunc = async () => {
+        console.log("posting gameroom");
         await axios.post("/api/pusher/symphony/gameRoomCreated", {
           hostUsername: params.username,
         });
@@ -432,6 +434,8 @@ export default function GamePage({ params }: { params: { username: string } }) {
               .sprite;
           }),
         ];
+
+        console.log("game room use effect");
 
         setAllPlayers(gameRoomPlayers);
         setPlayerCount(gameRoomPlayers.length);
