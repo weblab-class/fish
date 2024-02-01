@@ -268,11 +268,13 @@ export default function GamePage({ params }: { params: { username: string } }) {
         ]);
 
         const leavingMessage = ":---" + member.info.username + " has left!---";
-        await axios.post("/api/pusher/symphony/newMessage", {
-          hostUsername: params.username,
-          message: "",
-          username: leavingMessage,
-        });
+        try {
+          await axios.post("/api/pusher/symphony/newMessage", {
+            hostUsername: params.username,
+            message: "",
+            username: leavingMessage,
+          });
+        } catch {}
 
         await axios.post("/api/pusher/symphony/newMessage", {
           hostUsername: params.username,
@@ -283,11 +285,10 @@ export default function GamePage({ params }: { params: { username: string } }) {
         const host = await getPlayerByUsername(params.username);
         if (!host.data) return;
         const hostId = host.data[0]._id;
-        if (session!.user.uid == hostId) {
-          await deleteSentenceSymphony.mutateAsync({
-            hostId: host?.data[0]._id.toString(),
-          });
-        }
+
+        await deleteSentenceSymphony.mutateAsync({
+          hostId: host?.data[0]._id.toString(),
+        });
 
         window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
       },
@@ -541,6 +542,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           //   message: "hiiiii",
           //   username: "left",
           // });
+
           if (member.info.username === params.username) {
             if (!host?.data) return;
             await deleteSentenceSymphony.mutateAsync({
