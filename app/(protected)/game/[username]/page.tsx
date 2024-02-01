@@ -300,7 +300,9 @@ export default function GamePage({ params }: { params: { username: string } }) {
     };
   }, []);
 
-  useEffect(() => {}, [gameRoomExists]);
+  useEffect(() => {
+    console.log(gameRoomExists, "changed gre");
+  }, [gameRoomExists]);
 
   // events after host and player data are loaded
   useEffect(() => {
@@ -420,6 +422,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
   }, [currentStory]);
 
   useEffect(() => {
+    console.log("game room use effect");
     if (gameRoomExists) {
       const gameRoomRecFunc = async function () {
         if (!host?.data) return;
@@ -435,7 +438,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           }),
         ];
 
-        console.log("game room use effect");
+        console.log("game room use effect inside");
 
         setAllPlayers(gameRoomPlayers);
         setPlayerCount(gameRoomPlayers.length);
