@@ -268,13 +268,12 @@ export default function GamePage({ params }: { params: { username: string } }) {
         ]);
 
         const leavingMessage = ":---" + member.info.username + " has left!---";
-        try {
-          await axios.post("/api/pusher/symphony/newMessage", {
-            hostUsername: params.username,
-            message: "",
-            username: leavingMessage,
-          });
-        } catch {}
+
+        await axios.post("/api/pusher/symphony/newMessage", {
+          hostUsername: params.username,
+          message: "",
+          username: leavingMessage,
+        });
 
         await axios.post("/api/pusher/symphony/newMessage", {
           hostUsername: params.username,
@@ -282,13 +281,15 @@ export default function GamePage({ params }: { params: { username: string } }) {
           username: ":-----RETURNING HOME...-----",
         });
 
-        const host = await getPlayerByUsername(params.username);
-        if (!host.data) return;
-        const hostId = host.data[0]._id;
+        try {
+          const host = await getPlayerByUsername(params.username);
+          if (!host.data) return;
+          const hostId = host.data[0]._id;
 
-        await deleteSentenceSymphony.mutateAsync({
-          hostId: host?.data[0]._id.toString(),
-        });
+          await deleteSentenceSymphony.mutateAsync({
+            hostId: host?.data[0]._id.toString(),
+          });
+        } catch {}
 
         window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
       },
@@ -797,12 +798,16 @@ export default function GamePage({ params }: { params: { username: string } }) {
         }, 1000);
 
         if (roundType === "story") {
-          if (!player?.data) return;
           const deleteGame = async () => {
-            if (!host?.data) return;
-            await deleteSentenceSymphony.mutateAsync({
-              hostId: host?.data[0]._id.toString(),
-            });
+            try {
+              const host = await getPlayerByUsername(params.username);
+              if (!host.data) return;
+              const hostId = host.data[0]._id;
+
+              await deleteSentenceSymphony.mutateAsync({
+                hostId: host?.data[0]._id.toString(),
+              });
+            } catch {}
           };
           deleteGame();
 
@@ -1296,7 +1301,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
                     creatorUsername={
                       allPlayers.find(
                         (player) => player.playerId === response.creatorId,
-                      )?.gameName ?? "AI-wahhh"
+                      )?.gameName ?? "Anonymous"
                     }
                     votes={
                       response.voterIds != undefined
