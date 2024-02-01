@@ -189,7 +189,7 @@ export default function HelpPopup({ defaultTab }: { defaultTab: string }) {
                       game from the popup
                     </p>
                     <p className="m-3 flex items-center rounded-xl bg-white bg-opacity-15 p-2 text-4xl text-amber-800">
-                      NOTE: While you can play with just 1-2 players, it is much
+                      NOTE: While you can play with just 2 players, it is much
                       more fun with 3+ players as you are not allowed to vote
                       for your own responses!
                     </p>

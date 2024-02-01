@@ -11,9 +11,11 @@ let intervalId: NodeJS.Timeout | undefined;
 
 export async function POST(req: NextRequest) {
   let { time, hostUsername } = (await req.json()) as TimerRequest;
+  console.log(time)
 
 
     intervalId = setInterval(async () => {
+      console.log("time inside", time)
 
         time -= 1;
         if (time>=0){
@@ -38,8 +40,6 @@ export async function POST(req: NextRequest) {
 export async function DELETE (req: NextRequest){
         // Stop the timer
         clearInterval(intervalId);
-
-
 
         return NextResponse.json({ status: 200 });
 

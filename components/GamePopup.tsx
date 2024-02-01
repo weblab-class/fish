@@ -94,9 +94,8 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
         </div>
       ) : (
         <div className="flex h-full w-1/2 items-center justify-center rounded-3xl bg-[url('/backgrounds/whiteBg.png')] p-4 text-center text-5xl text-rose-900">
-          Invite friends to play Sentence Symphony or get some practice by
-          playing by yourself! See how to play in the Help Menu in the bottom
-          right corner.
+          Invite friends to play Sentence Symphony! See how to play in the Help
+          Menu in the bottom right corner.
         </div>
       )}
 
@@ -105,7 +104,7 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
 
         <div className="flex items-center justify-center">
           <button
-            disabled={loading}
+            disabled={loading && isMulti}
             className="ml-2 mt-4 h-fit w-fit rounded-2xl bg-[url('/backgrounds/redBg.png')] p-2 text-4xl text-white outline-white hover:bg-[url('/backgrounds/pinkBg.png')] hover:outline"
             onClick={async () => {
               setLoading(true);
@@ -118,7 +117,11 @@ const InvitePopup = ({ hostId, hostUsername, isHost }: IInvitePopup) => {
               );
             }}
           >
-            {loading ? "Loading..." : "Start Game with Current Visitors"}
+            {loading
+              ? "Loading..."
+              : isMulti
+                ? "Start Game with Current Visitors"
+                : "Invite Friends to Play"}
           </button>
         </div>
       </div>
