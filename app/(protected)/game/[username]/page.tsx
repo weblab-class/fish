@@ -196,6 +196,33 @@ export default function GamePage({ params }: { params: { username: string } }) {
     }
   };
 
+  let intervalId: NodeJS.Timeout | undefined;
+  const stopTimer = function () {
+    clearInterval(intervalId);
+  };
+  const timerControl = function (startTime: number) {
+    let time = startTime;
+    intervalId = setInterval(async () => {
+      console.log("time inside", time);
+
+      time -= 1;
+      if (time >= 0) {
+        const triggerTimer = async () => {
+          await axios.post("/api/pusher/symphony/timeChange", {
+            time: time,
+            hostUsername: params.username,
+          });
+          // await pusherServer.trigger(`presence-ss-${hostUsername}`, "timer", {
+          //   time,
+          // });
+        };
+        await triggerTimer();
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 1000);
+  };
+
   interface Contribution {
     playerName: string;
     value: number;
@@ -256,7 +283,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
     );
 
     gameChannel.bind("gameRoomCreated", () => {
-      console.log("bind created");
       setGameRoomExists(true);
     });
 
@@ -276,17 +302,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(gameRoomExists, "GRE");
-  }, [gameRoomExists]);
+  useEffect(() => {}, [gameRoomExists]);
 
   // events after host and player data are loaded
   useEffect(() => {
     // makes sure timer is stopped before unloading
-    const stopTimer = async () => {
-      console.log("deleting timer");
-      await axios.delete("/api/pusher/symphony/gameTimer");
-    };
+    if (isHost) {
+      stopTimer();
+    }
 
     // makes sure host data and player data are loaded
     if (!host?.data || !host.data[0] || !player?.data) return;
@@ -553,13 +576,14 @@ export default function GamePage({ params }: { params: { username: string } }) {
     // start timer after new round
     if (isHost) {
       console.log("timer starting called");
-      const timer = async () => {
-        await axios.post(`/api/pusher/symphony/gameTimer`, {
-          time: timerDuration,
-          hostUsername: params.username,
-        });
-      };
-      timer();
+      // const timer = async () => {
+      //   await axios.post(`/api/pusher/symphony/gameTimer`, {
+      //     time: timerDuration,
+      //     hostUsername: params.username,
+      //   });
+      // };
+      // timer();
+      timerControl(timerDuration);
     }
 
     gameChannel.bind("updateResponses", (data: { responses: Response[] }) => {
@@ -616,6 +640,120 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
     // gameChannel.bind("mostVoted",(data:{mostVotedPrompt:string,newPrompt}))
 
+    gameChannel.bind("updateTime", (data: { time: number }) => {
+      console.log(data.time, "guest");
+      setTime(data.time);
+
+      if (data.time === 0 && roundNumber < 30) {
+        // only host controls stopTimer
+        if (isHost) {
+          stopTimer();
+        }
+
+        setTimesUp(true);
+
+        setTimeout(() => {
+          setTimesUp(false);
+        }, 1000);
+
+        if (roundType === "story") {
+          if (!player?.data) return;
+          const deleteGame = async () => {
+            if (!host?.data) return;
+            await deleteSentenceSymphony.mutateAsync({
+              hostId: host?.data[0]._id.toString(),
+            });
+          };
+          deleteGame();
+
+          // router.push(`/home/${params.username}`);
+          window.location.href = `${process.env.NEXT_PUBLIC_DOMAIN}`;
+        }
+
+        // only host controls roundChangeFunc
+        if (roundType === "voted") {
+          // clears responses for new round and calculates the winning prompt
+          if (isHost) {
+            const startNewRoundFunc = async () => {
+              const voteOptions = responsesData;
+
+              voteOptions.sort((a, b) => b.voterIds.length - a.voterIds.length);
+
+              const maxVoteOptions = _takeWhile(
+                voteOptions,
+                (v) => v.voterIds.length === voteOptions[0].voterIds.length,
+              );
+              const pickedOpt =
+                maxVoteOptions[_random(0, maxVoteOptions.length - 1)];
+
+              const newSentences = [
+                ...sentenceWinners,
+                {
+                  sentence: pickedOpt.sentence,
+                  creatorId: pickedOpt.creatorId,
+                },
+              ];
+
+              setSentenceWinners(newSentences);
+
+              const newStory = currentStory + " " + pickedOpt.sentence;
+              await axios.post("/api/pusher/symphony/updateStory", {
+                story: newStory,
+                hostUsername: params.username,
+              });
+
+              const winnerName = allPlayers.find(
+                ({ playerId }) => playerId === pickedOpt.creatorId,
+              )?.gameName!;
+              // const winnerName = allPlayers.find(
+              //   (player: { playerId: string }) => player.playerId === winner,
+              // ).gameName;
+              setMostVoted(pickedOpt.sentence);
+              setVotedWinner(winnerName);
+
+              const newContributions = contributions.map((player) => {
+                if (player.playerName === winnerName) {
+                  return { ...player, value: player.value + 1 };
+                }
+
+                return { ...player };
+              });
+
+              setContributions(newContributions);
+
+              const tie = maxVoteOptions.length > 1;
+
+              await axios.post("/api/pusher/symphony/updateContributions", {
+                contributions: contributions.map((player) => {
+                  if (player.playerName === winnerName) {
+                    return { ...player, value: player.value + 1 };
+                  }
+
+                  return { ...player };
+                }),
+
+                // ERROR: maxVoteOptions undefined ?
+                hostUsername: params.username,
+                winnerId: winnerName,
+                // winnerId: maxVoteOptions.map((options) => {
+                //   options.creatorId;
+                // }),
+                tie: tie,
+              });
+
+              await axios.post("/api/pusher/symphony/updateResponses", {
+                hostUsername: params.username,
+                responses: [],
+              });
+            };
+            startNewRoundFunc();
+          }
+        }
+        if (isHost) {
+          roundChangeFunc(roundType);
+        }
+      }
+    });
     gameChannel.bind("timer", (data: { time: number }) => {
       console.log(data.time);
       setTime(data.time);
@@ -623,10 +761,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
       if (data.time === 0 && roundNumber < 30) {
         // only host controls stopTimer
         if (isHost) {
-          const stopTimer = async () => {
-            console.log("delete 3");
-            await axios.delete("/api/pusher/symphony/gameTimer");
-          };
           stopTimer();
         }
 
@@ -795,9 +929,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
 
   // handles round changes, host makes postn requests and the server triggers changes for all players
   const roundChangeFunc = (roundTypeParam: string) => {
-    const stopTimer = async () => {
-      await axios.delete("/api/pusher/symphony/gameTimer");
-    };
     stopTimer();
 
     // change from writing to voting
@@ -1058,10 +1189,6 @@ export default function GamePage({ params }: { params: { username: string } }) {
                 className={`${isHost ? "cursor-pointer hover:bg-[url(/backgrounds/pinkBg.png)] hover:outline " : "cursor-not-allowed "} z-20 ml-10 mt-5 h-fit rounded-2xl bg-[url(/backgrounds/redBg.png)] p-4 text-3xl text-white outline outline-white`}
                 disabled={submissionLoading && !isHost}
                 onClick={() => {
-                  const stopTimer = async () => {
-                    console.log("deleeting 2");
-                    await axios.delete("/api/pusher/symphony/gameTimer");
-                  };
                   stopTimer();
 
                   // change to writing round for everyone
