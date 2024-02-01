@@ -424,8 +424,11 @@ export default function GamePage({ params }: { params: { username: string } }) {
   useEffect(() => {
     console.log("game room use effect");
     if (gameRoomExists) {
+      console.log("game room use effect inside");
       const gameRoomRecFunc = async function () {
+        console.log("function called");
         if (!host?.data) return;
+        console.log("past host data checl");
         const gameRoomRes = await getSentenceSymphony(
           host!.data[0]._id.toString(),
         );
@@ -438,7 +441,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
           }),
         ];
 
-        console.log("game room use effect inside");
+        console.log("game room use effect past the get");
 
         setAllPlayers(gameRoomPlayers);
         setPlayerCount(gameRoomPlayers.length);
@@ -448,7 +451,7 @@ export default function GamePage({ params }: { params: { username: string } }) {
       };
       gameRoomRecFunc();
     }
-  }, [gameRoomExists, isSubscribed]);
+  }, [gameRoomExists, isSubscribed, isBothFinishedLoading]);
 
   useEffect(() => {
     if (allPlayers.length > 0) {
